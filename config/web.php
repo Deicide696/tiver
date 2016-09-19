@@ -86,6 +86,18 @@ $config = [
 						'timeZone' => 'America/Bogota',
 						'locale' => 'es-CO' 
 				],
+				'assetManager' => [
+						'bundles' => [
+								'dosamigos\google\maps\MapAsset' => [
+										'options' => [
+												'key' => 'AIzaSyD6sHf-DQOt0l-TlMv8B0IhW9BzHTOSXT8',
+												'language' => 'es',
+												'version' => '3.1.18'
+										]
+								]
+						]
+				],
+				
 				'db' => require (__DIR__ . '/db.php') 
 		],
 		'params' => $params 
