@@ -1,0 +1,29 @@
+
+2016-04-26 16:47:00
+1461707220
+Servicio 58 no fue aceptado por el especialista Fulanito El Estupendo
+Servicio 58 asignado al especialista Pepito Perez
+
+2016-04-26 16:50:06
+1461707406
+Servicio 58 no fue aceptado por el especialista Pepito Perez
+Servicio 58 asignado al especialista Fulanito El Estupendo
+
+2016-04-26 16:53:14
+1461707594
+Servicio 58 no fue aceptado por el especialista Fulanito El Estupendo
+Servicio 58 asignado al especialista Pepito Perez
+
+2016-04-26 16:56:21
+1461707781
+Servicio 58 no fue aceptado por el especialista Pepito Perez
+Servicio 58 asignado al especialista Fulanito El Estupendo
+
+2016-04-26 16:59:29
+1461707969
+Servicio 58 no fue aceptado por el especialista Fulanito El Estupendo
+Servicio 58 asignado al especialista Pepito Perez
+
+2016-04-26 17:02:36
+1461708156
+Demasiados intentos

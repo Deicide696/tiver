@@ -1,0 +1,29 @@
+
+2016-08-18 09:04:41
+226 -> 2016-8-18 13:30:00 -> 1
+Servicio 226 no fue aceptado por el especialista Leydy Johanna Correa Ortiz
+Servicio 226 asignado al especialista Melida Gonzalez Ariza
+
+2016-08-18 09:05:42
+226 -> 2016-8-18 13:30:00 -> 2
+Servicio 226 no fue aceptado por el especialista Melida Gonzalez Ariza
+Servicio 226 asignado al especialista Leydy Johanna Correa Ortiz
+
+2016-08-18 09:06:42
+226 -> 2016-8-18 13:30:00 -> 3
+Servicio 226 no fue aceptado por el especialista Leydy Johanna Correa Ortiz
+Servicio 226 asignado al especialista Melida Gonzalez Ariza
+
+2016-08-18 09:07:42
+226 -> 2016-8-18 13:30:00 -> 4
+Servicio 226 no fue aceptado por el especialista Melida Gonzalez Ariza
+Servicio 226 asignado al especialista Leydy Johanna Correa Ortiz
+
+2016-08-18 09:08:43
+226 -> 2016-8-18 13:30:00 -> 5
+Servicio 226 no fue aceptado por el especialista Leydy Johanna Correa Ortiz
+Servicio 226 asignado al especialista Melida Gonzalez Ariza
+
+2016-08-18 09:09:43
+226 -> 2016-8-18 13:30:00 -> 6
+Demasiados intentos

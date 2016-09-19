@@ -1,0 +1,14 @@
+
+2016-08-26 17:54:06
+229 -> 2016-8-26 21:00:00 -> 1
+Servicio 229 no fue aceptado por el especialista Ginna Paola Sabogal Benavides
+Servicio 229 asignado al especialista Martha Isabel Losada Manrrique
+
+2016-08-26 17:55:06
+229 -> 2016-8-26 21:00:00 -> 2
+Servicio 229 no fue aceptado por el especialista Martha Isabel Losada Manrrique
+Servicio 229 asignado al especialista Ginna Paola Sabogal Benavides
+
+2016-08-26 17:56:06
+229 -> 2016-8-26 21:00:00 -> 3
+Servicio 229 ya fue aceptado

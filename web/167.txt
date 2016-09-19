@@ -1,0 +1,9 @@
+
+2016-05-17 10:10:00
+167 -> 2016-5-17 17:30:00 -> 1
+Servicio 167 no fue aceptado por el especialista Pepito Perez
+Servicio 167 asignado al especialista Fulanito El Estupendo
+
+2016-05-17 10:11:06
+167 -> 2016-5-17 17:30:00 -> 2
+Servicio 167 ya fue aceptado

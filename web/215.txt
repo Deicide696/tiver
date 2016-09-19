@@ -1,0 +1,24 @@
+
+2016-07-01 09:55:21
+215 -> 2016-7-1 18:00:00 -> 1
+Servicio 215 no fue aceptado por el especialista Melida Gonzalez Ariza
+Servicio 215 asignado al especialista Andrea  Martinez Lopez
+
+2016-07-01 09:56:22
+215 -> 2016-7-1 18:00:00 -> 2
+Servicio 215 no fue aceptado por el especialista Andrea  Martinez Lopez
+Servicio 215 asignado al especialista Melida Gonzalez Ariza
+
+2016-07-01 09:57:22
+215 -> 2016-7-1 18:00:00 -> 3
+Servicio 215 no fue aceptado por el especialista Melida Gonzalez Ariza
+Servicio 215 asignado al especialista Andrea  Martinez Lopez
+
+2016-07-01 09:58:23
+215 -> 2016-7-1 18:00:00 -> 4
+Servicio 215 no fue aceptado por el especialista Andrea  Martinez Lopez
+Servicio 215 asignado al especialista Melida Gonzalez Ariza
+
+2016-07-01 09:59:23
+215 -> 2016-7-1 18:00:00 -> 5
+Servicio 215 ya fue aceptado

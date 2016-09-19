@@ -1,0 +1,52 @@
+
+2016-04-27 15:10:53
+1461787853
+Servicio 65 no fue aceptado por el especialista Fulanito El Estupendo
+Servicio 65 asignado al especialista Pepito Perez
+
+2016-04-27 15:12:42
+1461787962
+Servicio 65 no fue aceptado por el especialista Pepito Perez
+Servicio 65 asignado al especialista Fulanito El Estupendo
+
+2016-04-27 15:13:48
+1461788028
+Servicio 65 no fue aceptado por el especialista Fulanito El Estupendo
+Servicio 65 asignado al especialista Pepito Perez
+
+2016-04-27 15:13:59
+1461788039
+Servicio 65 no fue aceptado por el especialista Pepito Perez
+Servicio 65 asignado al especialista Fulanito El Estupendo
+
+2016-04-27 15:15:49
+1461788149
+Servicio 65 no fue aceptado por el especialista Fulanito El Estupendo
+Servicio 65 asignado al especialista Pepito Perez
+
+2016-04-27 15:16:55
+1461788215
+Servicio 65 no fue aceptado por el especialista Pepito Perez
+Servicio 65 asignado al especialista Fulanito El Estupendo
+
+2016-04-27 15:17:05
+1461788225
+Servicio 65 no fue aceptado por el especialista Fulanito El Estupendo
+Servicio 65 asignado al especialista Pepito Perez
+
+2016-04-27 15:18:58
+1461788338
+Servicio 65 no fue aceptado por el especialista Pepito Perez
+Servicio 65 asignado al especialista Fulanito El Estupendo
+
+2016-04-27 15:20:02
+1461788402
+Demasiados intentos
+
+2016-04-27 15:20:11
+1461788411
+Servicio 65 no existe
+
+2016-04-27 15:22:05
+1461788525
+Servicio 65 no existe

@@ -1,0 +1,5 @@
+
+2016-06-13 18:02:26
+197 -> 2016-6-13 19:15:00 -> 1
+Servicio 197 no fue aceptado por el especialista Pepito Perez
+No hay especialistas disponibles

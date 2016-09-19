@@ -1,0 +1,29 @@
+
+2016-05-12 18:29:33
+158 -> 2016-5-17 17:15:00 -> 1
+Servicio 158 no fue aceptado por el especialista Fulanito El Estupendo
+Servicio 158 asignado al especialista Pepito Perez
+
+2016-05-12 18:59:33
+158 -> 2016-5-17 17:15:00 -> 2
+Servicio 158 no fue aceptado por el especialista Pepito Perez
+Servicio 158 asignado al especialista Fulanito El Estupendo
+
+2016-05-12 19:29:33
+158 -> 2016-5-17 17:15:00 -> 3
+Servicio 158 no fue aceptado por el especialista Fulanito El Estupendo
+Servicio 158 asignado al especialista Pepito Perez
+
+2016-05-12 19:59:34
+158 -> 2016-5-17 17:15:00 -> 4
+Servicio 158 no fue aceptado por el especialista Pepito Perez
+Servicio 158 asignado al especialista Fulanito El Estupendo
+
+2016-05-12 20:29:34
+158 -> 2016-5-17 17:15:00 -> 5
+Servicio 158 no fue aceptado por el especialista Fulanito El Estupendo
+Servicio 158 asignado al especialista Pepito Perez
+
+2016-05-12 20:59:34
+158 -> 2016-5-17 17:15:00 -> 6
+Demasiados intentos

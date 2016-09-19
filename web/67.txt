@@ -1,0 +1,5 @@
+
+2016-04-27 16:55:56
+67 -> 2016-5-2 03:00:00 -> 1
+Servicio 67 no fue aceptado por el especialista Pepito Perez
+No hay especialistas disponibles

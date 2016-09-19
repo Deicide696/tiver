@@ -1,0 +1,10 @@
+
+2016-04-28 11:47:41
+76 -> 2016-5-2 03:00:00 -> 1
+Servicio 76 no fue aceptado por el especialista Pepito Perez
+Servicio 76 asignado al especialista Fulanito El Estupendo
+
+2016-04-28 11:50:48
+76 -> 2016-5-2 03:00:00 -> 2
+Servicio 76 no fue aceptado por el especialista Fulanito El Estupendo
+No hay especialistas disponibles

@@ -1,0 +1,10 @@
+
+2016-05-12 17:38:58
+155 -> 2016-5-17 16:15:00 -> 2
+Servicio 155 no fue aceptado por el especialista Fulanito El Estupendo
+Servicio 155 asignado al especialista Pepito Perez
+
+2016-05-12 17:40:06
+155 -> 2016-5-17 16:15:00 -> 3
+Servicio 155 no fue aceptado por el especialista Pepito Perez
+No hay especialistas disponibles

@@ -1,0 +1,29 @@
+
+2016-04-26 15:00:49
+1461700849
+Servicio 53 no fue aceptado por el especialista Pepito Perez
+Servicio 53 asignado al especialista Fulanito El Estupendo
+
+2016-04-26 15:00:57
+1461700857
+Servicio 53 no fue aceptado por el especialista Fulanito El Estupendo
+Servicio 53 asignado al especialista Pepito Perez
+
+2016-04-26 15:01:06
+1461700866
+Servicio 53 no fue aceptado por el especialista Pepito Perez
+Servicio 53 asignado al especialista Fulanito El Estupendo
+
+2016-04-26 15:01:14
+1461700874
+Servicio 53 no fue aceptado por el especialista Fulanito El Estupendo
+Servicio 53 asignado al especialista Pepito Perez
+
+2016-04-26 15:01:22
+1461700882
+Servicio 53 no fue aceptado por el especialista Pepito Perez
+Servicio 53 asignado al especialista Fulanito El Estupendo
+
+2016-04-26 15:01:30
+1461700890
+Demasiados intentos

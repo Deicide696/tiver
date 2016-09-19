@@ -1,0 +1,29 @@
+
+2016-04-26 15:20:04
+1461702004
+Servicio 55 no fue aceptado por el especialista Fulanito El Estupendo
+Servicio 55 asignado al especialista Pepito Perez
+
+2016-04-26 15:20:13
+1461702013
+Servicio 55 no fue aceptado por el especialista Pepito Perez
+Servicio 55 asignado al especialista Fulanito El Estupendo
+
+2016-04-26 15:20:22
+1461702022
+Servicio 55 no fue aceptado por el especialista Fulanito El Estupendo
+Servicio 55 asignado al especialista Pepito Perez
+
+2016-04-26 15:20:32
+1461702032
+Servicio 55 no fue aceptado por el especialista Pepito Perez
+Servicio 55 asignado al especialista Fulanito El Estupendo
+
+2016-04-26 15:20:41
+1461702041
+Servicio 55 no fue aceptado por el especialista Fulanito El Estupendo
+Servicio 55 asignado al especialista Pepito Perez
+
+2016-04-26 15:20:51
+1461702051
+Demasiados intentos
