@@ -28,9 +28,13 @@ class PushNotifier extends Component {
 		
 		return $response;
 	}
-	public function sendNotificationUserOS($titulo, $mensaje, $data, $ids = null) {
+	public function sendNotificationUserOS($titulo, $mensaje, $data, $ids = null,$firebase=Yii::$app->params ['send_firebase']) {
 		$data ['title'] = $titulo;
 		$data ['alert'] = $mensaje;
+		
+		if($firebase){
+			$this->sendNotificationUser($data, $ids);
+		}
 		
 		$content = array (
 				"es" => $mensaje,
@@ -40,6 +44,8 @@ class PushNotifier extends Component {
 				"es" => $titulo,
 				"en" => $titulo 
 		);
+		
+		
 		
 		$time_wait = 20000;
 		if (isset ( $data ['time_wait'] ))
@@ -76,10 +82,16 @@ class PushNotifier extends Component {
 		// print($return);
 		// print("\n");
 	}
-	public function sendNotificationExpertOS($titulo, $mensaje, $data, $ids = null) {
+	public function sendNotificationExpertOS($titulo, $mensaje, $data, $ids = null, $firebase=Yii::$app->params ['send_firebase']) {
+		
+		
 		$data ['title'] = $titulo;
 		$data ['alert'] = $mensaje;
 		// print_r($data);
+		
+		if($firebase){
+			$this->sendNotificationExpert($data, $ids);
+		}
 		
 		$content = array (
 				"es" => $mensaje,

@@ -22,9 +22,15 @@ return [
 		'fb_app_secret' => '6950db3ab678df4da5592fc074e2a40c',
 		
 		//GCM notificaitons
-		'gcm_api_key_user' => "AIzaSyDpDVRxDjsEjJd9ftODUIitRmfC4Ob4B5w",
+		/*'gcm_api_key_user' => "AIzaSyDpDVRxDjsEjJd9ftODUIitRmfC4Ob4B5w",
 		'gcm_api_key_especialista' => "AIzaSyDVqTTy77E4Cd-0m-OCgLY_Ay296rREGdI",
-		'gcm_url'=>"https://gcm-http.googleapis.com/gcm/send",
+		'gcm_url'=>"https://gcm-http.googleapis.com/gcm/send",*/	
+		
+		//FCM notificaitons
+		'gcm_api_key_user' => "AIzaSyAB8v_a_XZ-2odgqna8RkY4QQJSzTCcivA",
+		'gcm_api_key_especialista' => "AIzaSyDVqTTy77E4Cd-0m-OCgLY_Ay296rREGdI",
+		'gcm_url'=>"https://fcm.googleapis.com/fcm/send",
+		'send_firebase'=>false,
 		
 		//One Signal notifications
 		'os_id_user'=>'02fc2d67-0e8a-4cce-b8c5-b8665011a490',

@@ -331,12 +331,24 @@ class AssignedServiceController extends Controller {
 		 * foreach ( $gcm_tokens as $gcm_token ) {
 		 * $tokens [] = $gcm_token->token;
 		 * }
-		 * $data = array (
-		 * "title" => "Nuevo servicio",
-		 * "body" => "Tienes un nuevo servicio",
-		 * "ticker" => "Tienes trabajo",
-		 * 'type' => Yii::$app->params ['notification_type_assgigned_expert']
-		 * );
+			$data = [ 
+				"ticker" => "Tienes trabajo",
+				'time' => $time,
+				'date' => $date,
+				'address' => $model->address,
+				'lat' => $lat,
+				'id_serv' => $model->id,
+				'lng' => $lng,
+				'name_user' => $model_user->first_name,
+				'lastname_user' => $model_user->last_name,
+				'id_service' => $service,
+				'id_modifier' => $modifier,
+				'comments' => $comment,
+				'timestamp' => date ( "U" ),
+				'time_wait'=>Yii::$app->params ['seconds_wait'] ,
+				//'id_not' => $model->id,
+				'type' => Yii::$app->params ['notification_type_assgigned_expert'] 
+			];
 		 *
 		 * // print_r($data);
 		 *

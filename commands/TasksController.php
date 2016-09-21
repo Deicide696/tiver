@@ -52,7 +52,7 @@ class TasksController extends Controller {
 					
 				
 				
-				if ($num_intent > 5) {
+				if ($num_intent > 10) {
 					print "Demasiados intentos" . PHP_EOL;
 					
 					$services->delete ();
