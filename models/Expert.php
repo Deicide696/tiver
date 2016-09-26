@@ -199,7 +199,7 @@ class Expert extends \yii\db\ActiveRecord
     public function getPushTokens(){
     	$tokens=null;
     	$gcm_tokens = GcmTokenExpert::find ()->select ( [
-    			'one_signal_token'
+    			'one_signal_token','token'
     	] )->where ( [
     			"expert_id" => $this->id
     	] )->all ();

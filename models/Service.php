@@ -50,7 +50,7 @@ class Service extends \yii\db\ActiveRecord
             [['name', 'price', 'tax', 'icon', 'category_service_id'], 'required'],
             [['price', 'tax', 'duration', 'status', 'category_service_id'], 'integer'],
             [['name'], 'string', 'max' => 100],
-        		[['description'], 'string', 'max' => 255],
+        	[['description'], 'string', 'max' => 255],
             [['icon'], 'string', 'max' => 200]
         ];
     }
@@ -64,7 +64,7 @@ class Service extends \yii\db\ActiveRecord
             'id' => 'ID',
             'name' => 'Servicio',
             'price' => 'Precio',
-            'tax' => '% IVA',
+            'tax' => 'I.V.A.',
         		   'status' => 'Activo',
             'duration' => 'Duración (mins)',
         		'description' => 'Descripción',

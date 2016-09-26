@@ -995,6 +995,7 @@ class AssignedServiceController extends Controller {
 		
 		// Obtener precio del servicio
 		$value = $services->getPrice ();
+		$tax=$services->getTax();
 		
 		$duracion = ($services->getDuration ())-15;
 		// $value=2;
@@ -1086,7 +1087,7 @@ class AssignedServiceController extends Controller {
 			 */
 			
 			// /
-			$data_pay = Yii::$app->TPaga->CreateCharge ( $credit_card->hash, $value, "Servicio Tiver" );
+			$data_pay = Yii::$app->TPaga->CreateCharge ( $credit_card->hash, $value, "Servicio Tiver",$tax );
 			
 			// print "$id_pay -> $message_pay - $paid_pay";
 			// exit();

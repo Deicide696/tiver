@@ -28,12 +28,13 @@ class PushNotifier extends Component {
 		
 		return $response;
 	}
-	public function sendNotificationUserOS($titulo, $mensaje, $data, $ids = null,$firebase=Yii::$app->params ['send_firebase']) {
+	public function sendNotificationUserOS($titulo, $mensaje, $data, $ids = null) {
 		$data ['title'] = $titulo;
 		$data ['alert'] = $mensaje;
 		
-		if($firebase){
+		if(Yii::$app->params ['send_firebase']){
 			$this->sendNotificationUser($data, $ids);
+			return;
 		}
 		
 		$content = array (
@@ -82,15 +83,18 @@ class PushNotifier extends Component {
 		// print($return);
 		// print("\n");
 	}
-	public function sendNotificationExpertOS($titulo, $mensaje, $data, $ids = null, $firebase=Yii::$app->params ['send_firebase']) {
+	public function sendNotificationExpertOS($titulo, $mensaje, $data, $ids = null) {
 		
 		
 		$data ['title'] = $titulo;
 		$data ['alert'] = $mensaje;
-		// print_r($data);
+		// 
 		
-		if($firebase){
+		if(Yii::$app->params ['send_firebase']){
 			$this->sendNotificationExpert($data, $ids);
+			
+			//print "enviar firebase";
+			return;
 		}
 		
 		$content = array (
@@ -174,7 +178,7 @@ class PushNotifier extends Component {
 		
 		// Set GCM post variables (device IDs and push payload)
 		$post = array (
-				'registration_ids' => $ids,
+				'to' => $ids,
 				'notification' => $data 
 		);
 		// Set CURL request headers (authentication and type)
@@ -182,6 +186,8 @@ class PushNotifier extends Component {
 				'Authorization: key=' . Yii::$app->params ['gcm_api_key_especialista'],
 				'Content-Type: application/json' 
 		);
+		
+		print json_encode( $post);
 		
 		$ch = curl_init ();
 		curl_setopt ( $ch, CURLOPT_URL, Yii::$app->params ['gcm_url'] );

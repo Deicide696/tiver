@@ -162,6 +162,15 @@ class AssignedService extends \yii\db\ActiveRecord
   		return $price;
     	
     }
+    public function getTax(){
+    	$tax=true;
+    	$service=Service::findOne(['id'=>$this->service_id]);
+    	if($service->tax==0)
+    		$tax=false;
+    	//var_dump($modifier);
+    	return $tax;
+    
+    }
     public function getDuration(){
     	$duration=0;
     	$service=Service::findOne(['id'=>$this->service_id]);

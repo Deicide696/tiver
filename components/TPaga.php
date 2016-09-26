@@ -6,11 +6,14 @@ use app\assets\Tpaga\Api\CreditCardApi;
 use app\assets\Tpaga\Api\CustomerApi;
 use app\assets\Tpaga\ApiClient;
 use yii\base\Component;
+use Yii;
 
 use app\assets\Tpaga\Model\Address;
 use app\assets\Tpaga\Model\CreditCardCharge;
 use app\assets\Tpaga\Model\CreditCardCreate;
 use app\assets\Tpaga\Model\Customer;
+use app\assets\Tpaga\Model\CreditCardRefund;
+use app\assets\Tpaga\Api\RefundApi;
 
 
 class TPaga extends Component {
@@ -113,7 +116,7 @@ class TPaga extends Component {
 		
 	}
 	
-	public function CreateCharge($id_card,$amount,$order_id) {
+	public function CreateCharge($id_card,$amount,$order_id,$tax) {
 		$api_client = new ApiClient ();
 		//$api_client->api_key = self::api_key;
 	
@@ -121,7 +124,10 @@ class TPaga extends Component {
 		$amount=(int)$amount;
 		$charge = new CreditCardCharge ();
 		$charge->amount = $amount;
-		$charge->tax_amount = (($amount*0.20)*0.16);//16 % de iva sobre el 20 del valor total (comisión TIVer)
+		if($tax)
+		$charge->tax_amount = $amount*(Yii::$app->params ['tax_percent']);
+		else
+		$charge->tax_amount = 0;
 		$charge->currency = "COP";
 		$charge->credit_card = $id_card;
 		//$charge->installments =$installments;
@@ -131,6 +137,26 @@ class TPaga extends Component {
 			$charge_api = new CreditCardAPI ( $api_client );
 			// return Charge (model)
 			$response = $charge_api->addCreditCardCharge ( $charge );
+			//var_dump ( $response );
+			//print "<br>Pago creado: " . $id_payment . "<br><br>";
+			return $response;
+		} catch ( Exception $e ) {
+			echo 'Caught exception: ', $e->getMessage (), "\n";
+			return false;
+		}
+	
+	}
+	public function RefundCharge($id_charge) {
+		$api_client = new ApiClient ();
+	
+		// Devolvemos el cargo creado a una tarjeta
+		$refund=new CreditCardRefund();
+		$refund->id=$id_charge;
+		
+		try {
+			$refund_api=new RefundApi($api_client);
+			// return Charge (model)
+			$response = $refund_api->refundCreditCardCharge($refund);
 			//var_dump ( $response );
 			//print "<br>Pago creado: " . $id_payment . "<br><br>";
 			return $response;

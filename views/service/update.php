@@ -28,12 +28,12 @@ $form = ActiveForm::begin ( [
  );
 ?>
 	<?= $form->field($model,'name'); ?>
-		<?= $form->field($model,'description'); ?>
-		<?= $form->field($model, 'icon'); ?>
+	<?= $form->field($model,'description'); ?>
+	<?= $form->field($model, 'icon'); ?>
 	<?= $form->field($model,'duration'); ?>
 	<?= $form->field($model, 'price'); ?>
 	
-	<?= $form->field($model, 'tax'); ?>
+	<?= $form->field($model, 'tax')->checkbox(); ?>
 	
 <?= $form->field($model, 'status')->checkbox(); ?>
 	<?php 	

@@ -37,6 +37,21 @@ class TpagaController extends Controller {
 	}
 	
 	
+		public function actionTestRefund() {
+			$id = Yii::$app->request->post ( "id", null );
+			print"Tryng to refund -> $id" ;
+			 $refund= Yii::$app->TPaga->RefundCharge($id);
+			 if(!$refund){
+			 	//No se pudo procesar
+			 }
+			 else{
+			 	if(!$refund->paid){
+			 		//Al hacer la reversión, la propiedad paid llega en false
+			 		//La reversión se realizó correctamente
+			 	}
+			 }
+			
+		}
 	
 	//
 	public function actionTest() {

@@ -28,7 +28,7 @@ return [
 		
 		//FCM notificaitons
 		'gcm_api_key_user' => "AIzaSyAB8v_a_XZ-2odgqna8RkY4QQJSzTCcivA",
-		'gcm_api_key_especialista' => "AIzaSyDVqTTy77E4Cd-0m-OCgLY_Ay296rREGdI",
+		'gcm_api_key_especialista' => "AIzaSyBptNyXz82401LJReQjLqpTVWCa7FjeJes",
 		'gcm_url'=>"https://fcm.googleapis.com/fcm/send",
 		'send_firebase'=>false,
 		
@@ -53,7 +53,9 @@ return [
 		'path_scripts'=>'/var/www/html/tiver',//prd
 		
 		//
-		'walk_time'=>30//minutos que demoraría un especialista en llegar de un servicio a otro, se usa para calcular la disponibilidad del experto
+		'walk_time'=>30,//minutos que demoraría un especialista en llegar de un servicio a otro, se usa para calcular la disponibilidad del experto
+		
+		'tax_percent'=>0.32,//Corresponde al 20% (comision) del valor del servicio * 16% (IVA) -> 0.2*0.16 
 	
 	
 		

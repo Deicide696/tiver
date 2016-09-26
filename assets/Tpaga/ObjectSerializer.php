@@ -52,7 +52,7 @@ class ObjectSerializer
      *
      * @return string serialized form of $data
      */
-    public function sanitizeForSerialization($data)
+    public static function sanitizeForSerialization($data)
     {
         if (is_scalar($data) || null === $data) {
             $sanitized = $data;
@@ -60,7 +60,7 @@ class ObjectSerializer
             $sanitized = $data->format(\DateTime::ISO8601);
         } else if (is_array($data)) {
             foreach ($data as $property => $value) {
-                $data[$property] = $this->sanitizeForSerialization($value);
+                $data[$property] =ObjectSerializer::sanitizeForSerialization($value);
             }
             $sanitized = $data;
         } else if (is_object($data)) {
@@ -68,7 +68,7 @@ class ObjectSerializer
             foreach (array_keys($data::$swaggerTypes) as $property) {
                 $getter = $data::$getters[$property];
                 if ($data->$getter() !== null) {
-                    $values[$data::$attributeMap[$property]] = $this->sanitizeForSerialization($data->$getter());
+                    $values[$data::$attributeMap[$property]] = ObjectSerializer::sanitizeForSerialization($data->$getter());
                 }
             }
             $sanitized = $values;

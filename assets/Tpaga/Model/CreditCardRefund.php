@@ -83,7 +83,7 @@ class CreditCardRefund implements ArrayAccess
       * $id The id of the `CreditCardCharge` to be refunded.
       * @var string
       */
-    protected $id;
+    public $id;
     
 
     /**
