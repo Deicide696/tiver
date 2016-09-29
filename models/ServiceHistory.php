@@ -191,7 +191,7 @@ class ServiceHistory extends \yii\db\ActiveRecord
     }
     public function getLastPay(){
     	return Pay::find()->joinWith(['serviceHistoryHasPay'])->where(['service_history_id'=>$this->id])->orderBy(['pay.created_date'=>SORT_ASC])->one();
-    	//var_dump($model_pay);
+    	
     	
     }
     public function getDuration(){

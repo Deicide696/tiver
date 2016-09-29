@@ -65,10 +65,11 @@ class PasswordResetRequestForm extends Model {
                     return false;
                 }
             }
+           
             $assetEmail = new EmailAsset();
             if ($user->email != '') {
                 $arg = [ 'userName' => $user->first_name . ' ' . $user->last_name, 'email' => $user->email, 'token' => $token->token];
-                return $assetEmail->sendMail('info@mimeza.com', $user->email, '¿Olvidaste tu contraseña?', 'user/reset', $arg);
+                return $assetEmail->sendMail('tiver@zugartek.com', $user->email, '¿Olvidaste tu contraseña?', 'user/reset', $arg);
                 //return true;
             }
 //            return \Yii::$app->mailer->compose(['html' => 'passwordResetToken-html', 'text' => 'passwordResetToken-text'], ['user' => $user, 'token' => $token])

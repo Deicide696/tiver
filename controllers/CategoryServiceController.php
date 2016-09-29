@@ -145,6 +145,16 @@ class CategoryServiceController extends Controller
 	    	])->asArray()->all();
 	    	//$model=CategoryService::find()->select(['category_service.id','description','status','icon'])->where(['status'=>'1'])->joinwith('service')->asArray()->all();
 	    
+	    	for($i=0;$i<sizeof($model);$i++){
+	    		$services=$model[$i]['service'];
+	    		for($j=0;$j<sizeof($services);$j++){
+	    			if($model[$i]['service'][$j]['tax']==1){
+	    				$model[$i]['service'][$j]['price']=$model[$i]['service'][$j]['price']+($model[$i]['service'][$j]['price']*Yii::$app->params ['tax_percent']);
+	    			}
+	    			
+	    		}
+	    	}
+	    	
 	    	if($model!=null){
 	    		$response["success"]=true;
 	    		$response['data']=$model;

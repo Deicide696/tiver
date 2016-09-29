@@ -55,7 +55,7 @@ return [
 		//
 		'walk_time'=>30,//minutos que demoraría un especialista en llegar de un servicio a otro, se usa para calcular la disponibilidad del experto
 		
-		'tax_percent'=>0.32,//Corresponde al 20% (comision) del valor del servicio * 16% (IVA) -> 0.2*0.16 
+		'tax_percent'=>0.032,//Corresponde al 20% (comision) del valor del servicio * 16% (IVA) -> 0.2*0.16 
 	
 	
 		

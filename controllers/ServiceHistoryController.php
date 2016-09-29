@@ -223,10 +223,11 @@ class ServiceHistoryController extends Controller {
 				'state' => 1,
 				'user_id' => $model_token->FK_id_user 
 		] )->asArray()->all ();
-	//	var_dump($model);
+	
 		foreach ( $model as $service ) {
 			
 			$pay = ServiceHistory::findOne(['id'=>$service['id']])->getLastPay ();
+			//var_dump($pay);
 			if ($pay == null) {
 				$response ["success"] = true;
 				$response ['data'] = $service;

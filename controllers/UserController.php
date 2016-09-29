@@ -1138,7 +1138,7 @@ class UserController extends Controller {
 				} else {
 					return [ 
 							'success' => true,
-							'errcode' => 10,
+							'errcode' => 11,
 							'data' => [ 
 									'message' => 'No se ha podido enviar el correo' 
 							] 

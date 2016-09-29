@@ -29,6 +29,7 @@ class EmailAsset {
 
     public function sendMail($from, $to, $subject, $layout, $arg, $fromName = 'Tiver') {
         $time = -microtime(true);
+      //  print"Enviar correo";
         try {
             Yii::error(json_encode(['mensaje' => "Envio de email " . $time . " " . $to . " Mailer: " . json_encode($this->mailer) . " Transport: " . json_encode($this->_transport)]));
             $email = $this->mailer->compose('@app/mail/' . $layout, $arg)
@@ -41,7 +42,7 @@ class EmailAsset {
             return true;
         } catch (\Exception $e) {
             Yii::error($e->getMessage());
-            //print $e->getMessage();
+          //  print $e->getMessage();
             return false;
         }
         return false;
