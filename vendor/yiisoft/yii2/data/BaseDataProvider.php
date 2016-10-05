@@ -33,7 +33,7 @@ abstract class BaseDataProvider extends Component implements DataProviderInterfa
     /**
      * @var string an ID that uniquely identifies the data provider among all data providers.
      * You should set this property if the same page contains two or more different data providers.
-     * Otherwise, the [[pagination]] and [[sort]] mainly not work properly.
+     * Otherwise, the [[pagination]] and [[sort]] may not work properly.
      */
     public $id;
 
@@ -163,7 +163,7 @@ abstract class BaseDataProvider extends Component implements DataProviderInterfa
      * Returns the pagination object used by this data provider.
      * Note that you should call [[prepare()]] or [[getModels()]] first to get correct values
      * of [[Pagination::totalCount]] and [[Pagination::pageCount]].
-     * @return Pagination|boolean the pagination object. If this is false, it means the pagination is disabled.
+     * @return Pagination|false the pagination object. If this is false, it means the pagination is disabled.
      */
     public function getPagination()
     {
@@ -203,6 +203,7 @@ abstract class BaseDataProvider extends Component implements DataProviderInterfa
     }
 
     /**
+     * Returns the sorting object used by this data provider.
      * @return Sort|boolean the sorting object. If this is false, it means the sorting is disabled.
      */
     public function getSort()

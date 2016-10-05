@@ -404,7 +404,7 @@ class Map extends ObjectAbstract
             $overlay->options['map'] = new JsExpression($this->getName());
             $overlaysJs[] = $overlay->getJs();
         }
-       // $js[] = "(function(){";
+        $js[] = "(function(){";
         $js[] = $this->getClosureScopedVariablesScript();
         $js[] = "function initialize(){";
         $js[] = "var mapOptions = {$this->getEncodedOptions()};";
@@ -427,7 +427,7 @@ class Map extends ObjectAbstract
         $js = ArrayHelper::merge($js, $this->_js);
         $js[] = "};";
         $js[] = "google.maps.event.addDomListener(window, 'load', initialize);";
-       // $js[] = "})();";
+        $js[] = "})();";
 
         return implode("\n", $js);
     }

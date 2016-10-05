@@ -19,7 +19,7 @@
 return [
     '(not set)' => '(tidak ditetapkan)',
     'An internal server error occurred.' => 'Ralat dalaman pelayan web telah berlaku',
-    '¿Desea realmente eliminar este elemento?' => 'Adakah anda pasti untuk menghapuskan item ini?',
+    'Are you sure you want to delete this item?' => 'Adakah anda pasti untuk menghapuskan item ini?',
     'Delete' => 'Padam',
     'Error' => 'Ralat',
     'File upload failed.' => 'Gagal memuat naik fail',
@@ -37,11 +37,11 @@ return [
     'Please upload a file.' => 'Sila muat naik fail',
     'Showing <b>{begin, number}-{end, number}</b> of <b>{totalCount, number}</b> {totalCount, plural, one{item} other{items}}.' => 
     'Memaparkan <b>{begin, number}-{end, number}</b> daripada <b>{totalCount, number}</b> {totalCount, plural, one{item} other{items}}.',
-    'The file "{file}" is not an image.' => 'Fail ini "{file}" bukan bejenis gambar.',
-    'The file "{file}" is too big. Its size cannot exceed {limit, number} {limit, plural, one{byte} other{bytes}}.' => 
-    'Fail ini "{file}" terlalu besar. Saiz tidak boleh lebih besar daripada {limit, number} {limit, plural, one{byte} other{bytes}}.',
-    'The file "{file}" is too small. Its size cannot be smaller than {limit, number} {limit, plural, one{byte} other{bytes}}.' => 
-    'Fail ini "{file}" terlalu kecil. Saiznya tidak boleh lebih kecil daripada {limit, number} {limit, plural, one{byte} other{bytes}}.',
+    'The file "{file}" is not an image.' => 'Fail ini "{file}" bukan berjenis gambar.',
+    'The file "{file}" is too big. Its size cannot exceed {formattedLimit}.' =>
+    'Fail ini "{file}" terlalu besar. Saiz tidak boleh lebih besar daripada {formattedLimit}.',
+    'The file "{file}" is too small. Its size cannot be smaller than {formattedLimit}.' =>
+    'Fail ini "{file}" terlalu kecil. Saiznya tidak boleh lebih kecil daripada {formattedLimit}.',
     'The format of {attribute} is invalid.' => 'Format untuk atribut ini {attribute} tidak sah.',
     'The image "{file}" is too large. The height cannot be larger than {limit, number} {limit, plural, one{pixel} other{pixels}}.' => 
     'Gambar "{file}" terlalu panjang. Panjang gambar tidak boleh lebih besar daripada {limit, number} {limit, plural, one{pixel} other{pixels}}.',

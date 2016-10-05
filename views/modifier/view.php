@@ -28,6 +28,14 @@ else
 	$icon= Yii::$app->params['iconDisabled'];
 	
 
+	$iva=true;
+	if($model->tax==0)
+		$iva=false;
+		if($iva)
+			$icon_iva= Yii::$app->params['iconEnabled'];
+			else
+				$icon_iva= Yii::$app->params['iconDisabled'];
+
 ?>
     <?= DetailView::widget([
         'model' => $model,
@@ -41,7 +49,11 @@ else
         		'value'=>$model->price,
         		'format' => 'Currency',
         		],
-        		'tax',
+        		[
+        		'attribute' => 'I.V.A.',
+        		'format' => 'raw',
+        		'value' =>$icon_iva
+        		],
         		'duration',
         		[
         		'attribute' => 'Activo',

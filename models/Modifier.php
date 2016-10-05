@@ -50,7 +50,7 @@ class Modifier extends \yii\db\ActiveRecord
             'description' => 'Descripción',
         		'price' => 'Precio adicional',
         		'duration' => 'Duración adicional (mins)',
-        		'tax' => '% IVA',
+        		'tax' => 'I.V.A.',
         		'status' => 'Activo',
         		'service_id' => 'Servicio',
             'type_modifier_id' => 'Nivel de modificador',

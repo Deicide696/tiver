@@ -1,460 +1,656 @@
 <?php
-
 namespace GuzzleHttp\Tests;
 
-use GuzzleHttp\Adapter\FakeParallelAdapter;
-use GuzzleHttp\Adapter\MockAdapter;
 use GuzzleHttp\Client;
-use GuzzleHttp\Event\BeforeEvent;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Message\MessageFactory;
-use GuzzleHttp\Message\Response;
-use GuzzleHttp\Subscriber\History;
-use GuzzleHttp\Subscriber\Mock;
+use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Promise\PromiseInterface;
+use GuzzleHttp\Psr7;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\Uri;
+use Psr\Http\Message\ResponseInterface;
 
-/**
- * @covers GuzzleHttp\Client
- */
 class ClientTest extends \PHPUnit_Framework_TestCase
 {
-    public function testProvidesDefaultUserAgent()
-    {
-        $this->assertEquals(1, preg_match('#^Guzzle/.+ curl/.+ PHP/.+$#', Client::getDefaultUserAgent()));
-    }
-
-    public function testUsesDefaultDefaultOptions()
+    public function testUsesDefaultHandler()
     {
         $client = new Client();
-        $this->assertTrue($client->getDefaultOption('allow_redirects'));
-        $this->assertTrue($client->getDefaultOption('exceptions'));
-        $this->assertContains('cacert.pem', $client->getDefaultOption('verify'));
-    }
-
-    public function testUsesProvidedDefaultOptions()
-    {
-        $client = new Client([
-            'defaults' => [
-                'allow_redirects' => false,
-                'query' => ['foo' => 'bar']
-            ]
-        ]);
-        $this->assertFalse($client->getDefaultOption('allow_redirects'));
-        $this->assertTrue($client->getDefaultOption('exceptions'));
-        $this->assertContains('cacert.pem', $client->getDefaultOption('verify'));
-        $this->assertEquals(['foo' => 'bar'], $client->getDefaultOption('query'));
-    }
-
-    public function testCanSpecifyBaseUrl()
-    {
-        $this->assertSame('', (new Client())->getBaseUrl());
-        $this->assertEquals('http://foo', (new Client([
-            'base_url' => 'http://foo'
-        ]))->getBaseUrl());
-    }
-
-    public function testCanSpecifyBaseUrlUriTemplate()
-    {
-        $client = new Client(['base_url' => ['http://foo.com/{var}/', ['var' => 'baz']]]);
-        $this->assertEquals('http://foo.com/baz/', $client->getBaseUrl());
-    }
-
-    public function testClientUsesDefaultAdapterWhenNoneIsSet()
-    {
-        $client = new Client();
-        if (!extension_loaded('curl')) {
-            $adapter = 'GuzzleHttp\Adapter\StreamAdapter';
-        } elseif (ini_get('allow_url_fopen')) {
-            $adapter = 'GuzzleHttp\Adapter\StreamingProxyAdapter';
-        } else {
-            $adapter = 'GuzzleHttp\Adapter\Curl\CurlAdapter';
-        }
-        $this->assertInstanceOf($adapter, $this->readAttribute($client, 'adapter'));
+        Server::enqueue([new Response(200, ['Content-Length' => 0])]);
+        $response = $client->get(Server::$url);
+        $this->assertEquals(200, $response->getStatusCode());
     }
 
     /**
-     * @expectedException \Exception
-     * @expectedExceptionMessage Foo
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Magic request methods require a URI and optional options array
      */
-    public function testCanSpecifyAdapter()
+    public function testValidatesArgsForMagicMethods()
     {
-        $adapter = $this->getMockBuilder('GuzzleHttp\Adapter\AdapterInterface')
-            ->setMethods(['send'])
-            ->getMockForAbstractClass();
-        $adapter->expects($this->once())
-            ->method('send')
-            ->will($this->throwException(new \Exception('Foo')));
-        $client = new Client(['adapter' => $adapter]);
-        $client->get('http://httpbin.org');
-    }
-
-    /**
-     * @expectedException \Exception
-     * @expectedExceptionMessage Foo
-     */
-    public function testCanSpecifyMessageFactory()
-    {
-        $factory = $this->getMockBuilder('GuzzleHttp\Message\MessageFactoryInterface')
-            ->setMethods(['createRequest'])
-            ->getMockForAbstractClass();
-        $factory->expects($this->once())
-            ->method('createRequest')
-            ->will($this->throwException(new \Exception('Foo')));
-        $client = new Client(['message_factory' => $factory]);
+        $client = new Client();
         $client->get();
     }
 
-    public function testCanSpecifyEmitter()
-    {
-        $emitter = $this->getMockBuilder('GuzzleHttp\Event\EmitterInterface')
-            ->setMethods(['listeners'])
-            ->getMockForAbstractClass();
-        $emitter->expects($this->once())
-            ->method('listeners')
-            ->will($this->returnValue('foo'));
-
-        $client = new Client(['emitter' => $emitter]);
-        $this->assertEquals('foo', $client->getEmitter()->listeners());
-    }
-
-    public function testAddsDefaultUserAgentHeaderWithDefaultOptions()
-    {
-        $client = new Client(['defaults' => ['allow_redirects' => false]]);
-        $this->assertFalse($client->getDefaultOption('allow_redirects'));
-        $this->assertEquals(
-            ['User-Agent' => Client::getDefaultUserAgent()],
-            $client->getDefaultOption('headers')
-        );
-    }
-
-    public function testAddsDefaultUserAgentHeaderWithoutDefaultOptions()
+    public function testCanSendMagicAsyncRequests()
     {
         $client = new Client();
+        Server::flush();
+        Server::enqueue([new Response(200, ['Content-Length' => 2], 'hi')]);
+        $p = $client->getAsync(Server::$url, ['query' => ['test' => 'foo']]);
+        $this->assertInstanceOf(PromiseInterface::class, $p);
+        $this->assertEquals(200, $p->wait()->getStatusCode());
+        $received = Server::received(true);
+        $this->assertCount(1, $received);
+        $this->assertEquals('test=foo', $received[0]->getUri()->getQuery());
+    }
+
+    public function testCanSendSynchronously()
+    {
+        $client = new Client(['handler' => new MockHandler([new Response()])]);
+        $request = new Request('GET', 'http://example.com');
+        $r = $client->send($request);
+        $this->assertInstanceOf(ResponseInterface::class, $r);
+        $this->assertEquals(200, $r->getStatusCode());
+    }
+
+    public function testClientHasOptions()
+    {
+        $client = new Client([
+            'base_uri' => 'http://foo.com',
+            'timeout'  => 2,
+            'headers'  => ['bar' => 'baz'],
+            'handler'  => new MockHandler()
+        ]);
+        $base = $client->getConfig('base_uri');
+        $this->assertEquals('http://foo.com', (string) $base);
+        $this->assertInstanceOf(Uri::class, $base);
+        $this->assertNotNull($client->getConfig('handler'));
+        $this->assertEquals(2, $client->getConfig('timeout'));
+        $this->assertArrayHasKey('timeout', $client->getConfig());
+        $this->assertArrayHasKey('headers', $client->getConfig());
+    }
+
+    public function testCanMergeOnBaseUri()
+    {
+        $mock = new MockHandler([new Response()]);
+        $client = new Client([
+            'base_uri' => 'http://foo.com/bar/',
+            'handler'  => $mock
+        ]);
+        $client->get('baz');
         $this->assertEquals(
-            ['User-Agent' => Client::getDefaultUserAgent()],
-            $client->getDefaultOption('headers')
+            'http://foo.com/bar/baz',
+            $mock->getLastRequest()->getUri()
         );
     }
 
-    private function getRequestClient()
+    public function testCanMergeOnBaseUriWithRequest()
     {
-        $client = $this->getMockBuilder('GuzzleHttp\Client')
-            ->setMethods(['send'])
-            ->getMock();
-        $client->expects($this->once())
-            ->method('send')
-            ->will($this->returnArgument(0));
+        $mock = new MockHandler([new Response(), new Response()]);
+        $client = new Client([
+            'handler'  => $mock,
+            'base_uri' => 'http://foo.com/bar/'
+        ]);
+        $client->request('GET', new Uri('baz'));
+        $this->assertEquals(
+            'http://foo.com/bar/baz',
+            (string) $mock->getLastRequest()->getUri()
+        );
 
-        return $client;
+        $client->request('GET', new Uri('baz'), ['base_uri' => 'http://example.com/foo/']);
+        $this->assertEquals(
+            'http://example.com/foo/baz',
+            (string) $mock->getLastRequest()->getUri(),
+            'Can overwrite the base_uri through the request options'
+        );
     }
 
-    public function requestMethodProvider()
+    public function testCanUseRelativeUriWithSend()
     {
-        return [
-            ['GET', false],
-            ['HEAD', false],
-            ['DELETE', false],
-            ['OPTIONS', false],
-            ['POST', 'foo'],
-            ['PUT', 'foo'],
-            ['PATCH', 'foo']
-        ];
+        $mock = new MockHandler([new Response()]);
+        $client = new Client([
+            'handler'  => $mock,
+            'base_uri' => 'http://bar.com'
+        ]);
+        $this->assertEquals('http://bar.com', (string) $client->getConfig('base_uri'));
+        $request = new Request('GET', '/baz');
+        $client->send($request);
+        $this->assertEquals(
+            'http://bar.com/baz',
+            (string) $mock->getLastRequest()->getUri()
+        );
+    }
+
+    public function testMergesDefaultOptionsAndDoesNotOverwriteUa()
+    {
+        $c = new Client(['headers' => ['User-agent' => 'foo']]);
+        $this->assertEquals(['User-agent' => 'foo'], $c->getConfig('headers'));
+        $this->assertInternalType('array', $c->getConfig('allow_redirects'));
+        $this->assertTrue($c->getConfig('http_errors'));
+        $this->assertTrue($c->getConfig('decode_content'));
+        $this->assertTrue($c->getConfig('verify'));
+    }
+
+    public function testDoesNotOverwriteHeaderWithDefault()
+    {
+        $mock = new MockHandler([new Response()]);
+        $c = new Client([
+            'headers' => ['User-agent' => 'foo'],
+            'handler' => $mock
+        ]);
+        $c->get('http://example.com', ['headers' => ['User-Agent' => 'bar']]);
+        $this->assertEquals('bar', $mock->getLastRequest()->getHeaderLine('User-Agent'));
+    }
+
+    public function testDoesNotOverwriteHeaderWithDefaultInRequest()
+    {
+        $mock = new MockHandler([new Response()]);
+        $c = new Client([
+            'headers' => ['User-agent' => 'foo'],
+            'handler' => $mock
+        ]);
+        $request = new Request('GET', Server::$url, ['User-Agent' => 'bar']);
+        $c->send($request);
+        $this->assertEquals('bar', $mock->getLastRequest()->getHeaderLine('User-Agent'));
+    }
+
+    public function testDoesOverwriteHeaderWithSetRequestOption()
+    {
+        $mock = new MockHandler([new Response()]);
+        $c = new Client([
+            'headers' => ['User-agent' => 'foo'],
+            'handler' => $mock
+        ]);
+        $request = new Request('GET', Server::$url, ['User-Agent' => 'bar']);
+        $c->send($request, ['headers' => ['User-Agent' => 'YO']]);
+        $this->assertEquals('YO', $mock->getLastRequest()->getHeaderLine('User-Agent'));
+    }
+
+    public function testCanUnsetRequestOptionWithNull()
+    {
+        $mock = new MockHandler([new Response()]);
+        $c = new Client([
+            'headers' => ['foo' => 'bar'],
+            'handler' => $mock
+        ]);
+        $c->get('http://example.com', ['headers' => null]);
+        $this->assertFalse($mock->getLastRequest()->hasHeader('foo'));
+    }
+
+    public function testRewriteExceptionsToHttpErrors()
+    {
+        $client = new Client(['handler' => new MockHandler([new Response(404)])]);
+        $res = $client->get('http://foo.com', ['exceptions' => false]);
+        $this->assertEquals(404, $res->getStatusCode());
+    }
+
+    public function testRewriteSaveToToSink()
+    {
+        $r = Psr7\stream_for(fopen('php://temp', 'r+'));
+        $mock = new MockHandler([new Response(200, [], 'foo')]);
+        $client = new Client(['handler' => $mock]);
+        $client->get('http://foo.com', ['save_to' => $r]);
+        $this->assertSame($r, $mock->getLastOptions()['sink']);
+    }
+
+    public function testAllowRedirectsCanBeTrue()
+    {
+        $mock = new MockHandler([new Response(200, [], 'foo')]);
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
+        $client->get('http://foo.com', ['allow_redirects' => true]);
+        $this->assertInternalType('array',  $mock->getLastOptions()['allow_redirects']);
     }
 
     /**
-     * @dataProvider requestMethodProvider
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage allow_redirects must be true, false, or array
      */
-    public function testClientProvidesMethodShortcut($method, $body)
+    public function testValidatesAllowRedirects()
     {
-        $client = $this->getRequestClient();
-        if ($body) {
-            $request = $client->{$method}('http://foo.com', [
-                'headers' => ['X-Baz' => 'Bar'],
-                'body' => $body,
-                'query' => ['a' => 'b']
-            ]);
-        } else {
-            $request = $client->{$method}('http://foo.com', [
-                'headers' => ['X-Baz' => 'Bar'],
-                'query' => ['a' => 'b']
-            ]);
-        }
-        $this->assertEquals($method, $request->getMethod());
-        $this->assertEquals('Bar', $request->getHeader('X-Baz'));
-        $this->assertEquals('a=b', $request->getQuery());
-        if ($body) {
-            $this->assertEquals($body, $request->getBody());
-        }
+        $mock = new MockHandler([new Response(200, [], 'foo')]);
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
+        $client->get('http://foo.com', ['allow_redirects' => 'foo']);
     }
 
-    public function testClientMergesDefaultOptionsWithRequestOptions()
+    /**
+     * @expectedException \GuzzleHttp\Exception\ClientException
+     */
+    public function testThrowsHttpErrorsByDefault()
     {
-        $f = $this->getMockBuilder('GuzzleHttp\Message\MessageFactoryInterface')
-            ->setMethods(array('createRequest'))
-            ->getMockForAbstractClass();
+        $mock = new MockHandler([new Response(404)]);
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
+        $client->get('http://foo.com');
+    }
 
-        $o = null;
-        // Intercept the creation
-        $f->expects($this->once())
-            ->method('createRequest')
-            ->will($this->returnCallback(
-                function ($method, $url, array $options = []) use (&$o) {
-                    $o = $options;
-                    return (new MessageFactory())->createRequest($method, $url, $options);
-                }
-            ));
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage cookies must be an instance of GuzzleHttp\Cookie\CookieJarInterface
+     */
+    public function testValidatesCookies()
+    {
+        $mock = new MockHandler([new Response(200, [], 'foo')]);
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
+        $client->get('http://foo.com', ['cookies' => 'foo']);
+    }
 
-        $client = new Client([
-            'message_factory' => $f,
-            'defaults' => [
-                'headers' => ['Foo' => 'Bar'],
-                'query' => ['baz' => 'bam'],
-                'exceptions' => false
+    public function testSetCookieToTrueUsesSharedJar()
+    {
+        $mock = new MockHandler([
+            new Response(200, ['Set-Cookie' => 'foo=bar']),
+            new Response()
+        ]);
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler, 'cookies' => true]);
+        $client->get('http://foo.com');
+        $client->get('http://foo.com');
+        $this->assertEquals('foo=bar', $mock->getLastRequest()->getHeaderLine('Cookie'));
+    }
+
+    public function testSetCookieToJar()
+    {
+        $mock = new MockHandler([
+            new Response(200, ['Set-Cookie' => 'foo=bar']),
+            new Response()
+        ]);
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
+        $jar = new CookieJar();
+        $client->get('http://foo.com', ['cookies' => $jar]);
+        $client->get('http://foo.com', ['cookies' => $jar]);
+        $this->assertEquals('foo=bar', $mock->getLastRequest()->getHeaderLine('Cookie'));
+    }
+
+    public function testCanDisableContentDecoding()
+    {
+        $mock = new MockHandler([new Response()]);
+        $client = new Client(['handler' => $mock]);
+        $client->get('http://foo.com', ['decode_content' => false]);
+        $last = $mock->getLastRequest();
+        $this->assertFalse($last->hasHeader('Accept-Encoding'));
+        $this->assertFalse($mock->getLastOptions()['decode_content']);
+    }
+
+    public function testCanSetContentDecodingToValue()
+    {
+        $mock = new MockHandler([new Response()]);
+        $client = new Client(['handler' => $mock]);
+        $client->get('http://foo.com', ['decode_content' => 'gzip']);
+        $last = $mock->getLastRequest();
+        $this->assertEquals('gzip', $last->getHeaderLine('Accept-Encoding'));
+        $this->assertEquals('gzip', $mock->getLastOptions()['decode_content']);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testValidatesHeaders()
+    {
+        $mock = new MockHandler();
+        $client = new Client(['handler' => $mock]);
+        $client->get('http://foo.com', ['headers' => 'foo']);
+    }
+
+    public function testAddsBody()
+    {
+        $mock = new MockHandler([new Response()]);
+        $client = new Client(['handler' => $mock]);
+        $request = new Request('PUT', 'http://foo.com');
+        $client->send($request, ['body' => 'foo']);
+        $last = $mock->getLastRequest();
+        $this->assertEquals('foo', (string) $last->getBody());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testValidatesQuery()
+    {
+        $mock = new MockHandler();
+        $client = new Client(['handler' => $mock]);
+        $request = new Request('PUT', 'http://foo.com');
+        $client->send($request, ['query' => false]);
+    }
+
+    public function testQueryCanBeString()
+    {
+        $mock = new MockHandler([new Response()]);
+        $client = new Client(['handler' => $mock]);
+        $request = new Request('PUT', 'http://foo.com');
+        $client->send($request, ['query' => 'foo']);
+        $this->assertEquals('foo', $mock->getLastRequest()->getUri()->getQuery());
+    }
+
+    public function testQueryCanBeArray()
+    {
+        $mock = new MockHandler([new Response()]);
+        $client = new Client(['handler' => $mock]);
+        $request = new Request('PUT', 'http://foo.com');
+        $client->send($request, ['query' => ['foo' => 'bar baz']]);
+        $this->assertEquals('foo=bar%20baz', $mock->getLastRequest()->getUri()->getQuery());
+    }
+
+    public function testCanAddJsonData()
+    {
+        $mock = new MockHandler([new Response()]);
+        $client = new Client(['handler' => $mock]);
+        $request = new Request('PUT', 'http://foo.com');
+        $client->send($request, ['json' => ['foo' => 'bar']]);
+        $last = $mock->getLastRequest();
+        $this->assertEquals('{"foo":"bar"}', (string) $mock->getLastRequest()->getBody());
+        $this->assertEquals('application/json', $last->getHeaderLine('Content-Type'));
+    }
+
+    public function testCanAddJsonDataWithoutOverwritingContentType()
+    {
+        $mock = new MockHandler([new Response()]);
+        $client = new Client(['handler' => $mock]);
+        $request = new Request('PUT', 'http://foo.com');
+        $client->send($request, [
+            'headers' => ['content-type' => 'foo'],
+            'json'    => 'a'
+        ]);
+        $last = $mock->getLastRequest();
+        $this->assertEquals('"a"', (string) $mock->getLastRequest()->getBody());
+        $this->assertEquals('foo', $last->getHeaderLine('Content-Type'));
+    }
+
+    public function testAuthCanBeTrue()
+    {
+        $mock = new MockHandler([new Response()]);
+        $client = new Client(['handler' => $mock]);
+        $client->get('http://foo.com', ['auth' => false]);
+        $last = $mock->getLastRequest();
+        $this->assertFalse($last->hasHeader('Authorization'));
+    }
+
+    public function testAuthCanBeArrayForBasicAuth()
+    {
+        $mock = new MockHandler([new Response()]);
+        $client = new Client(['handler' => $mock]);
+        $client->get('http://foo.com', ['auth' => ['a', 'b']]);
+        $last = $mock->getLastRequest();
+        $this->assertEquals('Basic YTpi', $last->getHeaderLine('Authorization'));
+    }
+
+    public function testAuthCanBeArrayForDigestAuth()
+    {
+        $mock = new MockHandler([new Response()]);
+        $client = new Client(['handler' => $mock]);
+        $client->get('http://foo.com', ['auth' => ['a', 'b', 'digest']]);
+        $last = $mock->getLastOptions();
+        $this->assertEquals([
+            CURLOPT_HTTPAUTH => 2,
+            CURLOPT_USERPWD  => 'a:b'
+        ], $last['curl']);
+    }
+
+    public function testAuthCanBeCustomType()
+    {
+        $mock = new MockHandler([new Response()]);
+        $client = new Client(['handler' => $mock]);
+        $client->get('http://foo.com', ['auth' => 'foo']);
+        $last = $mock->getLastOptions();
+        $this->assertEquals('foo', $last['auth']);
+    }
+
+    public function testCanAddFormParams()
+    {
+        $mock = new MockHandler([new Response()]);
+        $client = new Client(['handler' => $mock]);
+        $client->post('http://foo.com', [
+            'form_params' => [
+                'foo' => 'bar bam',
+                'baz' => ['boo' => 'qux']
+            ]
+        ]);
+        $last = $mock->getLastRequest();
+        $this->assertEquals(
+            'application/x-www-form-urlencoded',
+            $last->getHeaderLine('Content-Type')
+        );
+        $this->assertEquals(
+            'foo=bar+bam&baz%5Bboo%5D=qux',
+            (string) $last->getBody()
+        );
+    }
+
+    public function testFormParamsEncodedProperly()
+    {
+        $separator = ini_get('arg_separator.output');
+        ini_set('arg_separator.output', '&amp;');
+        $mock = new MockHandler([new Response()]);
+        $client = new Client(['handler' => $mock]);
+        $client->post('http://foo.com', [
+            'form_params' => [
+                'foo' => 'bar bam',
+                'baz' => ['boo' => 'qux']
+            ]
+        ]);
+        $last = $mock->getLastRequest();
+        $this->assertEquals(
+            'foo=bar+bam&baz%5Bboo%5D=qux',
+            (string) $last->getBody()
+        );
+
+        ini_set('arg_separator.output', $separator);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testEnsuresThatFormParamsAndMultipartAreExclusive()
+    {
+        $client = new Client(['handler' => function () {}]);
+        $client->post('http://foo.com', [
+            'form_params' => ['foo' => 'bar bam'],
+            'multipart' => []
+        ]);
+    }
+
+    public function testCanSendMultipart()
+    {
+        $mock = new MockHandler([new Response()]);
+        $client = new Client(['handler' => $mock]);
+        $client->post('http://foo.com', [
+            'multipart' => [
+                [
+                    'name'     => 'foo',
+                    'contents' => 'bar'
+                ],
+                [
+                    'name'     => 'test',
+                    'contents' => fopen(__FILE__, 'r')
+                ]
             ]
         ]);
 
-        $request = $client->createRequest('GET', 'http://foo.com?a=b', [
-            'headers' => ['Hi' => 'there', '1' => 'one'],
-            'allow_redirects' => false,
-            'query' => ['t' => 1]
-        ]);
+        $last = $mock->getLastRequest();
+        $this->assertContains(
+            'multipart/form-data; boundary=',
+            $last->getHeaderLine('Content-Type')
+        );
 
-        $this->assertFalse($o['allow_redirects']);
-        $this->assertFalse($o['exceptions']);
-        $this->assertEquals('Bar', $request->getHeader('Foo'));
-        $this->assertEquals('there', $request->getHeader('Hi'));
-        $this->assertEquals('one', $request->getHeader('1'));
-        $this->assertEquals('a=b&baz=bam&t=1', $request->getQuery());
-    }
+        $this->assertContains(
+            'Content-Disposition: form-data; name="foo"',
+            (string) $last->getBody()
+        );
 
-    public function testClientMergesDefaultHeadersCaseInsensitively()
-    {
-        $client = new Client(['defaults' => ['headers' => ['Foo' => 'Bar']]]);
-        $request = $client->createRequest('GET', 'http://foo.com?a=b', [
-            'headers' => ['foo' => 'custom', 'user-agent' => 'test']
-        ]);
-        $this->assertEquals('test', $request->getHeader('User-Agent'));
-        $this->assertEquals('custom', $request->getHeader('Foo'));
-    }
-
-    public function testUsesBaseUrlWhenNoUrlIsSet()
-    {
-        $client = new Client(['base_url' => 'http://www.foo.com/baz?bam=bar']);
-        $this->assertEquals(
-            'http://www.foo.com/baz?bam=bar',
-            $client->createRequest('GET')->getUrl()
+        $this->assertContains('bar', (string) $last->getBody());
+        $this->assertContains(
+            'Content-Disposition: form-data; name="foo"' . "\r\n",
+            (string) $last->getBody()
+        );
+        $this->assertContains(
+            'Content-Disposition: form-data; name="test"; filename="ClientTest.php"',
+            (string) $last->getBody()
         );
     }
 
-    public function testUsesBaseUrlCombinedWithProvidedUrl()
+    public function testCanSendMultipartWithExplicitBody()
     {
-        $client = new Client(['base_url' => 'http://www.foo.com/baz?bam=bar']);
-        $this->assertEquals(
-            'http://www.foo.com/bar/bam',
-            $client->createRequest('GET', 'bar/bam')->getUrl()
+        $mock = new MockHandler([new Response()]);
+        $client = new Client(['handler' => $mock]);
+        $client->send(
+            new Request(
+                'POST',
+                'http://foo.com',
+                [],
+                new Psr7\MultipartStream(
+                    [
+                        [
+                            'name' => 'foo',
+                            'contents' => 'bar',
+                        ],
+                        [
+                            'name' => 'test',
+                            'contents' => fopen(__FILE__, 'r'),
+                        ],
+                    ]
+                )
+            )
         );
-    }
 
-    public function testUsesBaseUrlCombinedWithProvidedUrlViaUriTemplate()
-    {
-        $client = new Client(['base_url' => 'http://www.foo.com/baz?bam=bar']);
-        $this->assertEquals(
-            'http://www.foo.com/bar/123',
-            $client->createRequest('GET', ['bar/{bam}', ['bam' => '123']])->getUrl()
+        $last = $mock->getLastRequest();
+        $this->assertContains(
+            'multipart/form-data; boundary=',
+            $last->getHeaderLine('Content-Type')
         );
-    }
 
-    public function testSettingAbsoluteUrlOverridesBaseUrl()
-    {
-        $client = new Client(['base_url' => 'http://www.foo.com/baz?bam=bar']);
-        $this->assertEquals(
-            'http://www.foo.com/foo',
-            $client->createRequest('GET', '/foo')->getUrl()
+        $this->assertContains(
+            'Content-Disposition: form-data; name="foo"',
+            (string) $last->getBody()
         );
-    }
 
-    public function testSettingAbsoluteUriTemplateOverridesBaseUrl()
-    {
-        $client = new Client(['base_url' => 'http://www.foo.com/baz?bam=bar']);
-        $this->assertEquals(
-            'http://goo.com/1',
-            $client->createRequest(
-                'GET',
-                ['http://goo.com/{bar}', ['bar' => '1']]
-            )->getUrl()
+        $this->assertContains('bar', (string) $last->getBody());
+        $this->assertContains(
+            'Content-Disposition: form-data; name="foo"' . "\r\n",
+            (string) $last->getBody()
         );
-    }
-
-    public function testCanSetRelativeUrlStartingWithHttp()
-    {
-        $client = new Client(['base_url' => 'http://www.foo.com']);
-        $this->assertEquals(
-            'http://www.foo.com/httpfoo',
-            $client->createRequest('GET', 'httpfoo')->getUrl()
+        $this->assertContains(
+            'Content-Disposition: form-data; name="test"; filename="ClientTest.php"',
+            (string) $last->getBody()
         );
-    }
-
-    public function testClientSendsRequests()
-    {
-        $response = new Response(200);
-        $adapter = new MockAdapter();
-        $adapter->setResponse($response);
-        $client = new Client(['adapter' => $adapter]);
-        $this->assertSame($response, $client->get('http://test.com'));
-        $this->assertEquals('http://test.com', $response->getEffectiveUrl());
-    }
-
-    public function testSendingRequestCanBeIntercepted()
-    {
-        $response = new Response(200);
-        $response2 = new Response(200);
-        $adapter = new MockAdapter();
-        $adapter->setResponse($response);
-        $client = new Client(['adapter' => $adapter]);
-        $client->getEmitter()->on(
-            'before',
-            function (BeforeEvent $e) use ($response2) {
-                $e->intercept($response2);
-            }
-        );
-        $this->assertSame($response2, $client->get('http://test.com'));
-        $this->assertEquals('http://test.com', $response2->getEffectiveUrl());
-    }
-
-    /**
-     * @expectedException \GuzzleHttp\Exception\RequestException
-     * @expectedExceptionMessage No response
-     */
-    public function testEnsuresResponseIsPresentAfterSending()
-    {
-        $adapter = $this->getMockBuilder('GuzzleHttp\Adapter\MockAdapter')
-            ->setMethods(['send'])
-            ->getMock();
-        $adapter->expects($this->once())
-            ->method('send');
-        $client = new Client(['adapter' => $adapter]);
-        $client->get('http://httpbin.org');
-    }
-
-    public function testClientHandlesErrorsDuringBeforeSend()
-    {
-        $client = new Client();
-        $client->getEmitter()->on('before', function ($e) {
-            throw new \Exception('foo');
-        });
-        $client->getEmitter()->on('error', function ($e) {
-            $e->intercept(new Response(200));
-        });
-        $this->assertEquals(200, $client->get('http://test.com')->getStatusCode());
-    }
-
-    /**
-     * @expectedException \GuzzleHttp\Exception\RequestException
-     * @expectedExceptionMessage foo
-     */
-    public function testClientHandlesErrorsDuringBeforeSendAndThrowsIfUnhandled()
-    {
-        $client = new Client();
-        $client->getEmitter()->on('before', function ($e) {
-            throw new RequestException('foo', $e->getRequest());
-        });
-        $client->get('http://httpbin.org');
-    }
-
-    /**
-     * @expectedException \GuzzleHttp\Exception\RequestException
-     * @expectedExceptionMessage foo
-     */
-    public function testClientWrapsExceptions()
-    {
-        $client = new Client();
-        $client->getEmitter()->on('before', function ($e) {
-            throw new \Exception('foo');
-        });
-        $client->get('http://httpbin.org');
-    }
-
-    public function testCanSetDefaultValues()
-    {
-        $client = new Client(['foo' => 'bar']);
-        $client->setDefaultOption('headers/foo', 'bar');
-        $this->assertNull($client->getDefaultOption('foo'));
-        $this->assertEquals('bar', $client->getDefaultOption('headers/foo'));
-    }
-
-    public function testSendsAllInParallel()
-    {
-        $client = new Client();
-        $client->getEmitter()->attach(new Mock([
-            new Response(200),
-            new Response(201),
-            new Response(202),
-        ]));
-        $history = new History();
-        $client->getEmitter()->attach($history);
-
-        $requests = [
-            $client->createRequest('GET', 'http://test.com'),
-            $client->createRequest('POST', 'http://test.com'),
-            $client->createRequest('PUT', 'http://test.com')
-        ];
-
-        $client->sendAll($requests);
-        $requests = array_map(function ($r) { return $r->getMethod(); }, $history->getRequests());
-        $this->assertContains('GET', $requests);
-        $this->assertContains('POST', $requests);
-        $this->assertContains('PUT', $requests);
-    }
-
-    public function testCanSetCustomParallelAdapter()
-    {
-        $called = false;
-        $pa = new FakeParallelAdapter(new MockAdapter(function () use (&$called) {
-            $called = true;
-            return new Response(203);
-        }));
-        $client = new Client(['parallel_adapter' => $pa]);
-        $client->sendAll([$client->createRequest('GET', 'http://www.foo.com')]);
-        $this->assertTrue($called);
-    }
-
-    public function testCanDisableAuthPerRequest()
-    {
-        $client = new Client(['defaults' => ['auth' => 'foo']]);
-        $request = $client->createRequest('GET', 'http://test.com');
-        $this->assertEquals('foo', $request->getConfig()['auth']);
-        $request = $client->createRequest('GET', 'http://test.com', ['auth' => null]);
-        $this->assertFalse($request->getConfig()->hasKey('auth'));
-    }
-
-    /**
-     * @expectedException \PHPUnit_Framework_Error_Deprecated
-     */
-    public function testHasDeprecatedGetEmitter()
-    {
-        $client = new Client();
-        $client->getEventDispatcher();
     }
 
     public function testUsesProxyEnvironmentVariables()
     {
+        $http = getenv('HTTP_PROXY');
+        $https = getenv('HTTPS_PROXY');
+        $no = getenv('NO_PROXY');
         $client = new Client();
-        $this->assertNull($client->getDefaultOption('proxy'));
-
+        $this->assertNull($client->getConfig('proxy'));
         putenv('HTTP_PROXY=127.0.0.1');
         $client = new Client();
         $this->assertEquals(
             ['http' => '127.0.0.1'],
-            $client->getDefaultOption('proxy')
+            $client->getConfig('proxy')
         );
-
         putenv('HTTPS_PROXY=127.0.0.2');
+        putenv('NO_PROXY=127.0.0.3, 127.0.0.4');
         $client = new Client();
         $this->assertEquals(
-            ['http' => '127.0.0.1', 'https' => '127.0.0.2'],
-            $client->getDefaultOption('proxy')
+            ['http' => '127.0.0.1', 'https' => '127.0.0.2', 'no' => ['127.0.0.3','127.0.0.4']],
+            $client->getConfig('proxy')
         );
+        putenv("HTTP_PROXY=$http");
+        putenv("HTTPS_PROXY=$https");
+        putenv("NO_PROXY=$no");
+    }
 
-        putenv('HTTP_PROXY=');
-        putenv('HTTPS_PROXY=');
+    public function testRequestSendsWithSync()
+    {
+        $mock = new MockHandler([new Response()]);
+        $client = new Client(['handler' => $mock]);
+        $client->request('GET', 'http://foo.com');
+        $this->assertTrue($mock->getLastOptions()['synchronous']);
+    }
+
+    public function testSendSendsWithSync()
+    {
+        $mock = new MockHandler([new Response()]);
+        $client = new Client(['handler' => $mock]);
+        $client->send(new Request('GET', 'http://foo.com'));
+        $this->assertTrue($mock->getLastOptions()['synchronous']);
+    }
+
+    public function testCanSetCustomHandler()
+    {
+        $mock = new MockHandler([new Response(500)]);
+        $client = new Client(['handler' => $mock]);
+        $mock2 = new MockHandler([new Response(200)]);
+        $this->assertEquals(
+            200,
+            $client->send(new Request('GET', 'http://foo.com'), [
+                'handler' => $mock2
+            ])->getStatusCode()
+        );
+    }
+
+    public function testProperlyBuildsQuery()
+    {
+        $mock = new MockHandler([new Response()]);
+        $client = new Client(['handler' => $mock]);
+        $request = new Request('PUT', 'http://foo.com');
+        $client->send($request, ['query' => ['foo' => 'bar', 'john' => 'doe']]);
+        $this->assertEquals('foo=bar&john=doe', $mock->getLastRequest()->getUri()->getQuery());
+    }
+
+    public function testSendSendsWithIpAddressAndPortAndHostHeaderInRequestTheHostShouldBePreserved()
+    {
+        $mockHandler = new MockHandler([new Response()]);
+        $client = new Client(['base_uri' => 'http://127.0.0.1:8585', 'handler' => $mockHandler]);
+        $request = new Request('GET', '/test', ['Host'=>'foo.com']);
+
+        $client->send($request);
+
+        $this->assertEquals('foo.com', $mockHandler->getLastRequest()->getHeader('Host')[0]);
+    }
+
+    public function testSendSendsWithDomainAndHostHeaderInRequestTheHostShouldBePreserved()
+    {
+        $mockHandler = new MockHandler([new Response()]);
+        $client = new Client(['base_uri' => 'http://foo2.com', 'handler' => $mockHandler]);
+        $request = new Request('GET', '/test', ['Host'=>'foo.com']);
+
+        $client->send($request);
+
+        $this->assertEquals('foo.com', $mockHandler->getLastRequest()->getHeader('Host')[0]);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testValidatesSink()
+    {
+        $mockHandler = new MockHandler([new Response()]);
+        $client = new Client(['handler' => $mockHandler]);
+        $client->get('http://test.com', ['sink' => true]);
+    }
+
+    public function testHttpDefaultSchemeIfUriHasNone()
+    {
+        $mockHandler = new MockHandler([new Response()]);
+        $client = new Client(['handler' => $mockHandler]);
+
+        $client->request('GET', '//example.org/test');
+
+        $this->assertSame('http://example.org/test', (string) $mockHandler->getLastRequest()->getUri());
+    }
+
+    public function testOnlyAddSchemeWhenHostIsPresent()
+    {
+        $mockHandler = new MockHandler([new Response()]);
+        $client = new Client(['handler'  => $mockHandler]);
+
+        $client->request('GET', 'baz');
+        $this->assertSame(
+            'baz',
+            (string) $mockHandler->getLastRequest()->getUri()
+        );
     }
 }

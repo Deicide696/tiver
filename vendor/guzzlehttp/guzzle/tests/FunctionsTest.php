@@ -1,174 +1,138 @@
 <?php
+namespace GuzzleHttp\Test;
 
-namespace GuzzleHttp\Tests;
-
-use GuzzleHttp\Client;
-use GuzzleHttp\Event\BeforeEvent;
-use GuzzleHttp\Event\CompleteEvent;
-use GuzzleHttp\Event\ErrorEvent;
-use GuzzleHttp\Message\Response;
-use GuzzleHttp\Subscriber\Mock;
+use GuzzleHttp;
 
 class FunctionsTest extends \PHPUnit_Framework_TestCase
 {
     public function testExpandsTemplate()
     {
-        $this->assertEquals('foo/123', \GuzzleHttp\uri_template('foo/{bar}', ['bar' => '123']));
+        $this->assertEquals(
+            'foo/123',
+            GuzzleHttp\uri_template('foo/{bar}', ['bar' => '123'])
+        );
     }
-
     public function noBodyProvider()
     {
         return [['get'], ['head'], ['delete']];
     }
 
-    /**
-     * @dataProvider noBodyProvider
-     */
-    public function testSendsNoBody($method)
+    public function testProvidesDefaultUserAgent()
     {
-        Server::flush();
-        Server::enqueue([new Response(200)]);
-        call_user_func("GuzzleHttp\\{$method}", Server::$url, [
-            'headers' => ['foo' => 'bar'],
-            'query' => ['a' => '1']
-        ]);
-        $sent = Server::received(true)[0];
-        $this->assertEquals(strtoupper($method), $sent->getMethod());
-        $this->assertEquals('/?a=1', $sent->getResource());
-        $this->assertEquals('bar', $sent->getHeader('foo'));
+        $ua = GuzzleHttp\default_user_agent();
+        $this->assertEquals(1, preg_match('#^GuzzleHttp/.+ curl/.+ PHP/.+$#', $ua));
     }
 
-    public function testSendsOptionsRequest()
+    public function typeProvider()
     {
-        Server::flush();
-        Server::enqueue([new Response(200)]);
-        \GuzzleHttp\options(Server::$url, ['headers' => ['foo' => 'bar']]);
-        $sent = Server::received(true)[0];
-        $this->assertEquals('OPTIONS', $sent->getMethod());
-        $this->assertEquals('/', $sent->getResource());
-        $this->assertEquals('bar', $sent->getHeader('foo'));
-    }
-
-    public function hasBodyProvider()
-    {
-        return [['put'], ['post'], ['patch']];
-    }
-
-    /**
-     * @dataProvider hasBodyProvider
-     */
-    public function testSendsWithBody($method)
-    {
-        Server::flush();
-        Server::enqueue([new Response(200)]);
-        call_user_func("GuzzleHttp\\{$method}", Server::$url, [
-            'headers' => ['foo' => 'bar'],
-            'body'    => 'test',
-            'query'   => ['a' => '1']
-        ]);
-        $sent = Server::received(true)[0];
-        $this->assertEquals(strtoupper($method), $sent->getMethod());
-        $this->assertEquals('/?a=1', $sent->getResource());
-        $this->assertEquals('bar', $sent->getHeader('foo'));
-        $this->assertEquals('test', $sent->getBody());
-    }
-
-    /**
-     * @expectedException \PHPUnit_Framework_Error_Deprecated
-     * @expectedExceptionMessage GuzzleHttp\Tests\HasDeprecations::baz() is deprecated and will be removed in a future version. Update your code to use the equivalent GuzzleHttp\Tests\HasDeprecations::foo() method instead to avoid breaking changes when this shim is removed.
-     */
-    public function testManagesDeprecatedMethods()
-    {
-        $d = new HasDeprecations();
-        $d->baz();
-    }
-
-    /**
-     * @expectedException \BadMethodCallException
-     */
-    public function testManagesDeprecatedMethodsAndHandlesMissingMethods()
-    {
-        $d = new HasDeprecations();
-        $d->doesNotExist();
-    }
-
-    public function testBatchesRequests()
-    {
-        $client = new Client();
-        $responses = [
-            new Response(301, ['Location' => 'http://foo.com/bar']),
-            new Response(200),
-            new Response(200),
-            new Response(404)
+        return [
+            ['foo', 'string(3) "foo"'],
+            [true, 'bool(true)'],
+            [false, 'bool(false)'],
+            [10, 'int(10)'],
+            [1.0, 'float(1)'],
+            [new StrClass(), 'object(GuzzleHttp\Test\StrClass)'],
+            [['foo'], 'array(1)']
         ];
-        $client->getEmitter()->attach(new Mock($responses));
-        $requests = [
-            $client->createRequest('GET', 'http://foo.com/baz'),
-            $client->createRequest('HEAD', 'http://httpbin.org/get'),
-            $client->createRequest('PUT', 'http://httpbin.org/put'),
+    }
+    /**
+     * @dataProvider typeProvider
+     */
+    public function testDescribesType($input, $output)
+    {
+        $this->assertEquals($output, GuzzleHttp\describe_type($input));
+    }
+
+    public function testParsesHeadersFromLines()
+    {
+        $lines = ['Foo: bar', 'Foo: baz', 'Abc: 123', 'Def: a, b'];
+        $this->assertEquals([
+            'Foo' => ['bar', 'baz'],
+            'Abc' => ['123'],
+            'Def' => ['a, b'],
+        ], GuzzleHttp\headers_from_lines($lines));
+    }
+
+    public function testParsesHeadersFromLinesWithMultipleLines()
+    {
+        $lines = ['Foo: bar', 'Foo: baz', 'Foo: 123'];
+        $this->assertEquals([
+            'Foo' => ['bar', 'baz', '123'],
+        ], GuzzleHttp\headers_from_lines($lines));
+    }
+
+    public function testReturnsDebugResource()
+    {
+        $this->assertTrue(is_resource(GuzzleHttp\debug_resource()));
+    }
+
+    public function testProvidesDefaultCaBundler()
+    {
+        $this->assertFileExists(GuzzleHttp\default_ca_bundle());
+    }
+
+    public function noProxyProvider()
+    {
+        return [
+            ['mit.edu', ['.mit.edu'], false],
+            ['foo.mit.edu', ['.mit.edu'], true],
+            ['mit.edu', ['mit.edu'], true],
+            ['mit.edu', ['baz', 'mit.edu'], true],
+            ['mit.edu', ['', '', 'mit.edu'], true],
+            ['mit.edu', ['baz', '*'], true],
         ];
+    }
 
-        $a = $b = $c = 0;
-        $result = \GuzzleHttp\batch($client, $requests, [
-            'before'   => function (BeforeEvent $e) use (&$a) { $a++; },
-            'complete' => function (CompleteEvent $e) use (&$b) { $b++; },
-            'error'    => function (ErrorEvent $e) use (&$c) { $c++; },
-        ]);
-
-        $this->assertEquals(4, $a);
-        $this->assertEquals(2, $b);
-        $this->assertEquals(1, $c);
-        $this->assertCount(3, $result);
-
-        foreach ($result as $i => $request) {
-            $this->assertSame($requests[$i], $request);
-        }
-
-        // The first result is actually the second (redirect) response.
-        $this->assertSame($responses[1], $result[$requests[0]]);
-        // The second result is a 1:1 request:response map
-        $this->assertSame($responses[2], $result[$requests[1]]);
-        // The third entry is the 404 RequestException
-        $this->assertSame($responses[3], $result[$requests[2]]->getResponse());
+    /**
+     * @dataProvider noproxyProvider
+     */
+    public function testChecksNoProxyList($host, $list, $result)
+    {
+        $this->assertSame(
+            $result,
+            \GuzzleHttp\is_host_in_noproxy($host, $list)
+        );
     }
 
     /**
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid event format
      */
-    public function testBatchValidatesTheEventFormat()
+    public function testEnsuresNoProxyCheckHostIsSet()
     {
-        $client = new Client();
-        $requests = [$client->createRequest('GET', 'http://foo.com/baz')];
-        \GuzzleHttp\batch($client, $requests, ['complete' => 'foo']);
+        \GuzzleHttp\is_host_in_noproxy('', []);
     }
 
-    public function testJsonDecodes()
+    public function testEncodesJson()
     {
-        $data = \GuzzleHttp\json_decode('true');
-        $this->assertTrue($data);
+        $this->assertEquals('true', \GuzzleHttp\json_encode(true));
     }
 
     /**
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Unable to parse JSON data: JSON_ERROR_SYNTAX - Syntax error, malformed JSON
      */
-    public function testJsonDecodesWithErrorMessages()
+    public function testEncodesJsonAndThrowsOnError()
     {
-        \GuzzleHttp\json_decode('!narf!');
+        \GuzzleHttp\json_encode("\x99");
+    }
+
+    public function testDecodesJson()
+    {
+        $this->assertSame(true, \GuzzleHttp\json_decode('true'));
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testDecodesJsonAndThrowsOnError()
+    {
+        \GuzzleHttp\json_decode('{{]]');
     }
 }
 
-class HasDeprecations
+final class StrClass
 {
-    function foo()
+    public function __toString()
     {
-        return 'abc';
-    }
-    function __call($name, $arguments)
-    {
-        return \GuzzleHttp\deprecation_proxy($this, $name, $arguments, [
-            'baz' => 'foo'
-        ]);
+        return 'foo';
     }
 }

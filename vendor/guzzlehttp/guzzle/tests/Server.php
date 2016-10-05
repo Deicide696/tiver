@@ -1,10 +1,9 @@
 <?php
-
 namespace GuzzleHttp\Tests;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Message\MessageFactory;
-use GuzzleHttp\Message\ResponseInterface;
+use GuzzleHttp\Psr7;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * The Server class is used to control a scripted webserver using node.js that
@@ -22,14 +21,11 @@ use GuzzleHttp\Message\ResponseInterface;
  */
 class Server
 {
-    const REQUEST_DELIMITER = "\n----[request]\n";
-
     /** @var Client */
     private static $client;
-
-    public static $started;
-    public static $url = 'http://127.0.0.1:8125/';
-    public static $port = 8125;
+    private static $started = false;
+    public static $url = 'http://127.0.0.1:8126/';
+    public static $port = 8126;
 
     /**
      * Flush the received requests from the server
@@ -37,9 +33,7 @@ class Server
      */
     public static function flush()
     {
-        self::start();
-
-        return self::$client->delete('guzzle-server/requests');
+        return self::getClient()->request('DELETE', 'guzzle-server/requests');
     }
 
     /**
@@ -54,66 +48,64 @@ class Server
      */
     public static function enqueue($responses)
     {
-        static $factory;
-        if (!$factory) {
-            $factory = new MessageFactory();
-        }
-
-        self::start();
-
         $data = [];
         foreach ((array) $responses as $response) {
-
-            // Create the response object from a string
-            if (is_string($response)) {
-                $response = $factory->fromMessage($response);
-            } elseif (!($response instanceof ResponseInterface)) {
-                throw new \Exception('Responses must be strings or Responses');
+            if (!($response instanceof ResponseInterface)) {
+                throw new \Exception('Invalid response given.');
             }
-
             $headers = array_map(function ($h) {
                 return implode(' ,', $h);
             }, $response->getHeaders());
 
             $data[] = [
-                'statusCode'   => $response->getStatusCode(),
-                'reasonPhrase' => $response->getReasonPhrase(),
-                'headers'      => $headers,
-                'body'         => base64_encode((string) $response->getBody())
+                'status'  => (string) $response->getStatusCode(),
+                'reason'  => $response->getReasonPhrase(),
+                'headers' => $headers,
+                'body'    => base64_encode((string) $response->getBody())
             ];
         }
 
-        self::getClient()->put('guzzle-server/responses', [
-            'body' => json_encode($data)
+        self::getClient()->request('PUT', 'guzzle-server/responses', [
+            'json' => $data
         ]);
     }
 
     /**
      * Get all of the received requests
      *
-     * @param bool $hydrate Set to TRUE to turn the messages into
-     *      actual {@see RequestInterface} objects.  If $hydrate is FALSE,
-     *      requests will be returned as strings.
-     *
-     * @return array
+     * @return ResponseInterface[]
      * @throws \RuntimeException
      */
-    public static function received($hydrate = false)
+    public static function received()
     {
         if (!self::$started) {
             return [];
         }
 
-        $response = self::getClient()->get('guzzle-server/requests');
-        $data = array_filter(explode(self::REQUEST_DELIMITER, (string) $response->getBody()));
-        if ($hydrate) {
-            $factory = new MessageFactory();
-            $data = array_map(function ($message) use ($factory) {
-                return $factory->fromMessage($message);
-            }, $data);
-        }
+        $response = self::getClient()->request('GET', 'guzzle-server/requests');
+        $data = json_decode($response->getBody(), true);
 
-        return $data;
+        return array_map(
+            function ($message) {
+                $uri = $message['uri'];
+                if (isset($message['query_string'])) {
+                    $uri .= '?' . $message['query_string'];
+                }
+                $response = new Psr7\Request(
+                    $message['http_method'],
+                    $uri,
+                    $message['headers'],
+                    $message['body'],
+                    $message['version']
+                );
+                return $response->withUri(
+                    $response->getUri()
+                        ->withScheme('http')
+                        ->withHost($response->getHeaderLine('host'))
+                );
+            },
+            $data
+        );
     }
 
     /**
@@ -122,7 +114,7 @@ class Server
     public static function stop()
     {
         if (self::$started) {
-            self::getClient()->delete('guzzle-server');
+            self::getClient()->request('DELETE', 'guzzle-server');
         }
 
         self::$started = false;
@@ -140,14 +132,14 @@ class Server
         }
     }
 
-    private static function start()
+    public static function start()
     {
         if (self::$started) {
             return;
         }
 
         if (!self::isListening()) {
-            exec('node ' . __DIR__ . \DIRECTORY_SEPARATOR . 'server.js '
+            exec('node ' . __DIR__ . '/server.js '
                 . self::$port . ' >> /tmp/server.log 2>&1 &');
             self::wait();
         }
@@ -158,7 +150,7 @@ class Server
     private static function isListening()
     {
         try {
-            self::getClient()->get('guzzle-server/perf', [
+            self::getClient()->request('GET', 'guzzle-server/perf', [
                 'connect_timeout' => 5,
                 'timeout'         => 5
             ]);
@@ -171,7 +163,10 @@ class Server
     private static function getClient()
     {
         if (!self::$client) {
-            self::$client = new Client(['base_url' => self::$url]);
+            self::$client = new Client([
+                'base_uri' => self::$url,
+                'sync'     => true,
+            ]);
         }
 
         return self::$client;

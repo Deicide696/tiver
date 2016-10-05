@@ -106,39 +106,38 @@ class UserController extends Controller {
 	 * @param integer $id        	
 	 * @return mixed
 	 */
-	public function actionView($id)
-	{
-		$searchModel = new Address();
-
-		$dataProvider = new ActiveDataProvider ([
-				'query' => $searchModel->find ()->joinWith (['userHasAddress'])->where (['user_has_address.user_id' => $id])
-		]);
+	public function actionView($id) {
+		$searchModel = new Address ();
+		
+		$dataProvider = new ActiveDataProvider ( [ 
+				'query' => $searchModel->find ()->joinWith ( [ 
+						'userHasAddress' 
+				] )->where ( [ 
+						'user_has_address.user_id' => $id 
+				] ) 
+		] );
 		
 		// $dataProvider = $searchModel->search(['expert_id' => $id]);
 		
-		return $this->render ( 'view', [
-				'model' => $this->findModel($id),
+		return $this->render ( 'view', [ 
+				'model' => $this->findModel ( $id ),
 				'searchModel' => $searchModel,
 				'dataProvider' => $dataProvider 
-			]);
+		] );
 	}
-
-	public function actionCreate()
-	{
-		$model = new SignupForm ([
+	public function actionCreate() {
+		$model = new SignupForm ( [ 
 				'scenario' => SignupForm::SCENARIO_REGISTER 
-		]);
+		] );
 		
-		if ($model->load(Yii::$app->request->post()) && $model->save())
-		{
-			return $this->redirect ([ 
+		if ($model->load ( Yii::$app->request->post () ) && $model->save ()) {
+			return $this->redirect ( [ 
 					'view',
 					'id' => $model->id 
-			]);
-		}
+			] );
+		} 
 
-		else if (Yii::$app->request->isPost)
-		{
+		else if (Yii::$app->request->isPost) {
 			// se define el layout
 			$this->layout = "json";
 			Yii::$app->response->format = 'json';
@@ -223,15 +222,14 @@ class UserController extends Controller {
 						] 
 				];
 			}
-		}
+		} 
 
-		else
-		{
-			$model = new User($id);
-
-			return $this->render('create', [ 
-					'model' => $model
-			]);
+		else {
+			$model = new User ( $id );
+			
+			return $this->render ( 'create', [ 
+					'model' => $model 
+			] );
 		}
 	}
 	public function actionCheckPreregister() {
@@ -884,6 +882,10 @@ class UserController extends Controller {
 		
 		//
 		
+		$sendGrid = Yii::$app->sendGrid;
+		$message = $sendGrid->compose ( '03_welcome/html' );
+		$message->setFrom ( 'tiver@zugartek.com' )->setTo ( $user->email )->setSubject ( 'Welcome' )->send ( $sendGrid );
+		
 		return [ 
 				'success' => true,
 				'data' => [ 
@@ -1030,9 +1032,9 @@ class UserController extends Controller {
 												"active_service" => $actual_service,
 												"count_credit_card" => $credit_card,
 												"pending_pay" => $user->hasPendingPay () 
-										]
-										 
-								];
+										] 
+								]
+								;
 							} else {
 								Yii::trace ( json_encode ( [ 
 										'message' => 'El token no se pudo guardar  -  ' . json_encode ( $tokenMmz->getErrors () ) 
@@ -1242,8 +1244,7 @@ class UserController extends Controller {
 				'name' => "fulanito" 
 		);
 		// $pusher->presence_auth($_POST['channel_name'], $_POST['socket_id'], $user->uid, $presence_data);
-		//print "h!!!i";
-		print $pusher->presence_auth($_POST['channel_name'], $_POST['socket_id'], rand ( 1, 100 ), $presence_data);
-
+		// print "h!!!i";
+		print $pusher->presence_auth ( $_POST ['channel_name'], $_POST ['socket_id'], rand ( 1, 100 ), $presence_data );
 	}
 }

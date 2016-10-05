@@ -148,9 +148,18 @@ class CategoryServiceController extends Controller
 	    	for($i=0;$i<sizeof($model);$i++){
 	    		$services=$model[$i]['service'];
 	    		for($j=0;$j<sizeof($services);$j++){
+	    			//Modificamos precio del servicio
 	    			if($model[$i]['service'][$j]['tax']==1){
 	    				$model[$i]['service'][$j]['price']=$model[$i]['service'][$j]['price']+($model[$i]['service'][$j]['price']*Yii::$app->params ['tax_percent']);
 	    			}
+	    			//Buscamos modificadores y se reajusta el precio del servicio
+	    			$modificadores=$model[$i]['service'][$j]['serviceHasModifier'];
+	    			for($k=0;$k<sizeof($modificadores);$k++){
+	    				if($model[$i]['service'][$j]['serviceHasModifier'][$k]['modifier']['tax']==1){
+	    					$model[$i]['service'][$j]['serviceHasModifier'][$k]['modifier']['price']=$model[$i]['service'][$j]['serviceHasModifier'][$k]['modifier']['price']+($model[$i]['service'][$j]['serviceHasModifier'][$k]['modifier']['price']*Yii::$app->params ['tax_percent']);
+	    				}
+	    			}
+	    			
 	    			
 	    		}
 	    	}

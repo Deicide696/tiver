@@ -31,7 +31,7 @@ $form = ActiveForm::begin ( [
 	<?= $form->field($model,'name'); ?>
 	<?= $form->field($model, 'description'); ?>
 	<?= $form->field($model, 'price')->input('number'); ?>
-	<?= $form->field($model, 'tax')->input('number'); ?>
+	<?= $form->field($model, 'tax')->checkbox(); ?>
 	<?= $form->field($model, 'duration')->input('number'); ?>
 	<?= $form->field($model, 'status')->checkbox(); ?>
 	
