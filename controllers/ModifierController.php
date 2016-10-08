@@ -104,6 +104,8 @@ class ModifierController extends Controller
          
         } else {
         	$model_relation=ServiceHasModifier::find()->where(["modifier_id"=>$model->id])->one();
+        	//var_dump($model_relation);
+        	//exit();
         	$model->service_id=$model_relation->service_id;
             return $this->render('update', [
                 'model' => $model,

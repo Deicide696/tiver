@@ -29,6 +29,8 @@ class ExpertHasService extends \yii\db\ActiveRecord
         return [
             [['expert_id', 'service_id'], 'required'],
             [['expert_id', 'service_id'], 'integer'],
+			[['expert_id', 'service_id'], 'unique', 'targetAttribute' => ['expert_id', 'service_id'], 'message'=>'Este especialista ya tiene asignado el servicio'],
+      
             [['qualification'], 'number']
         ];
     }

@@ -310,7 +310,7 @@ class UserController extends Controller {
 			} catch ( Facebook\Exceptions\FacebookSDKException $e ) {
 				echo 'Facebook SDK returned an error: ' . $e->getMessage ();
 				exit ();
-			}
+			} 
 			
 			$user_fb = $request->getGraphUser ();
 			$email = $user_fb->getProperty ( 'email' );
@@ -882,9 +882,9 @@ class UserController extends Controller {
 		
 		//
 		
-		$sendGrid = Yii::$app->sendGrid;
-		$message = $sendGrid->compose ( '03_welcome/html' );
-		$message->setFrom ( 'tiver@zugartek.com' )->setTo ( $user->email )->setSubject ( 'Welcome' )->send ( $sendGrid );
+	//	$sendGrid = Yii::$app->sendGrid;
+		//$message = $sendGrid->compose ( '03_welcome/html' );
+		//$message->setFrom ( 'tiver@zugartek.com' )->setTo ( $user->email )->setSubject ( 'Welcome' )->send ( $sendGrid );
 		
 		return [ 
 				'success' => true,
