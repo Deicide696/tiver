@@ -201,6 +201,7 @@ class AssignedServiceController extends Controller {
 		// obtenemos la duración del servicio, (duracion serv+ duracion mod)
 		$dur_serv = 0;
 		$dur_serv += Service::find ()->select ( [ 'duration' ] )->where ( [ 'id' => $service ] )->one ()->duration;
+		if($modifier!='')
 		$dur_serv += Modifier::find ()->select ( [ 	'duration' 	] )->where ( [ 	'id' => $modifier 	] )->one ()->duration;
 		
 		// print "---> $dur_serv";
@@ -242,7 +243,7 @@ class AssignedServiceController extends Controller {
 			
 			$response ["success"] = false;
 			$response ["data"] = [ 
-					"message" => "El servicio no se pudo asignar porque no tenemos especialistas disponibles, intenta en otro horario" 
+					"message" => "El servicio no se pudo asignar porque no tenemos especialistas disponibles en este horario ($time $date)" 
 			];
 			$response = json_encode ( $response );
 			return $response;
@@ -478,6 +479,8 @@ class AssignedServiceController extends Controller {
 		// "state" => 1
 		joinWith ( 'service' )->one ();
 		
+		
+		
 		if ($services == null) {
 			$response ["success"] = false;
 			$response ["data"] = [ 
@@ -500,6 +503,32 @@ class AssignedServiceController extends Controller {
 		$tokens = Expert::findOne ( [ 
 				"id" => $services->expert_id 
 		] )->getPushTokens ();
+		
+	
+		
+		$user= User::findOne ( ["id" => $id_user ] );
+		$value = $services->getPrice ();
+		
+		//Enviar mail de pago en mora
+		$sendGrid = new \SendGrid ( Yii::$app->params ['sengrid_user'], Yii::$app->params ['sendgrid_pass'] );
+		$email = new \SendGrid\Email ();
+		$email
+		->setFrom ( Yii::$app->params ['sendgrid_from'] )
+		->setFromName ( Yii::$app->params ['sendgrid_from_name'] )
+		->addTo ( $user->email )
+		->setSubject ( ' ' )
+		->setHtml ( ' ' )
+		->setHtml(' ')
+		->addSubstitution('{{ username }}',[$user->first_name])
+		->addSubstitution('{{ buydate }}',[$services->date])
+		->addSubstitution('{{ useraddress }}',[$services->address])
+		->addSubstitution('{{ item.servname }}',[$value])
+		->addSubstitution('{{ item.servmodif }}',[$value])
+		->addSubstitution('{{ item.prodprecio }}',[$value])
+		->addSubstitution('{{ item.servesp }}',[$value])
+		->addSubstitution('{{ total }}',[$value])
+		->addFilter ( 'templates', 'template_id', Yii::$app->params ['sendgrid_template_cancelado'] );
+		$resp = $sendGrid->send ( $email );
 		
 		$services->delete ();
 		
@@ -1092,6 +1121,12 @@ class AssignedServiceController extends Controller {
 			// print "$id_pay -> $message_pay - $paid_pay";
 			// exit();
 			
+			$user= User::findOne ( ["id" => $id_user ] );
+			$info = Yii::$app->TPaga->GetCreditCard ( $user->tpaga_id, $credit_card->hash );
+			$last_four = $info->last_four;
+			$type = $info->type;
+			
+			
 			// $id_pay = Yii::$app->TPaga->CreateCharge ( $credit_card->hash, $value, "Servicio Tiver" );
 			if (! $data_pay) {
 				/*
@@ -1126,6 +1161,35 @@ class AssignedServiceController extends Controller {
 				$response ["data"] = [ 
 						"message" => "No se pudo realizar el cobro" 
 				];
+				
+				
+				
+				//Enviar mail de pago en mora
+				$sendGrid = new \SendGrid ( Yii::$app->params ['sengrid_user'], Yii::$app->params ['sendgrid_pass'] );
+				$email = new \SendGrid\Email ();
+				$email
+				->setFrom ( Yii::$app->params ['sendgrid_from'] )
+				->setFromName ( Yii::$app->params ['sendgrid_from_name'] )
+				->addTo ( $user->email )
+				->setSubject ( ' ' )
+				->setHtml ( ' ' )
+				->setHtml(' ')
+				->addSubstitution('{{ username }}',[$user->first_name])
+				->addSubstitution('{{ usercard }}',[$type])
+				->addSubstitution('{{ usercardnum }}',[$last_four])
+				->addSubstitution('{{ buydate }}',[$services->date])
+				->addSubstitution('{{ useraddress }}',[$services->address])
+				->addSubstitution('{{ item.servname }}',[$value])
+				->addSubstitution('{{ item.servmodif }}',[$value])
+				->addSubstitution('{{ item.prodprecio }}',[$value])
+				->addSubstitution('{{ item.servesp }}',[$value])
+				->addSubstitution('{{ total }}',[$value])
+				->addFilter ( 'templates', 'template_id', Yii::$app->params ['sendgrid_template_mora'] );
+				$resp = $sendGrid->send ( $email );
+				
+				//
+				
+				
 				$response = json_encode ( $response );
 				return $response;
 			} else {
@@ -1134,10 +1198,56 @@ class AssignedServiceController extends Controller {
 				$paid_pay = $data_pay->paid;
 				
 				$pay = new Pay ();
-				if ($paid_pay)
+				
+			
+				
+				//Enviar mail de pago en mora
+				$sendGrid = new \SendGrid ( Yii::$app->params ['sengrid_user'], Yii::$app->params ['sendgrid_pass'] );
+				$email = new \SendGrid\Email ();
+				$email
+				->setFrom ( Yii::$app->params ['sendgrid_from'] )
+				->setFromName ( Yii::$app->params ['sendgrid_from_name'] )
+				->addTo ( $user->email )
+				->setSubject ( ' ' )
+				->setHtml ( ' ' )
+				->setHtml(' ');
+					
+				
+				if ($paid_pay){
 					$pay->state = 1;
-				else
+					$email->addSubstitution('{{ username }}',[$user->first_name])
+				//->addSubstitution('{{ usercard }}',[$type)
+				//->addSubstitution('{{ usercardnum }}',[$last_four)
+				->addSubstitution('{{ buydate }}',[$services->date])
+				->addSubstitution('{{ useraddress }}',[$services->address])
+				->addSubstitution('{{ item.servname }}',[$value])
+				->addSubstitution('{{ item.servmodif }}',[$value])
+				->addSubstitution('{{ item.prodprecio }}',[$value])
+				->addSubstitution('{{ item.servesp }}',[$value])
+				->addSubstitution('{{ total }}',[$value])
+				->addFilter ( 'templates', 'template_id', Yii::$app->params ['sendgrid_template_compraok'] );
+			
+				}
+					
+				else{
+					
+					$email
+					->addSubstitution('{{ username }}',[$user->first_name])
+					->addSubstitution('{{ usercard }}',[$type])
+					->addSubstitution('{{ usercardnum }}',[$last_four])
+					->addSubstitution('{{ buydate }}',[$services->date])
+					->addSubstitution('{{ useraddress }}',[$services->address])
+					->addSubstitution('{{ item.servname }}',[$value])
+					->addSubstitution('{{ item.servmodif }}',[$value])
+					->addSubstitution('{{ item.prodprecio }}',[$value])
+					->addSubstitution('{{ item.servesp }}',[$value])
+					->addSubstitution('{{ total }}',[$value])
+					->addFilter ( 'templates', 'template_id', Yii::$app->params ['sendgrid_template_mora'] );
+						
 					$pay->state = 0;
+				}
+				$resp = $sendGrid->send ( $email );
+				
 				$pay->message = $message_pay;
 				$pay->hash = $id_pay;
 				$pay->value = $value;

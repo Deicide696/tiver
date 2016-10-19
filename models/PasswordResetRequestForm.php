@@ -68,9 +68,30 @@ class PasswordResetRequestForm extends Model {
            
             $assetEmail = new EmailAsset();
             if ($user->email != '') {
-                $arg = [ 'userName' => $user->first_name . ' ' . $user->last_name, 'email' => $user->email, 'token' => $token->token];
-                return $assetEmail->sendMail('tiver@zugartek.com', $user->email, '¿Olvidaste tu contraseña?', 'user/reset', $arg);
-                //return true;
+              /*  $arg = [ 'userName' => $user->first_name . ' ' . $user->last_name, 'email' => $user->email, 'token' => $token->token];
+                return $assetEmail->sendMail('tiver@zugartek.com', $user->email, '¿Olvidaste tu contraseña?', 'user/reset', $arg);*/
+            	$subs=['{{ username }}'=>$user->first_name,
+            			//'{{ token }}' => $token->token
+            	];
+            	
+            	
+            	$sendGrid = new \SendGrid ( Yii::$app->params ['sengrid_user'], Yii::$app->params ['sendgrid_pass'] );
+            	$email = new \SendGrid\Email ();
+            	$email
+            	->setFrom ( Yii::$app->params ['sendgrid_from'] )
+            	->setFromName ( Yii::$app->params ['sendgrid_from_name'] )
+            	->addTo ( $user->email )
+            	->setSubject ( ' ' )
+            	->setHtml ( ' ' )
+            	->setHtml(' ')
+            	->addSubstitution('{{ username }}',[$user->first_name])
+            	->addSubstitution('{{ token }}',[$token->token])->addFilter ( 'templates', 'enabled', 1 )
+            	->addFilter ( 'templates', 'template_id', Yii::$app->params ['sendgrid_template_pass'] );
+            	$resp = $sendGrid->send ( $email );
+            	
+            	//var_dump($resp);
+            	//exit();
+                return true;
             }
 //            return \Yii::$app->mailer->compose(['html' => 'passwordResetToken-html', 'text' => 'passwordResetToken-text'], ['user' => $user, 'token' => $token])
 //                            ->setFrom([\Yii::$app->params['supportEmail'] => \Yii::$app->name . ' robot'])

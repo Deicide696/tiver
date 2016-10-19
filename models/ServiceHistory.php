@@ -176,17 +176,25 @@ class ServiceHistory extends \yii\db\ActiveRecord
     public function getPrice(){
     	$value=0;
     	$service=Service::findOne(['id'=>$this->service_id]);
+    	if($service->tax==0)
     	$value+=$service->price;
+    	else 
+    		$value+=$service->price+($service->price*Yii::$app->params ['tax_percent']);
     
     	$modifier_vw=VwServiceHistory::findOne(['id'=>$this->id]);
     	if($modifier_vw->modifier_id!=""){
     		$modifier=Modifier::findOne(['id'=>$modifier_vw->modifier_id]);
-    		$value+=$modifier->price;
+    		if($modifier->tax==0)
+  			$value+=$modifier->price;
+  			else 
+  			$value+=$modifier->price+($modifier->price*Yii::$app->params ['tax_percent']);
+  	
     	}
     
     	//var_dump($modifier);
     
-    	return $value;
+    		return round($value, -2, PHP_ROUND_HALF_UP);
+    	
     	 
     }
     public function getLastPay(){

@@ -24,11 +24,12 @@ $config = [
 				'PushNotifier' => [ 
 						'class' => 'app\components\PushNotifier' 
 				],
-				'sendGrid' => [
-						'class' => 'bryglen\sendgrid\Mailer',
+				/*'sendGrid' => [
+					'class' => 'bryglen\sendgrid\Mailer',
+
 						'username' => 'Tiver',
 						'password' => 'Pichinde1',
-				],
+				],*/
 				
 				'mailer' => [ 
 						'class' => 'yii\swiftmailer\Mailer',

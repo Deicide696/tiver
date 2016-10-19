@@ -41,6 +41,7 @@ use yii\helpers\Url;
 
 //
 use yii\data\ActiveDataProvider;
+use SendGrid\Email;
 
 /**
  * UserController implements the CRUD actions for User model.
@@ -175,13 +176,32 @@ class UserController extends Controller {
 							// se envia un email al usuario mmz con la bienvenida
 							$assetEmail = new EmailAsset ();
 							if ($user->email != '') {
-								$arg = [ 
-										'model' => $user 
-								];
-								$booleanSend = $assetEmail->sendMail ( 'tiver@zugartek.com', $user->email, '¡Bienvenido a Tiver!', 'user/create', $arg );
+								/*
+								 * $arg = [
+								 * 'model' => $user
+								 * ];
+								 * $booleanSend = $assetEmail->sendMail ( 'tiver@zugartek.com', $user->email, '¡Bienvenido a Tiver!', 'user/create', $arg );
+								 */
+								
+								//
+								
+								$sendGrid = new \SendGrid ( Yii::$app->params ['sengrid_user'], Yii::$app->params ['sendgrid_pass'] );
+								$email = new \SendGrid\Email ();
+								$email
+								->setFrom ( Yii::$app->params ['sendgrid_from'] )
+								->setFromName ( Yii::$app->params ['sendgrid_from_name'] )
+								->addTo ( $user->email )
+								->setSubject ( ' ' )
+								->setHtml ( ' ' )
+								->addSubstitution ( '{{ username }}', [ $user->first_name ] )
+								->addFilter ( 'templates', 'enabled', 1 )
+								->addFilter ( 'templates', 'template_id', Yii::$app->params ['sendgrid_template_welcome'] );
+								$resp = $sendGrid->send ( $email );
+							//	var_dump($resp);
 							}
 						} catch ( \Exception $e ) {
 							Yii::error ( $e->getMessage () );
+							echo $e->getMessage ();
 						}
 						return [ 
 								'success' => true,
@@ -310,14 +330,23 @@ class UserController extends Controller {
 			} catch ( Facebook\Exceptions\FacebookSDKException $e ) {
 				echo 'Facebook SDK returned an error: ' . $e->getMessage ();
 				exit ();
-			} 
+			}
 			
 			$user_fb = $request->getGraphUser ();
 			$email = $user_fb->getProperty ( 'email' );
 			$firstname = $user_fb->getProperty ( 'first_name' );
 			$lastname = $user_fb->getProperty ( 'last_name' );
 			$genero = $user_fb->getProperty ( 'gender' );
-			// var_dump($user_fb);
+			if (empty ( $email )) {
+				
+				return [ 
+						'success' => false,
+						'errcode' => 10,
+						'data' => [ 
+								'message' => 'No se pudo obtener el correo de tu cuenta de Facebook, debes registrarte manualmente desde la aplicación' 
+						] 
+				];
+			}
 			// Obtenemos el tipo de token
 			$typeToken = TypeToken::findOne ( $device );
 			
@@ -459,10 +488,25 @@ class UserController extends Controller {
 								// se envia un email al usuario mmz con la bienvenida
 								$assetEmail = new EmailAsset ();
 								if ($email != '') {
-									$arg = [ 
-											'model' => $user 
-									];
-									$booleanSend = $assetEmail->sendMail ( 'tiver@zugartek.com', $email, '¡Bienvenido a Tiver!', 'user/create', $arg );
+									/*
+									 * $arg = [
+									 * 'model' => $user
+									 * ];
+									 * $booleanSend = $assetEmail->sendMail ( 'tiver@zugartek.com', $email, '¡Bienvenido a Tiver!', 'user/create', $arg );
+									 */
+									//
+									$sendGrid = new \SendGrid ( Yii::$app->params ['sengrid_user'], Yii::$app->params ['sendgrid_pass'] );
+									$email = new \SendGrid\Email ();
+									$email
+									->setFrom ( Yii::$app->params ['sendgrid_from'] )
+									->setFromName ( Yii::$app->params ['sendgrid_from_name'] )
+									->addTo ( $user->email )
+									->setSubject ( ' ' )
+									->setHtml ( ' ' )
+									->addSubstitution ( '{{ username }}', [ $user->first_name ] )
+									->addFilter ( 'templates', 'enabled', 1 )
+									->addFilter ( 'templates', 'template_id', Yii::$app->params ['sendgrid_template_welcome'] );
+									$resp = $sendGrid->send ( $email );
 								}
 							} catch ( \Exception $e ) {
 								Yii::error ( $e->getMessage () );
@@ -880,12 +924,6 @@ class UserController extends Controller {
 		] )->count ();
 		$credit_card = $model_cc;
 		
-		//
-		
-	//	$sendGrid = Yii::$app->sendGrid;
-		//$message = $sendGrid->compose ( '03_welcome/html' );
-		//$message->setFrom ( 'tiver@zugartek.com' )->setTo ( $user->email )->setSubject ( 'Welcome' )->send ( $sendGrid );
-		
 		return [ 
 				'success' => true,
 				'data' => [ 
@@ -1033,8 +1071,7 @@ class UserController extends Controller {
 												"count_credit_card" => $credit_card,
 												"pending_pay" => $user->hasPendingPay () 
 										] 
-								]
-								;
+								];
 							} else {
 								Yii::trace ( json_encode ( [ 
 										'message' => 'El token no se pudo guardar  -  ' . json_encode ( $tokenMmz->getErrors () ) 

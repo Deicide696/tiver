@@ -124,10 +124,7 @@ class TPaga extends Component {
 		$amount=(int)$amount;
 		$charge = new CreditCardCharge ();
 		$charge->amount = $amount;
-		if($tax)
-		$charge->tax_amount = $amount*(Yii::$app->params ['tax_percent']);
-		else
-		$charge->tax_amount = 0;
+		$charge->tax_amount = $tax;
 		$charge->currency = "COP";
 		$charge->credit_card = $id_card;
 		//$charge->installments =$installments;

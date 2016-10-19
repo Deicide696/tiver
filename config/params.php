@@ -47,15 +47,29 @@ return [
 		'pusher_event_location'=>'experto_inmediato_posicion',
 		
 		//iterator service
-		'seconds_wait'=>60,//tiempo para esperar la respuesta de un servicio agendado
-		'seconds_wait_inmediato'=>(45),//tiempo para esperar la respuesta de un servicio inmediato
+		'seconds_wait'=>180,//tiempo para esperar la respuesta de un servicio agendado
+		'seconds_wait_inmediato'=>(60),//tiempo para esperar la respuesta de un servicio inmediato
 		//'path_scripts'=>'/Applications/MAMP/htdocs/tiver',//local - ruta para ejecutar scripts
 		'path_scripts'=>'/var/www/html/tiver',//prd
 		
 		//
 		'walk_time'=>30,//minutos que demoraría un especialista en llegar de un servicio a otro, se usa para calcular la disponibilidad del experto
+		'tax_percent'=>0.032,//Corresponde al 20% (comision) del valor del servicio * 16% (IVA) -> 0.2*0.16
 		
-		'tax_percent'=>0.032,//Corresponde al 20% (comision) del valor del servicio * 16% (IVA) -> 0.2*0.16 
+		//Sendgrid
+		'sengrid_user'=>'Tiver',
+		'sendgrid_pass'=>'Pichinde2015',
+		'sendgrid_from_name'=>'Tiver',
+		'sendgrid_from'=>'tiver@zugartek.com',
+		'sendgrid_template_welcome'=>'ad73c4b5-d671-405f-9331-e93c8f8f4c11',
+		'sendgrid_template_pass'=>'470a50dd-646e-46c4-93a3-44eb317cdbc6',
+		'sendgrid_template_mora'=>'195a9946-1eb6-42a4-8d46-09d330a2801c',
+		'sendgrid_template_compraok'=>'021f7dd6-1397-4c8a-9686-084e458140be',
+		'sendgrid_template_cancelado'=>'eb04b559-330e-494b-90d2-664524cdedeb',
+		
+		
+		
+		
 	
 	
 		

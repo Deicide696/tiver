@@ -149,26 +149,49 @@ class AssignedService extends \yii\db\ActiveRecord
     public function getPrice(){
     	$price=0;
     	$service=Service::findOne(['id'=>$this->service_id]);
-  		$price+=$service->price;
+  		
+    	
+    	if($service->tax==0)
+    	$price+=$service->price;
+    	else 
+    		$price+=$service->price+($service->price*Yii::$app->params ['tax_percent']);
  
   		$modifier_vw=VwActualService::findOne(['id'=>$this->id]);
   		if($modifier_vw->modifier_id!=""){
   			$modifier=Modifier::findOne(['id'=>$modifier_vw->modifier_id]);
+  			if($modifier->tax==0)
   			$price+=$modifier->price;
+  			else 
+  			$price+=$modifier->price+($modifier->price*Yii::$app->params ['tax_percent']);
+  		}
+  		
+  		//var_dump($modifier);
+  		
+  		return round($price, -2, PHP_ROUND_HALF_UP);
+    	
+    }
+    public function getTax(){
+    	$price=0;
+    	$service=Service::findOne(['id'=>$this->service_id]);
+  		
+    	
+    	if($service->tax==0)
+    	$price+=$service->price;
+    	else 
+    		$price+=($service->price*Yii::$app->params ['tax_percent']);
+ 
+  		$modifier_vw=VwActualService::findOne(['id'=>$this->id]);
+  		if($modifier_vw->modifier_id!=""){
+  			$modifier=Modifier::findOne(['id'=>$modifier_vw->modifier_id]);
+  			if($modifier->tax==0)
+  			$price+=$modifier->price;
+  			else 
+  			$price+=($modifier->price*Yii::$app->params ['tax_percent']);
   		}
   		
   		//var_dump($modifier);
   		
   		return $price;
-    	
-    }
-    public function getTax(){
-    	$tax=true;
-    	$service=Service::findOne(['id'=>$this->service_id]);
-    	if($service->tax==0)
-    		$tax=false;
-    	//var_dump($modifier);
-    	return $tax;
     
     }
     public function getDuration(){

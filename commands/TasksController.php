@@ -52,7 +52,7 @@ class TasksController extends Controller {
 					
 				
 				
-				if ($num_intent > 10) {
+				if ($num_intent > 50) {
 					print "Demasiados intentos" . PHP_EOL;
 					
 					$services->delete ();
@@ -102,10 +102,40 @@ class TasksController extends Controller {
 						// No hay más especialistas disponibles
 						if (! isset ( $expert_id )) {
 							//Cancelamos el servicio
-							$services->delete ();
+						
 								
 							$tokens=User::findOne(["id" => $services->user_id])->getPushTokens();
 								
+							$user= User::findOne ( ["id" => $services->user_id ] );
+							$value = $services->getPrice ();
+							
+							try{
+							//Enviar mail de pago en mora
+							$sendGrid = new \SendGrid ( Yii::$app->params ['sengrid_user'], Yii::$app->params ['sendgrid_pass'] );
+							$email = new \SendGrid\Email ();
+							$email
+							->setFrom ( Yii::$app->params ['sendgrid_from'] )
+							->setFromName ( Yii::$app->params ['sendgrid_from_name'] )
+							->addTo ( $user->email )
+							->setSubject ( ' ' )
+							->setHtml ( ' ' )
+							->setHtml(' ')
+							->addSubstitution('{{ username }}',[$user->first_name])
+							->addSubstitution('{{ buydate }}',[$services->date])
+							->addSubstitution('{{ useraddress }}',[$services->address])
+							->addSubstitution('{{ item.servname }}',[$value])
+							->addSubstitution('{{ item.servmodif }}',[$value])
+							->addSubstitution('{{ item.prodprecio }}',[$value])
+							->addSubstitution('{{ item.servesp }}',[$value])
+							->addSubstitution('{{ total }}',[$value])
+							->addFilter ( 'templates', 'template_id', Yii::$app->params ['sendgrid_template_cancelado'] );
+							$resp = $sendGrid->send ( $email );
+							} catch ( \Exception $e ) {
+								Yii::error ( $e->getMessage () );
+								echo "Error al enviar mail". $e->getMessage (). PHP_EOL;
+							}
+							
+							$services->delete ();
 							// print_r($tokens);
 							$data = [
 									"ticker" => "Servicio cancelado",
