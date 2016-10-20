@@ -10,7 +10,8 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\models\LogToken;
 use app\models\AssignedService;
-use app\pusher\Pusher;
+//use app\pusher\Pusher;
+require '../vendor/pusher/pusher-php-server/lib/Pusher.php';
 use function yii\db\all;
 use app\models\User;
 use app\models\Expert;
@@ -213,7 +214,9 @@ class ChatController extends Controller {
 				'time' => $model->time 
 		];
 		
-		$pusher = new Pusher ( Yii::$app->params ['pusher_app_key'], Yii::$app->params ['pusher_app_secret'], Yii::$app->params ['pusher_app_id'] );
+		
+		
+		$pusher = new \Pusher( Yii::$app->params ['pusher_app_key'], Yii::$app->params ['pusher_app_secret'], Yii::$app->params ['pusher_app_id'] );
 		
 		if (! $pusher->trigger ( Yii::$app->params ['pusher_channel_chat'] . "_$service", $event, $data )) {
 			
@@ -315,7 +318,7 @@ class ChatController extends Controller {
 				'time' => $model->time
 		];
 	
-		$pusher = new Pusher ( Yii::$app->params ['pusher_app_key'], Yii::$app->params ['pusher_app_secret'], Yii::$app->params ['pusher_app_id'] );
+		$pusher = new \Pusher ( Yii::$app->params ['pusher_app_key'], Yii::$app->params ['pusher_app_secret'], Yii::$app->params ['pusher_app_id'] );
 	
 		if (! $pusher->trigger ( Yii::$app->params ['pusher_channel_chat'] . "_$service", $event, $data )) {
 				

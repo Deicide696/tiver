@@ -362,12 +362,12 @@
         "source": {
             "type": "git",
             "url": "https://github.com/yiisoft/yii2-framework.git",
-            "reference": "36f940e182f69e29a3bd06bb13ee19bc8defbe89"
+            "reference": "c3ac390d7549e29b614f741df5a94e2297c4afb1"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/yiisoft/yii2-framework/zipball/36f940e182f69e29a3bd06bb13ee19bc8defbe89",
-            "reference": "36f940e182f69e29a3bd06bb13ee19bc8defbe89",
+            "url": "https://api.github.com/repos/yiisoft/yii2-framework/zipball/c3ac390d7549e29b614f741df5a94e2297c4afb1",
+            "reference": "c3ac390d7549e29b614f741df5a94e2297c4afb1",
             "shasum": ""
         },
         "require": {
@@ -383,7 +383,7 @@
             "php": ">=5.4.0",
             "yiisoft/yii2-composer": "~2.0.4"
         },
-        "time": "2016-10-01 19:04:52",
+        "time": "2016-10-20 19:38:41",
         "bin": [
             "yii"
         ],
@@ -449,61 +449,6 @@
         "keywords": [
             "framework",
             "yii2"
-        ]
-    },
-    {
-        "name": "swiftmailer/swiftmailer",
-        "version": "5.x-dev",
-        "version_normalized": "5.9999999.9999999.9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/swiftmailer/swiftmailer.git",
-            "reference": "de19df332219d73a2704525ba75aabd7dfaa303b"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/de19df332219d73a2704525ba75aabd7dfaa303b",
-            "reference": "de19df332219d73a2704525ba75aabd7dfaa303b",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.3"
-        },
-        "require-dev": {
-            "mockery/mockery": "~0.9.1"
-        },
-        "time": "2016-09-07 22:19:22",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "5.4-dev"
-            }
-        },
-        "installation-source": "source",
-        "autoload": {
-            "files": [
-                "lib/swift_required.php"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Chris Corbyn"
-            },
-            {
-                "name": "Fabien Potencier",
-                "email": "fabien@symfony.com"
-            }
-        ],
-        "description": "Swiftmailer, free feature-rich PHP mailer",
-        "homepage": "http://swiftmailer.org",
-        "keywords": [
-            "email",
-            "mail",
-            "mailer"
         ]
     },
     {
@@ -668,18 +613,18 @@
         "source": {
             "type": "git",
             "url": "https://github.com/kartik-v/yii2-krajee-base.git",
-            "reference": "8f558809e6093c8f4f4599b7b9fd64b366b22a60"
+            "reference": "71b4204c9966ea16393c736a06f76bffaa12e165"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/kartik-v/yii2-krajee-base/zipball/8f558809e6093c8f4f4599b7b9fd64b366b22a60",
-            "reference": "8f558809e6093c8f4f4599b7b9fd64b366b22a60",
+            "url": "https://api.github.com/repos/kartik-v/yii2-krajee-base/zipball/71b4204c9966ea16393c736a06f76bffaa12e165",
+            "reference": "71b4204c9966ea16393c736a06f76bffaa12e165",
             "shasum": ""
         },
         "require": {
             "yiisoft/yii2-bootstrap": "@dev"
         },
-        "time": "2016-09-04 09:25:29",
+        "time": "2016-10-13 16:44:25",
         "type": "yii2-extension",
         "extra": {
             "branch-alias": {
@@ -944,12 +889,12 @@
         "source": {
             "type": "git",
             "url": "https://github.com/guzzle/guzzle.git",
-            "reference": "a0d75173c8553b4281c8319333d9ee90e4656ed1"
+            "reference": "9061956e6ad81cc90e7f36d54f2eaa944ae74065"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/guzzle/guzzle/zipball/a0d75173c8553b4281c8319333d9ee90e4656ed1",
-            "reference": "a0d75173c8553b4281c8319333d9ee90e4656ed1",
+            "url": "https://api.github.com/repos/guzzle/guzzle/zipball/9061956e6ad81cc90e7f36d54f2eaa944ae74065",
+            "reference": "9061956e6ad81cc90e7f36d54f2eaa944ae74065",
             "shasum": ""
         },
         "require": {
@@ -962,7 +907,7 @@
             "phpunit/phpunit": "^4.0",
             "psr/log": "^1.0"
         },
-        "time": "2016-09-22 14:23:55",
+        "time": "2016-10-13 05:38:46",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -999,154 +944,6 @@
             "http client",
             "rest",
             "web service"
-        ]
-    },
-    {
-        "name": "2amigos/yii2-google-maps-library",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/2amigos/yii2-google-maps-library.git",
-            "reference": "cc49b6f763fc502488e743eff71d1645a6df62e5"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/2amigos/yii2-google-maps-library/zipball/cc49b6f763fc502488e743eff71d1645a6df62e5",
-            "reference": "cc49b6f763fc502488e743eff71d1645a6df62e5",
-            "shasum": ""
-        },
-        "require": {
-            "guzzlehttp/guzzle": "6.*",
-            "yiisoft/yii2": "*"
-        },
-        "time": "2016-05-10 13:03:34",
-        "type": "yii-extension",
-        "installation-source": "source",
-        "autoload": {
-            "psr-4": {
-                "dosamigos\\google\\maps\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "BSD-3-Clause"
-        ],
-        "authors": [
-            {
-                "name": "Antonio Ramirez",
-                "email": "ramirez.cobos@gmail.com",
-                "homepage": "http://www.ramirezcobos.com"
-            },
-            {
-                "name": "2amigOS! Consulting LLC",
-                "email": "hola@2amigos.us",
-                "homepage": "http://2amigos.us"
-            }
-        ],
-        "description": "Google Maps API library for Yii2.",
-        "keywords": [
-            "extension",
-            "google",
-            "library",
-            "maps",
-            "yii"
-        ]
-    },
-    {
-        "name": "yiisoft/yii2-codeception",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/yiisoft/yii2-codeception.git",
-            "reference": "572a6d46d942cc5733c45931fdbd1d60228f3c89"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/yiisoft/yii2-codeception/zipball/572a6d46d942cc5733c45931fdbd1d60228f3c89",
-            "reference": "572a6d46d942cc5733c45931fdbd1d60228f3c89",
-            "shasum": ""
-        },
-        "require": {
-            "yiisoft/yii2": ">=2.0.4"
-        },
-        "time": "2016-04-14 08:46:27",
-        "type": "yii2-extension",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.0.x-dev"
-            }
-        },
-        "installation-source": "source",
-        "autoload": {
-            "psr-4": {
-                "yii\\codeception\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "BSD-3-Clause"
-        ],
-        "authors": [
-            {
-                "name": "Mark Jebri",
-                "email": "mark.github@yandex.ru"
-            }
-        ],
-        "description": "The Codeception integration for the Yii framework",
-        "keywords": [
-            "codeception",
-            "yii2"
-        ]
-    },
-    {
-        "name": "yiisoft/yii2-debug",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/yiisoft/yii2-debug.git",
-            "reference": "17658ab8eb4981dad0891a9b09fda786d140be3b"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/yiisoft/yii2-debug/zipball/17658ab8eb4981dad0891a9b09fda786d140be3b",
-            "reference": "17658ab8eb4981dad0891a9b09fda786d140be3b",
-            "shasum": ""
-        },
-        "require": {
-            "yiisoft/yii2": "~2.0.4",
-            "yiisoft/yii2-bootstrap": "~2.0.0"
-        },
-        "time": "2016-09-05 10:57:44",
-        "type": "yii2-extension",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.0.x-dev"
-            }
-        },
-        "installation-source": "source",
-        "autoload": {
-            "psr-4": {
-                "yii\\debug\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "BSD-3-Clause"
-        ],
-        "authors": [
-            {
-                "name": "Qiang Xue",
-                "email": "qiang.xue@gmail.com"
-            }
-        ],
-        "description": "The debugger extension for the Yii framework",
-        "keywords": [
-            "debug",
-            "debugger",
-            "yii2"
         ]
     },
     {
@@ -1219,73 +1016,18 @@
         "description": "A comprehensive library for generating differences between two hashable objects (strings or arrays)."
     },
     {
-        "name": "yiisoft/yii2-gii",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/yiisoft/yii2-gii.git",
-            "reference": "a5136efe5495dd1e941615e5c4a4ed09c44af194"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/yiisoft/yii2-gii/zipball/a5136efe5495dd1e941615e5c4a4ed09c44af194",
-            "reference": "a5136efe5495dd1e941615e5c4a4ed09c44af194",
-            "shasum": ""
-        },
-        "require": {
-            "bower-asset/typeahead.js": "0.10.* | ~0.11.0",
-            "phpspec/php-diff": ">=1.0.2",
-            "yiisoft/yii2": "~2.0.4",
-            "yiisoft/yii2-bootstrap": "~2.0"
-        },
-        "time": "2016-09-05 12:04:28",
-        "type": "yii2-extension",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.0.x-dev"
-            },
-            "asset-installer-paths": {
-                "npm-asset-library": "vendor/npm",
-                "bower-asset-library": "vendor/bower"
-            }
-        },
-        "installation-source": "source",
-        "autoload": {
-            "psr-4": {
-                "yii\\gii\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "BSD-3-Clause"
-        ],
-        "authors": [
-            {
-                "name": "Qiang Xue",
-                "email": "qiang.xue@gmail.com"
-            }
-        ],
-        "description": "The Gii extension for the Yii framework",
-        "keywords": [
-            "code generator",
-            "gii",
-            "yii2"
-        ]
-    },
-    {
         "name": "fzaninotto/faker",
         "version": "dev-master",
         "version_normalized": "9999999-dev",
         "source": {
             "type": "git",
             "url": "https://github.com/fzaninotto/Faker.git",
-            "reference": "57d1666335f24fbf9c60c6f1bb75c8b2dbc17052"
+            "reference": "409c90a58a0018aab219a9b521cfb57483596474"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/fzaninotto/Faker/zipball/57d1666335f24fbf9c60c6f1bb75c8b2dbc17052",
-            "reference": "57d1666335f24fbf9c60c6f1bb75c8b2dbc17052",
+            "url": "https://api.github.com/repos/fzaninotto/Faker/zipball/409c90a58a0018aab219a9b521cfb57483596474",
+            "reference": "409c90a58a0018aab219a9b521cfb57483596474",
             "shasum": ""
         },
         "require": {
@@ -1296,7 +1038,7 @@
             "phpunit/phpunit": "~4.0",
             "squizlabs/php_codesniffer": "~1.5"
         },
-        "time": "2016-09-20 07:47:47",
+        "time": "2016-10-20 13:01:38",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -1577,19 +1319,19 @@
         "source": {
             "type": "git",
             "url": "https://github.com/kartik-v/yii2-dialog.git",
-            "reference": "0f87f9c8d13659ceb96d57f63a36aa70a64d2c11"
+            "reference": "98136b6bfe4b1ad7333a0b6c8e0dc3b586227932"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/kartik-v/yii2-dialog/zipball/0f87f9c8d13659ceb96d57f63a36aa70a64d2c11",
-            "reference": "0f87f9c8d13659ceb96d57f63a36aa70a64d2c11",
+            "url": "https://api.github.com/repos/kartik-v/yii2-dialog/zipball/98136b6bfe4b1ad7333a0b6c8e0dc3b586227932",
+            "reference": "98136b6bfe4b1ad7333a0b6c8e0dc3b586227932",
             "shasum": ""
         },
         "require": {
             "bower-asset/bootstrap3-dialog": "~1.34",
             "kartik-v/yii2-krajee-base": "~1.7"
         },
-        "time": "2016-09-16 18:45:50",
+        "time": "2016-10-18 06:12:57",
         "type": "yii2-extension",
         "extra": {
             "branch-alias": {
@@ -1625,25 +1367,330 @@
         ]
     },
     {
+        "name": "pusher/pusher-php-server",
+        "version": "2.x-dev",
+        "version_normalized": "2.9999999.9999999.9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/pusher/pusher-http-php.git",
+            "reference": "9f721dd7b0ab88aa24197f43d34a83c8d2c5d13d"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/pusher/pusher-http-php/zipball/9f721dd7b0ab88aa24197f43d34a83c8d2c5d13d",
+            "reference": "9f721dd7b0ab88aa24197f43d34a83c8d2c5d13d",
+            "shasum": ""
+        },
+        "require": {
+            "ext-curl": "*",
+            "php": ">=5.2"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "~4"
+        },
+        "time": "2016-03-16 19:51:22",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "classmap": [
+                "lib/"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "description": "Library for interacting with the Pusher REST API",
+        "homepage": "https://github.com/pusher/pusher-php-server",
+        "keywords": [
+            "events",
+            "php-pusher-server",
+            "publish",
+            "pusher",
+            "realtime",
+            "rest",
+            "trigger"
+        ]
+    },
+    {
+        "name": "swiftmailer/swiftmailer",
+        "version": "5.x-dev",
+        "version_normalized": "5.9999999.9999999.9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/swiftmailer/swiftmailer.git",
+            "reference": "a6d30977565081bc9b177b627bff2e2ba905224c"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/a6d30977565081bc9b177b627bff2e2ba905224c",
+            "reference": "a6d30977565081bc9b177b627bff2e2ba905224c",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.3"
+        },
+        "require-dev": {
+            "mockery/mockery": "~0.9.1"
+        },
+        "time": "2016-10-09 11:45:02",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "5.4-dev"
+            }
+        },
+        "installation-source": "source",
+        "autoload": {
+            "files": [
+                "lib/swift_required.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Chris Corbyn"
+            },
+            {
+                "name": "Fabien Potencier",
+                "email": "fabien@symfony.com"
+            }
+        ],
+        "description": "Swiftmailer, free feature-rich PHP mailer",
+        "homepage": "http://swiftmailer.org",
+        "keywords": [
+            "email",
+            "mail",
+            "mailer"
+        ]
+    },
+    {
+        "name": "2amigos/yii2-google-maps-library",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/2amigos/yii2-google-maps-library.git",
+            "reference": "1d8f69c7983522c99f511268b6cca5952f1c5fe6"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/2amigos/yii2-google-maps-library/zipball/1d8f69c7983522c99f511268b6cca5952f1c5fe6",
+            "reference": "1d8f69c7983522c99f511268b6cca5952f1c5fe6",
+            "shasum": ""
+        },
+        "require": {
+            "guzzlehttp/guzzle": "6.*",
+            "yiisoft/yii2": "*"
+        },
+        "time": "2016-10-11 08:35:17",
+        "type": "yii-extension",
+        "installation-source": "source",
+        "autoload": {
+            "psr-4": {
+                "dosamigos\\google\\maps\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Antonio Ramirez",
+                "email": "ramirez.cobos@gmail.com",
+                "homepage": "http://www.ramirezcobos.com"
+            },
+            {
+                "name": "2amigOS! Consulting LLC",
+                "email": "hola@2amigos.us",
+                "homepage": "http://2amigos.us"
+            }
+        ],
+        "description": "Google Maps API library for Yii2.",
+        "keywords": [
+            "extension",
+            "google",
+            "library",
+            "maps",
+            "yii"
+        ]
+    },
+    {
+        "name": "yiisoft/yii2-codeception",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/yiisoft/yii2-codeception.git",
+            "reference": "76fdd689b7ec49c3c57db6137ae5ea536fa8f16d"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/yiisoft/yii2-codeception/zipball/76fdd689b7ec49c3c57db6137ae5ea536fa8f16d",
+            "reference": "76fdd689b7ec49c3c57db6137ae5ea536fa8f16d",
+            "shasum": ""
+        },
+        "require": {
+            "yiisoft/yii2": ">=2.0.4"
+        },
+        "time": "2016-10-20 13:07:49",
+        "type": "yii2-extension",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.0.x-dev"
+            }
+        },
+        "installation-source": "source",
+        "autoload": {
+            "psr-4": {
+                "yii\\codeception\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Mark Jebri",
+                "email": "mark.github@yandex.ru"
+            }
+        ],
+        "description": "The Codeception integration for the Yii framework",
+        "keywords": [
+            "codeception",
+            "yii2"
+        ],
+        "abandoned": "codeception/codeception"
+    },
+    {
+        "name": "yiisoft/yii2-debug",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/yiisoft/yii2-debug.git",
+            "reference": "4f8de2192fe354c8b903a083fcdcc3d1ddaccc8c"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/yiisoft/yii2-debug/zipball/4f8de2192fe354c8b903a083fcdcc3d1ddaccc8c",
+            "reference": "4f8de2192fe354c8b903a083fcdcc3d1ddaccc8c",
+            "shasum": ""
+        },
+        "require": {
+            "yiisoft/yii2": "~2.0.4",
+            "yiisoft/yii2-bootstrap": "~2.0.0"
+        },
+        "time": "2016-10-13 20:17:27",
+        "type": "yii2-extension",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.0.x-dev"
+            }
+        },
+        "installation-source": "source",
+        "autoload": {
+            "psr-4": {
+                "yii\\debug\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Qiang Xue",
+                "email": "qiang.xue@gmail.com"
+            }
+        ],
+        "description": "The debugger extension for the Yii framework",
+        "keywords": [
+            "debug",
+            "debugger",
+            "yii2"
+        ]
+    },
+    {
+        "name": "yiisoft/yii2-gii",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/yiisoft/yii2-gii.git",
+            "reference": "12762bb0272db0bfceceeb151a1df6ec7a1898ce"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/yiisoft/yii2-gii/zipball/12762bb0272db0bfceceeb151a1df6ec7a1898ce",
+            "reference": "12762bb0272db0bfceceeb151a1df6ec7a1898ce",
+            "shasum": ""
+        },
+        "require": {
+            "bower-asset/typeahead.js": "0.10.* | ~0.11.0",
+            "phpspec/php-diff": ">=1.0.2",
+            "yiisoft/yii2": "~2.0.4",
+            "yiisoft/yii2-bootstrap": "~2.0"
+        },
+        "time": "2016-10-13 08:51:30",
+        "type": "yii2-extension",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.0.x-dev"
+            },
+            "asset-installer-paths": {
+                "npm-asset-library": "vendor/npm",
+                "bower-asset-library": "vendor/bower"
+            }
+        },
+        "installation-source": "source",
+        "autoload": {
+            "psr-4": {
+                "yii\\gii\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Qiang Xue",
+                "email": "qiang.xue@gmail.com"
+            }
+        ],
+        "description": "The Gii extension for the Yii framework",
+        "keywords": [
+            "code generator",
+            "gii",
+            "yii2"
+        ]
+    },
+    {
         "name": "kartik-v/yii2-grid",
         "version": "dev-master",
         "version_normalized": "9999999-dev",
         "source": {
             "type": "git",
             "url": "https://github.com/kartik-v/yii2-grid.git",
-            "reference": "7cca20a27234207d6d114a39a3263ae9c88fd171"
+            "reference": "08dd6ded1f0c81d5c28fc10a99b1dba39a83eeb6"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/kartik-v/yii2-grid/zipball/7cca20a27234207d6d114a39a3263ae9c88fd171",
-            "reference": "7cca20a27234207d6d114a39a3263ae9c88fd171",
+            "url": "https://api.github.com/repos/kartik-v/yii2-grid/zipball/08dd6ded1f0c81d5c28fc10a99b1dba39a83eeb6",
+            "reference": "08dd6ded1f0c81d5c28fc10a99b1dba39a83eeb6",
             "shasum": ""
         },
         "require": {
             "kartik-v/yii2-dialog": "~1.0",
             "kartik-v/yii2-krajee-base": "~1.7"
         },
-        "time": "2016-09-06 20:07:42",
+        "time": "2016-10-18 06:14:24",
         "type": "yii2-extension",
         "extra": {
             "branch-alias": {
@@ -1674,52 +1721,6 @@
             "grid",
             "widget",
             "yii2"
-        ]
-    },
-    {
-        "name": "pusher/pusher-php-server",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/pusher/pusher-http-php.git",
-            "reference": "fcb5400dcab053f6e6be79d49485f7cd0f0d3099"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/pusher/pusher-http-php/zipball/fcb5400dcab053f6e6be79d49485f7cd0f0d3099",
-            "reference": "fcb5400dcab053f6e6be79d49485f7cd0f0d3099",
-            "shasum": ""
-        },
-        "require": {
-            "ext-curl": "*",
-            "php": ">=5.2"
-        },
-        "require-dev": {
-            "phpunit/phpunit": "~4"
-        },
-        "time": "2016-08-24 09:59:17",
-        "type": "library",
-        "installation-source": "source",
-        "autoload": {
-            "classmap": [
-                "lib/"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "description": "Library for interacting with the Pusher REST API",
-        "homepage": "https://github.com/pusher/pusher-php-server",
-        "keywords": [
-            "events",
-            "php-pusher-server",
-            "publish",
-            "pusher",
-            "realtime",
-            "rest",
-            "trigger"
         ]
     }
 ]

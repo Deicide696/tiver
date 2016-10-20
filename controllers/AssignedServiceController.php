@@ -800,7 +800,8 @@ class AssignedServiceController extends Controller {
 			return $response;
 		}
 		$id_user = $model_token->FK_id_user;
-		
+		//var_dump($id_user);
+		//exit();
 		// Buscamos el servicio activo
 		$services = assignedService::find ()->where ( [ 
 				"user_id" => $id_user,
@@ -811,6 +812,7 @@ class AssignedServiceController extends Controller {
 		// "state" => 1
 		joinWith ( 'service' )->one ();
 		
+				
 		if ($services == null) {
 			$response ["success"] = false;
 			$response ["data"] = [ 

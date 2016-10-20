@@ -28,8 +28,8 @@
 		"2amigos/yii2-google-maps-library" : "*",
 		"kartik-v/yii2-grid" : "@dev",
 		"kartik-v/yii2-krajee-base" : "@dev",
-		"pusher/pusher-php-server" : "dev-master",
-		"bryglen/yii2-sendgrid": "*"
+		"pusher/pusher-php-server" : "^2.2",
+		"bryglen/yii2-sendgrid" : "*"
 	},
 	"require-dev" : {
 		"yiisoft/yii2-codeception" : "*",

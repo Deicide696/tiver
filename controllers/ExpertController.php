@@ -12,7 +12,8 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
-use app\pusher\Pusher;
+//use app\pusher\Pusher;
+require '../vendor/pusher/pusher-php-server/lib/Pusher.php';
 use app\models\ExpertHasService;
 use app\models\ExpertHasServiceSearch;
 use app\models\LogToken;
@@ -322,7 +323,7 @@ class ExpertController extends Controller {
 		
 		// $_POST['text']='Mensaje desde el servidor: '.$_POST['text'];
 		// var_dump(Yii::$app->request->post());
-		$pusher = new Pusher ( Yii::$app->params ['pusher_app_key'], Yii::$app->params ['pusher_app_secret'], Yii::$app->params ['pusher_app_id'] );
+		$pusher = new \Pusher ( Yii::$app->params ['pusher_app_key'], Yii::$app->params ['pusher_app_secret'], Yii::$app->params ['pusher_app_id'] );
 		// print 'Hell wrld';
 		// $_POST['id']=$expert_id;
 		
@@ -419,7 +420,7 @@ class ExpertController extends Controller {
 		;
 		//print Yii::$app->params ['pusher_channel_vip']."_$expert_id";
 		 
-		 $pusher = new Pusher ( Yii::$app->params ['pusher_app_key'], Yii::$app->params ['pusher_app_secret'], Yii::$app->params ['pusher_app_id'] );
+		 $pusher = new \Pusher ( Yii::$app->params ['pusher_app_key'], Yii::$app->params ['pusher_app_secret'], Yii::$app->params ['pusher_app_id'] );
 		 
 		if ($pusher->trigger ( Yii::$app->params ['pusher_channel_vip']."_$expert_id", $event, $data )) {
 			// Yii::$app->response->statusCode = 200;
@@ -489,7 +490,7 @@ class ExpertController extends Controller {
 			;
 			//print Yii::$app->params ['pusher_channel_vip']."_$expert_id";
 				
-			$pusher = new Pusher ( Yii::$app->params ['pusher_app_key'], Yii::$app->params ['pusher_app_secret'], Yii::$app->params ['pusher_app_id'] );
+			$pusher = new \Pusher ( Yii::$app->params ['pusher_app_key'], Yii::$app->params ['pusher_app_secret'], Yii::$app->params ['pusher_app_id'] );
 				
 			if ($pusher->trigger ( Yii::$app->params ['pusher_channel_vip']."_$expert_id", $event, $data )) {
 				// Yii::$app->response->statusCode = 200;
@@ -616,7 +617,7 @@ class ExpertController extends Controller {
 		
 		
 	
-		$pusher = new Pusher ( Yii::$app->params ['pusher_app_key'], Yii::$app->params ['pusher_app_secret'], Yii::$app->params ['pusher_app_id'] );
+		$pusher = new \Pusher ( Yii::$app->params ['pusher_app_key'], Yii::$app->params ['pusher_app_secret'], Yii::$app->params ['pusher_app_id'] );
 	
 		if ($pusher->trigger ( Yii::$app->params ['pusher_channel_vip']."_$expert_id", $event, $data )) {
 			// Yii::$app->response->statusCode = 200;

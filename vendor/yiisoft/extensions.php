@@ -21,15 +21,6 @@ return array (
       '@yii/bootstrap' => $vendorDir . '/yiisoft/yii2-bootstrap',
     ),
   ),
-  'kartik-v/yii2-krajee-base' => 
-  array (
-    'name' => 'kartik-v/yii2-krajee-base',
-    'version' => '9999999-dev',
-    'alias' => 
-    array (
-      '@kartik/base' => $vendorDir . '/kartik-v/yii2-krajee-base',
-    ),
-  ),
   'kartik-v/yii2-widget-sidenav' => 
   array (
     'name' => 'kartik-v/yii2-widget-sidenav',
@@ -37,6 +28,33 @@ return array (
     'alias' => 
     array (
       '@kartik/sidenav' => $vendorDir . '/kartik-v/yii2-widget-sidenav',
+    ),
+  ),
+  'yiisoft/yii2-faker' => 
+  array (
+    'name' => 'yiisoft/yii2-faker',
+    'version' => '9999999-dev',
+    'alias' => 
+    array (
+      '@yii/faker' => $vendorDir . '/yiisoft/yii2-faker',
+    ),
+  ),
+  'bryglen/yii2-sendgrid' => 
+  array (
+    'name' => 'bryglen/yii2-sendgrid',
+    'version' => '9999999-dev',
+    'alias' => 
+    array (
+      '@bryglen/sendgrid' => $vendorDir . '/bryglen/yii2-sendgrid',
+    ),
+  ),
+  'kartik-v/yii2-krajee-base' => 
+  array (
+    'name' => 'kartik-v/yii2-krajee-base',
+    'version' => '9999999-dev',
+    'alias' => 
+    array (
+      '@kartik/base' => $vendorDir . '/kartik-v/yii2-krajee-base',
     ),
   ),
   'yiisoft/yii2-codeception' => 
@@ -64,24 +82,6 @@ return array (
     'alias' => 
     array (
       '@yii/gii' => $vendorDir . '/yiisoft/yii2-gii',
-    ),
-  ),
-  'yiisoft/yii2-faker' => 
-  array (
-    'name' => 'yiisoft/yii2-faker',
-    'version' => '9999999-dev',
-    'alias' => 
-    array (
-      '@yii/faker' => $vendorDir . '/yiisoft/yii2-faker',
-    ),
-  ),
-  'bryglen/yii2-sendgrid' => 
-  array (
-    'name' => 'bryglen/yii2-sendgrid',
-    'version' => '9999999-dev',
-    'alias' => 
-    array (
-      '@bryglen/sendgrid' => $vendorDir . '/bryglen/yii2-sendgrid',
     ),
   ),
   'kartik-v/yii2-dialog' => 
