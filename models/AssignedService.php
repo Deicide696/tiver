@@ -250,5 +250,20 @@ class AssignedService extends \yii\db\ActiveRecord
     	return $modifier;
     
     }
+    public function beforeDelete()
+    {
+    	if (parent::beforeDelete()) {
+    		//Eliminamos chat del servicio
+    		
+    		$conv=Conversation::find()->where(['assigned_service_id'=>$this->id])->all();
+    		foreach ($conv as $conversation){
+    			Chat::deleteAll(['conversation_id'=>$conversation->id]);
+    		}
+    		Conversation::deleteAll(['assigned_service_id'=>$this->id]);
+    		return true;
+    	} else {
+    		return false;
+    	}
+    }
     
 }
