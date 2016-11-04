@@ -10,7 +10,7 @@ $this->title = 'Tiver';
     <br><br>
        <h1>Tiver Backend</h1> 
 <br><br><br><br>
-		<img src="assets/tiver/logo_vertical.png">
+		<img src= "<?= Url::to('@web/img/logo_vertical.png') ?>">
 <br><br>
        <!--  <p class="lead">You have successfully created your Yii-powered application.</p>
 

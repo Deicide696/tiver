@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="col-lg-4 col-md-4 col-sm-6" style="margin-top: 4%;">
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 text text-center" style="">
-                <img src="<?php echo Url::base();?>/assets/tiver/logo_horizontal.png" alt="logo" class="">
+                <img src= "<?= Url::to('@web/img/logo_horizontal.png') ?>" alt="logo" class="">
             </div>
         </div>
         <div class="alert alert-warning text text-center hidden" role="alert"><i class="fa fa-exclamation-triangle"></i> las contraseñas no coinciden</div>

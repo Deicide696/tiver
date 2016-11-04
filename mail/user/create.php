@@ -14,11 +14,11 @@ use app\models\MmzUsers;
 			<table align="center" style="width:40%;margin:0 auto;font-size:inherit;line-height:inherit;padding: 5px 10px 5px 10px;border:0;border: 2px solid blue;border-radius: 20px 20px 20px 20px;"cellpadding="2">
 				<tbody>
 					<tr>
-						<td align="center">
-								<div align="center" style="display:block">
-								 <br><img src="<?php //echo Url::base();
-                              print "http://54.85.119.195";?>/assets/tiver/logo_horizontal.png"alt="" style="display:block;text-align:center" class="CToWUd"><br>
-							</div>
+                                            <div align="center" style="display:block">
+                                                <br>
+                                                <img src= "<?= Url::to('@web/img/logo_horizontal.png') ?>" alt="" style="display:block;text-align:center" class="CToWUd">
+                                                <br>
+                                            </div>
 						</td>
 					</tr>
 					<tr>

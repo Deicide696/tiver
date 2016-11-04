@@ -17,8 +17,9 @@ use app\models\RestaurantSearch;
                 <tr>
                     <td colspan="4" align="center">
                         <div align="center" style="display:block">
-                              <br><img src="<?php //echo Url::base();
-                              print "http://54.85.119.195";?>/assets/tiver/logo_horizontal.png" alt="logo" style="display:block;text-align:center" class="CToWUd"><br>
+                              <br>
+                              <img src= "<?= Url::to('@web/img/logo_horizontal.png') ?>" alt="logo" style="display:block;text-align:center" class="CToWUd">
+                              <br>
                         </div>
                     </td>
                 </tr>

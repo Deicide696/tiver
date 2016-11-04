@@ -29,7 +29,7 @@ AppAsset::register ( $this );
 <div class="wrap">
     <?php
 				NavBar::begin ( [ 
-						'brandLabel' => '<img src="' . Url::base ( true ) . '/assets/tiver/logo_horizontal_w.png" class="logo_tiver">',
+						'brandLabel' => '<img src= "<?= Url::to("@web/img/logo_horizontal_w.png") ?>" class="logo_tiver">',
 						'brandUrl' => Yii::$app->homeUrl,
 						
 						'options' => [ 

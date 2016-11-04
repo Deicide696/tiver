@@ -96,12 +96,12 @@ a.desc:after {
 /*Tiver*/
 @font-face {
     font-family: 'TiverFont'; /*a name to be used later*/
-    src: url('../assets/tiver/CaviarDreams.ttf'); /*URL to font*/
+    src: url('../fonts/CaviarDreams.ttf'); /*URL to font*/
 }
 
 @font-face {
     font-family: 'Lato'; /*a name to be used later*/
-    src: url('../assets/tiver/Lato-Regular.ttf'); /*URL to font*/
+    src: url('../fonts/Lato-Regular.ttf'); /*URL to font*/
 }
 
 body {
