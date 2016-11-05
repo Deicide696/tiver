@@ -200,7 +200,8 @@ class ServiceHistoryController extends Controller {
 		
 		return $response;
 	}
-	public function actionPendingService() {
+	public function actionPendingService()
+	{
 		Yii::$app->response->format = 'json';
 		
 		$token = Yii::$app->request->post ( "token", null );
@@ -208,26 +209,27 @@ class ServiceHistoryController extends Controller {
 		$model_token = LogToken::find ()->where ( [ 
 				'token' => $token 
 		] )->one ();
-		
-		// var_dump($searched);
-		
-		if ($model_token == null) {
+				
+		if ($model_token == null)
+		{
 			$response ["success"] = false;
 			$response ["data"] = [ 
 					"message" => "Token inválido" 
 			];
+
 			return $response;
 		}
-		// buscamos los servicios que haya finalizado el usuario
+
+		// Busca servicios que haya cancelado el especialista
 		$model = ServiceHistory::find ()->select(['id','date','time','service_id'])->where ( [ 
 				'state' => 1,
 				'user_id' => $model_token->FK_id_user 
-		] )->asArray()->all ();
+		] )->asArray()->all();
 	
-		foreach ( $model as $service ) {
-			
+		foreach ($model as $service)
+		{	
 			$pay = ServiceHistory::findOne(['id'=>$service['id']])->getLastPay ();
-			//var_dump($pay);
+
 			if ($pay == null) {
 				$response ["success"] = true;
 				$response ['data'] = $service;
