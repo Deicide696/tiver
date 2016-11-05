@@ -1,5 +1,5 @@
 <?php
-
+use yii\helpers\Url;
 /* @var $this yii\web\View */
 
 $this->title = 'Tiver';
@@ -10,7 +10,7 @@ $this->title = 'Tiver';
     <br><br>
        <h1>Tiver Backend</h1> 
 <br><br><br><br>
-		<img src= "<?= Url::to('@web/img/logo_vertical.png') ?>">
+    <img src= "<?= Url::to('@web/img/logo_vertical.png') ?>" alt="">
 <br><br>
        <!--  <p class="lead">You have successfully created your Yii-powered application.</p>
 
