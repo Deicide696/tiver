@@ -3,5 +3,8 @@
 /vendor/*
 /vendor/
 /.settings/
+/runtime/
+/runtime/debug/index.data
+/runtime/debug/*
 /web/assets/
 /web/assets/*
