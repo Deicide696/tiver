@@ -6,3 +6,4 @@
 /runtime/
 /runtime/debug/index.data
 /web/assets/
+/web/assets/*
