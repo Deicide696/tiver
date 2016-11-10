@@ -5,10 +5,14 @@ namespace app\controllers;
 use Yii;
 use app\models\CategoryService;
 use app\models\CategoryServiceSearch;
+use app\models\Service;
+use app\models\ServiceHasModifier;
+use app\models\Modifier;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\models\ServiceSearch;
+use yii\db\Query;
 
 /**
  * CategoryServiceController implements the CRUD actions for CategoryService model.
@@ -55,7 +59,7 @@ class CategoryServiceController extends Controller {
                     'model' => $this->findModel($id),
                     'searchModel' => $searchModel,
                     'dataProvider' => $dataProvider,
-                ]);
+        ]);
     }
 
     /**
@@ -128,18 +132,20 @@ class CategoryServiceController extends Controller {
     }
 
     public function actionGetCategorias() {
+
         Yii::$app->response->format = 'json';
         $model = CategoryService::find()
-                ->select(['category_service.id', 'category_service.description', 'category_service.status', 'category_service.icon'])
-                ->where(['category_service.status' => '1'])
-                ->joinwith(['service'])
-                ->joinwith(['service.serviceHasModifier.modifier' => function ($query) {
-                        $query->select(['id', 'name', 'description', 'price', 'tax', 'status', 'duration']);
-                    }])
-                ->asArray()->all();
-        //$model=CategoryService::find()->select(['category_service.id','description','status','icon'])->where(['status'=>'1'])->joinwith('service')->asArray()->all();
+                        ->select(['category_service.id', 'category_service.description', 'category_service.status', 'category_service.icon'])
+                        ->where(['category_service.status' => '1'])
+                        ->joinwith(['service'])
+                        ->joinwith(['service.serviceHasModifier.modifier' => function ($query) {
+                                $query->select(['id', 'name', 'description', 'price', 'tax', 'status', 'duration']);
+                            }])
+                        ->asArray()->all();
+
 
         for ($i = 0; $i < sizeof($model); $i++) {
+
             $services = $model[$i]['service'];
             for ($j = 0; $j < sizeof($services); $j++) {
                 //Modificamos precio del servicio
@@ -148,9 +154,19 @@ class CategoryServiceController extends Controller {
                 }
                 //Buscamos modificadores y se reajusta el precio del servicio
                 $modificadores = $model[$i]['service'][$j]['serviceHasModifier'];
-                for ($k = 0; $k < sizeof($modificadores); $k++) {
-                    if ($model[$i]['service'][$j]['serviceHasModifier'][$k]['modifier']['tax'] == 1) {
-                        $model[$i]['service'][$j]['serviceHasModifier'][$k]['modifier']['price'] = round($model[$i]['service'][$j]['serviceHasModifier'][$k]['modifier']['price'] + ($model[$i]['service'][$j]['serviceHasModifier'][$k]['modifier']['price'] * Yii::$app->params ['tax_percent']), -2, PHP_ROUND_HALF_UP);
+                for ($k1 = 0; $k1 < sizeof($modificadores); $k1++) {
+                    //Ordenando los Precios de menor a mayor
+                    for ($k = 0; $k < sizeof($modificadores); $k++) {
+
+                        if (($k < sizeof($modificadores) - 1) && ($model[$i]['service'][$j]['serviceHasModifier'][$k]['modifier']['price'] > $model[$i]['service'][$j]['serviceHasModifier'][$k + 1]['modifier']['price'])) {
+
+                            $aux = $model[$i]['service'][$j]['serviceHasModifier'][$k];
+                            $model[$i]['service'][$j]['serviceHasModifier'][$k] = $model[$i]['service'][$j]['serviceHasModifier'][$k + 1];
+                            $model[$i]['service'][$j]['serviceHasModifier'][$k + 1] = $aux;
+                        }
+                    }
+                    if ($model[$i]['service'][$j]['serviceHasModifier'][$k1]['modifier']['tax'] == 1) {
+                        $model[$i]['service'][$j]['serviceHasModifier'][$k1]['modifier']['price'] = round($model[$i]['service'][$j]['serviceHasModifier'][$k1]['modifier']['price'] + ($model[$i]['service'][$j]['serviceHasModifier'][$k1]['modifier']['price'] * Yii::$app->params ['tax_percent']), -2, PHP_ROUND_HALF_UP);
                     }
                 }
             }
@@ -165,4 +181,5 @@ class CategoryServiceController extends Controller {
             return $response;
         }
     }
+
 }
