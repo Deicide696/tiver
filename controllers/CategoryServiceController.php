@@ -5,14 +5,10 @@ namespace app\controllers;
 use Yii;
 use app\models\CategoryService;
 use app\models\CategoryServiceSearch;
-use app\models\Service;
-use app\models\ServiceHasModifier;
-use app\models\Modifier;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\models\ServiceSearch;
-use yii\db\Query;
 
 /**
  * CategoryServiceController implements the CRUD actions for CategoryService model.
@@ -141,7 +137,7 @@ class CategoryServiceController extends Controller {
                         ->joinwith(['service.serviceHasModifier.modifier' => function ($query) {
                                 $query->select(['id', 'name', 'description', 'price', 'tax', 'status', 'duration']);
                             }])
-                        ->asArray()->all();
+                         ->asArray()->all();
 
 
         for ($i = 0; $i < sizeof($model); $i++) {

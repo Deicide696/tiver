@@ -7,25 +7,13 @@ require '../vendor/pusher/pusher-php-server/lib/Pusher.php';
 
 use Yii;
 use app\models\User;
-use app\models\Expert;
 use app\models\Address;
 use app\models\UserSearch;
 use app\models\CreditCard;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
-use app\models\User_create;
-use yii\base\Object;
-use app\assets\AppDate;
-use app\models\City;
-// use app\models\Gender;
-use app\models\TermTaxonomy;
-use app\models\Rol;
 use yii\web\NotFoundHttpException;
 use yii\filters\AccessControl;
-use yii\filters\AccessRule;
-use app\models\Users;
-use app\models\UsersSearch;
-use app\models\AddressSearch;
 use app\models\LogToken;
 use app\models\GcmToken;
 use app\models\LoginForm;
@@ -36,13 +24,9 @@ use app\models\ResetPasswordForm;
 use app\models\TypeToken;
 use app\assets\EmailAsset;
 use app\assets\Facebook\Facebook;
-use app\assets\Facebook\FacebookRequest;
-use app\assets\Facebook\FacebookApp;
-use app\assets\Facebook\FacebookClient;
 use yii\helpers\Url;
 //
 use yii\data\ActiveDataProvider;
-use SendGrid\Email;
 
 /**
  * UserController implements the CRUD actions for User model.
@@ -153,7 +137,6 @@ class UserController extends Controller {
             $imei = Yii::$app->request->post("imei", null);
 
             $tpaga_id = Yii::$app->TPaga->CreateCustomer($firstname, $lastname, $email, $phone);
-            ;
 
             $infoForm = [
                 'SignupForm' => [

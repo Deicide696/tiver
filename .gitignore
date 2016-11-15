@@ -3,7 +3,7 @@
 /vendor/*
 /vendor/
 /.settings/
-/runtime/
+/runtime/*
 /runtime/debug/index.data
 /runtime/debug/*
 /web/assets/
