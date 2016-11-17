@@ -149,7 +149,45 @@ class AssignedServiceController extends Controller {
 			throw new NotFoundHttpException ( 'The requested page does not exist.' );
 		}
 	}
-	
+        
+        Public function actionSendNotification(){
+            
+//            return true;
+            $title = $_POST['title'];
+            $message = $_POST['message'];
+            $address = $_POST ['address'];
+//		$address_comp = $_POST ['address_comp'];
+//		$date = $_POST ['date'];
+		 $time = $_POST ['time'];
+		$service = $_POST ['service'];
+		// $service_name = $_POST ['service_name'];
+		$token = $_POST ['token'];
+		$modifier = $_POST ['modifier'];
+		$comment = $_POST ['comment'];
+		$lat = $_POST ['address_lat'];
+		$lng = $_POST ['address_lng'];
+            
+            $data = [ 
+				"ticker" => "Tienes trabajo",
+				'time' => $time,
+				'date' => date('Y-m-d'),
+				'address' => $address,
+				'lat' => $lat,
+				'id_serv' => $service,
+				'lng' => $lng,
+				'name_user' => "Jhonny",
+				'lastname_user' => "Romero",
+				'id_service' => $service,
+				'id_modifier' => $modifier,
+				'comments' => $comment,
+				'timestamp' => date ( "U" ),
+				'time_wait' => Yii::$app->params ['seconds_wait'],
+				'type' => Yii::$app->params ['notification_type_assgigned_expert'] 
+		];
+//            return var_dump($data);
+            
+            Yii::$app->PushNotifier->sendNotificationExpertOS ( $title, $message, $data, $token );
+        }
 	// Android
 	public function actionAssignService() {
 		// Yii::$app->response->format = 'json';
