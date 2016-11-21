@@ -126,7 +126,12 @@ class CategoryServiceController extends Controller {
         $this->enableCsrfValidation = false;
         return parent::beforeAction($action);
     }
-
+    /**
+     * Get the categories
+     * 
+     * @return json with categories ordered minus to highest
+     */
+    
     public function actionGetCategorias() {
 
         Yii::$app->response->format = 'json';
