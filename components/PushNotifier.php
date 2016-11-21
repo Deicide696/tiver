@@ -124,8 +124,8 @@ class PushNotifier extends Component {
                     'All'
                 ),
                 'data' => $data,
-                'contents' => $content,
-                'headings' => $heading,
+//                'contents' => $content,
+//                'headings' => $heading,
                 'ttl' => $time_wait,
                 'android_background_data' => true
             );
@@ -134,8 +134,8 @@ class PushNotifier extends Component {
                 'app_id' => Yii::$app->params ['os_id_expert'],
                 'include_player_ids' => $ids,
                 'data' => $data,
-                'contents' => $content,
-                'headings' => $heading,
+//                'contents' => $content,
+//                'headings' => $heading,
                 'ttl' => $time_wait,
                 'android_background_data' => true
             );
