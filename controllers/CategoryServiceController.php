@@ -126,12 +126,12 @@ class CategoryServiceController extends Controller {
         $this->enableCsrfValidation = false;
         return parent::beforeAction($action);
     }
+    
     /**
      * Get the categories
      * 
      * @return json with categories ordered minus to highest
      */
-    
     public function actionGetCategorias() {
 
         Yii::$app->response->format = 'json';
@@ -146,28 +146,30 @@ class CategoryServiceController extends Controller {
 
 
         for ($i = 0; $i < sizeof($model); $i++) {
-
             $services = $model[$i]['service'];
             for ($j = 0; $j < sizeof($services); $j++) {
                 //Modificamos precio del servicio
                 if ($model[$i]['service'][$j]['tax'] == 1) {
-                    $model[$i]['service'][$j]['price'] = round($model[$i]['service'][$j]['price'] + ($model[$i]['service'][$j]['price'] * Yii::$app->params ['tax_percent']), -2, PHP_ROUND_HALF_UP);
+                    $model[$i]['service'][$j]['price'] = (int)round($model[$i]['service'][$j]['price'] + ($model[$i]['service'][$j]['price'] * Yii::$app->params ['tax_percent']), -2, PHP_ROUND_HALF_UP);
                 }
                 //Buscamos modificadores y se reajusta el precio del servicio
                 $modificadores = $model[$i]['service'][$j]['serviceHasModifier'];
-                for ($k1 = 0; $k1 < sizeof($modificadores); $k1++) {
-                    //Ordenando los Precios de menor a mayor
-                    for ($k = 0; $k < sizeof($modificadores); $k++) {
-
-                        if (($k < sizeof($modificadores) - 1) && ($model[$i]['service'][$j]['serviceHasModifier'][$k]['modifier']['price'] > $model[$i]['service'][$j]['serviceHasModifier'][$k + 1]['modifier']['price'])) {
-
-                            $aux = $model[$i]['service'][$j]['serviceHasModifier'][$k];
-                            $model[$i]['service'][$j]['serviceHasModifier'][$k] = $model[$i]['service'][$j]['serviceHasModifier'][$k + 1];
-                            $model[$i]['service'][$j]['serviceHasModifier'][$k + 1] = $aux;
+                
+                if(count($modificadores) > 0){
+                    for ($k1 = 0; $k1 < sizeof($modificadores); $k1++) {
+                        //Ordenando los Precios de menor a mayor
+                        for ($k = 0; $k < sizeof($modificadores); $k++) {
+                            if (($k < sizeof($modificadores) - 1) && ((int)$model[$i]['service'][$j]['serviceHasModifier'][$k]['modifier']['price'] > (int)$model[$i]['service'][$j]['serviceHasModifier'][$k + 1]['modifier']['price'])) {
+                                $aux = $model[$i]['service'][$j]['serviceHasModifier'][$k];
+                                $model[$i]['service'][$j]['serviceHasModifier'][$k] = $model[$i]['service'][$j]['serviceHasModifier'][$k + 1];
+                                $model[$i]['service'][$j]['serviceHasModifier'][$k + 1] =  $aux;
+                            }
                         }
-                    }
-                    if ($model[$i]['service'][$j]['serviceHasModifier'][$k1]['modifier']['tax'] == 1) {
-                        $model[$i]['service'][$j]['serviceHasModifier'][$k1]['modifier']['price'] = round($model[$i]['service'][$j]['serviceHasModifier'][$k1]['modifier']['price'] + ($model[$i]['service'][$j]['serviceHasModifier'][$k1]['modifier']['price'] * Yii::$app->params ['tax_percent']), -2, PHP_ROUND_HALF_UP);
+                        if ($model[$i]['service'][$j]['serviceHasModifier'][$k1]['modifier']['tax'] == 1) {
+                            $model[$i]['service'][$j]['serviceHasModifier'][$k1]['modifier']['price'] = (int)round($model[$i]['service'][$j]['serviceHasModifier'][$k1]['modifier']['price'] + ($model[$i]['service'][$j]['serviceHasModifier'][$k1]['modifier']['price'] * Yii::$app->params ['tax_percent']), -2, PHP_ROUND_HALF_UP);
+                        }else{
+                            $model[$i]['service'][$j]['serviceHasModifier'][$k1]['modifier']['price'] = (int)$model[$i]['service'][$j]['serviceHasModifier'][$k1]['modifier']['price'];
+                        }
                     }
                 }
             }
