@@ -8,8 +8,9 @@ use yii\base\Component;
 class PushNotifier extends Component {
 
     private function sendMessage($fields, $api_key) {
+        
+        $fields = json_encode($fields);
 
-        $fieldss = json_encode($fields);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, "https://onesignal.com/api/v1/notifications");
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
@@ -19,17 +20,17 @@ class PushNotifier extends Component {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_HEADER, FALSE);
         curl_setopt($ch, CURLOPT_POST, TRUE);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $fieldss);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 
         $response = curl_exec($ch);
-        var_dump(".- Respuesta:  ", $response);
         curl_close($ch);
 
         return $response;
     }
 
     public function sendNotificationUserOS($titulo, $mensaje, $data, $ids = null) {
+        
         $data ['title'] = $titulo;
         $data ['alert'] = $mensaje;
 
@@ -46,8 +47,8 @@ class PushNotifier extends Component {
             "es" => $titulo,
             "en" => $titulo
         );
-
         $time_wait = 20000;
+        
         if (isset($data ['time_wait'])){
             $time_wait = $data ['time_wait'];
         }
@@ -63,7 +64,7 @@ class PushNotifier extends Component {
                 'android_background_data' => true,
                 'ttl' => $time_wait,
             );
-        }else{
+        } else {
             $fields = array(
                 'app_id' => Yii::$app->params ['os_id_user'],
                 'include_player_ids' => $ids,
@@ -74,25 +75,12 @@ class PushNotifier extends Component {
                 'ttl' => $time_wait,
             );
         }
-        return $fields;
         $response = $this->sendMessage($fields, Yii::$app->params ['os_api_key_user']);
         $return ["allresponses"] = $response;
         $return = json_encode($return);
 
-        // print("\n\nJSON received:\n");
-        // print($return);
-        // print("\n");
     }
-    
-    /**
-     * Send otification push at expert with OneSignal Service
-     * 
-     * @param type $titulo Title containing the notification
-     * @param type $mensaje Message containing the notification
-     * @param type $data Requested service information 
-     * @param type $ids Ids of experts to the notifications will be sent
-     * @return type Push Notification
-     */
+
     public function sendNotificationExpertOS($titulo, $mensaje, $data, $ids = null) {
 
         $data ['title'] = $titulo;
@@ -102,7 +90,6 @@ class PushNotifier extends Component {
             $this->sendNotificationExpert($data, $ids);
             return;
         }
-
         $content = array(
             "es" => $mensaje,
             "en" => $mensaje
@@ -111,21 +98,20 @@ class PushNotifier extends Component {
             "es" => $titulo,
             "en" => $titulo
         );
-
         $time_wait = 20000;
-
+        
         if (isset($data ['time_wait'])){
             $time_wait = $data ['time_wait'];
         }
-        if ($ids == null) {
+        if ($ids == null){
             $fields = array(
                 'app_id' => Yii::$app->params ['os_id_expert'],
                 'included_segments' => array(
                     'All'
                 ),
                 'data' => $data,
-//                'contents' => $content,
-//                'headings' => $heading,
+                 'contents' => $content,
+                'headings' => $heading,
                 'ttl' => $time_wait,
                 'android_background_data' => true
             );
@@ -134,8 +120,8 @@ class PushNotifier extends Component {
                 'app_id' => Yii::$app->params ['os_id_expert'],
                 'include_player_ids' => $ids,
                 'data' => $data,
-//                'contents' => $content,
-//                'headings' => $heading,
+                'contents' => $content,
+                'headings' => $heading,
                 'ttl' => $time_wait,
                 'android_background_data' => true
             );
@@ -208,5 +194,4 @@ class PushNotifier extends Component {
 
         return true;
     }
-
 }
