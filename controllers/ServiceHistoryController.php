@@ -154,7 +154,7 @@ class ServiceHistoryController extends Controller {
 
         if ($model_token != null) {
             $model_history = VwServiceHistory::find()
-                    ->where(['user_id' => $model_token->FK_id_user])
+                    ->where(['user_id' => $model_token->FK_id_user, 'status' => 1])
                     ->orderBy(['date' => SORT_DESC])
                     ->asArray()
                     ->all();
