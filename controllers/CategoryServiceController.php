@@ -144,7 +144,6 @@ class CategoryServiceController extends Controller {
                             }])
                          ->asArray()->all();
 
-
         for ($i = 0; $i < sizeof($model); $i++) {
             $services = $model[$i]['service'];
             for ($j = 0; $j < sizeof($services); $j++) {
@@ -154,12 +153,13 @@ class CategoryServiceController extends Controller {
                 }
                 //Buscamos modificadores y se reajusta el precio del servicio
                 $modificadores = $model[$i]['service'][$j]['serviceHasModifier'];
+                $countMod = count($modificadores);
                 
-                if(count($modificadores) > 0){
-                    for ($k1 = 0; $k1 < sizeof($modificadores); $k1++) {
+                if($countMod > 0){
+                    for ($k1 = 0; $k1 < $countMod; $k1++) {
                         //Ordenando los Precios de menor a mayor
-                        for ($k = 0; $k < sizeof($modificadores); $k++) {
-                            if (($k < sizeof($modificadores) - 1) && ((int)$model[$i]['service'][$j]['serviceHasModifier'][$k]['modifier']['price'] > (int)$model[$i]['service'][$j]['serviceHasModifier'][$k + 1]['modifier']['price'])) {
+                        for ($k = 0; $k < $countMod; $k++) {
+                            if (($k < $countMod - 1) && ((int)$model[$i]['service'][$j]['serviceHasModifier'][$k]['modifier']['price'] > (int)$model[$i]['service'][$j]['serviceHasModifier'][$k + 1]['modifier']['price'])) {
                                 $aux = $model[$i]['service'][$j]['serviceHasModifier'][$k];
                                 $model[$i]['service'][$j]['serviceHasModifier'][$k] = $model[$i]['service'][$j]['serviceHasModifier'][$k + 1];
                                 $model[$i]['service'][$j]['serviceHasModifier'][$k + 1] =  $aux;
@@ -184,5 +184,4 @@ class CategoryServiceController extends Controller {
             return $response;
         }
     }
-
 }
