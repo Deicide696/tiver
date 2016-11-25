@@ -48,6 +48,37 @@ class Coupon extends \yii\db\ActiveRecord
             [['code'], 'unique']
         ];
     }
+    public function behaviors()
+    {
+       return [           
+           'timestamp' => [
+               'class' => 'yii\behaviors\TimestampBehavior',
+               'attributes' => [
+                   \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_date'],                   
+               ],
+           ],
+           'timestamp' => [
+               'class' => 'yii\behaviors\TimestampBehavior',
+               'attributes' => [
+                   \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_date'],                   
+               ],
+           ],
+           'activeBehavior' => [
+               'class' => 'yii\behaviors\AttributeBehavior',
+                'attributes' => [
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => 'enable',
+                ],
+                'value' => 1,
+           ],
+           'activeBehavior' => [
+               'class' => 'yii\behaviors\AttributeBehavior',
+                'attributes' => [
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => 'used',
+                ],
+                'value' => 0,
+           ],
+       ];
+    }
 
     /**
      * @inheritdoc

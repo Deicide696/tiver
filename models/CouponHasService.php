@@ -41,7 +41,7 @@ class CouponHasService extends \yii\db\ActiveRecord
     {
         return [
             'coupon_id' => 'Coupon ID',
-            'service_id' => 'Service ID',
+            'service_id' => 'Servicio',
         ];
     }
 
