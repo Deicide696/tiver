@@ -13,18 +13,6 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="coupon-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
-
-    <p>
-        <?= Html::a('Actualizar', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Borrar', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => '¿Desea realmente eliminar este elemento?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
-
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
@@ -38,5 +26,14 @@ $this->params['breadcrumbs'][] = $this->title;
             'type_coupon_id',
         ],
     ]) ?>
-
+    <p>
+        <?= Html::a('Actualizar', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Borrar', ['delete', 'id' => $model->id], [
+            'class' => 'btn btn-danger',
+            'data' => [
+                'confirm' => '¿Desea realmente eliminar este elemento?',
+                'method' => 'post',
+            ],
+        ]) ?>
+    </p>
 </div>
