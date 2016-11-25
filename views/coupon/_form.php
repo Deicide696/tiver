@@ -52,20 +52,21 @@ $this->registerJs('
     if(e == 0){
         $("#asignar2").val("0");
         document.getElementById("asignar2").disabled=true;
+    }else{
+        $.ajax({
+            type: "POST",
+            url: "'.Url::to(['coupon/getmodel']).'",
+            data: { select: e },
+            dataType: "json",
+            success:function (data){
+                document.getElementById("asignar2").disabled=false;
+                $("#asignar2").html(data.scri).fadeIn();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert("Error");
+            }
+        }); 
     }
-    $.ajax({
-        type: "POST",
-        url: "'.Url::to(['coupon/getmodel']).'",
-        data: { select: e },
-        dataType: "json",
-        success:function (data){
-            document.getElementById("asignar2").disabled=false;
-            $("#asignar2").html(data.scri).fadeIn();
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            alert("Error");
-        }
-    }); 
  }); 
 ');
 ?>
