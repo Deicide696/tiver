@@ -42,8 +42,8 @@ class ServiceHistorySearch extends ServiceHistory
      */
     public function search($params)
     {
-        $query = ServiceHistory::find()->where(['state'=>'1']);
-    	//$query = ServiceHistory::find();
+//        $query = ServiceHistory::find()->where(['state'=>'1']);
+        $query = ServiceHistory::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

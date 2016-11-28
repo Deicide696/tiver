@@ -85,8 +85,7 @@ class CouponController extends Controller {
                             'id' => $model->id
                         ]);
                      }
-                
-                }else if($_POST["asignar1"] == 2){
+                } else if($_POST["asignar1"] == 2){
                     $Cservice->coupon_id = $model->id;
                     $Cservice->service_id = $_POST["asignar2"];
                     if($Cservice->save()){
@@ -95,8 +94,7 @@ class CouponController extends Controller {
                             'id' => $model->id
                         ]);
                      }
-                }
-            
+                }    
             }
         } else {
             return $this->render('create', [

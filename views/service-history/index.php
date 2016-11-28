@@ -16,111 +16,106 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-     
+
     </p>
 
-   <?= GridView::widget([
+    <?=
+    GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
-   	
-   		'rowOptions'=>function ($searchModel){
-   		($searchModel->getPayStatus()==0 && $searchModel->state==1)?$class= ['class'=>'danger']:$class= [];
-   		return $class;
-   	
-   },
+        'rowOptions' => function ($searchModel) {
+            ($searchModel->getPayStatus() == 0 && $searchModel->state == 1) ? $class = ['class' => 'danger'] : $class = [];
+            return $class;
+        },
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-           // 'id',
-        		  [
-        		'attribute' => 'Fecha',
-        		'format' => 'raw',
-        		'value'=>'date',
-        		'format' => 'Date',
-        		],
-        		  [
-        		'attribute' => 'Hora',
-        		'format' => 'raw',
-        		'value'=>'time',
-        		'format' => 'Time',
-        		],
+                ['class' => 'yii\grid\SerialColumn'],
+            // 'id',
+            [
+                'attribute' => 'Fecha',
+                'format' => 'raw',
+                'value' => 'date',
+                'format' => 'Date',
+            ],
+                [
+                'attribute' => 'Hora',
+                'format' => 'raw',
+                'value' => 'time',
+                'format' => 'Time',
+            ],
             'address',
-        		'expert.zone.name',
-        		
-   			[
-        		'attribute' => 'Finalizado',
-        		'format' => 'raw',
-        		'value' =>function($searchModel){
-        		$valido=true;
-        		($searchModel->state==0)?$icon= Yii::$app->params['iconDisabled']:$icon= Yii::$app->params['iconEnabled'];
-        			return $icon;}
-        		
-        		],
-        		
-             [
-        		'attribute' => 'Fecha finalizado',
-        		'format' => 'raw',
-        		'value'=>'created_date',
-        		'format' => 'DateTime',
-        		],
-        		[
-        		'attribute' => 'Servicio',
-        		'format' => 'raw',
-        		
-        		'value' =>function($searchModel){
-        		 
-        		return$searchModel->getServiceName()  ;
-        		}
-        		],
-        		[
-        		'attribute' => 'Precio',
-        		'format' => 'raw',
-        				'format' => 'Currency',
-        		'value' =>function($searchModel){
-        		 
-        		return$searchModel->getPrice()  ;
-        		}
-        		],
-        		[
-        		'attribute' => 'Duración (mins)',
-        		'format' => 'raw',
-        		'value' =>function($searchModel){
-     				
-        					return$searchModel->getDuration()  ;
-        		}
-        		],
-             //'coupon.code',
-             //'comment',
-           
-            	[
-        		'attribute' => 'Usuario',
-        		'format' => 'raw',
-        		'value' =>function($searchModel){
-     				
-        					return$searchModel->getUserName()  ;
-        		}
-        		],
-        	
+            'expert.zone.name',
+                [
+                'attribute' => 'Finalizado',
+                'format' => 'raw',
+                'value' => function($searchModel) {
+                    $valido = true;
+                    ($searchModel->state == 0) ? $icon = Yii::$app->params['iconDisabled'] : $icon = Yii::$app->params['iconEnabled'];
+                    return $icon;
+                }
+            ],
+                [
+                'attribute' => 'Fecha finalizado',
+                'format' => 'raw',
+                'value' => 'created_date',
+                'format' => 'DateTime',
+            ],
+                [
+                'attribute' => 'Servicio',
+                'format' => 'raw',
+                'value' => function($searchModel) {
+
+                    return$searchModel->getServiceName();
+                }
+            ],
+                [
+                'attribute' => 'Precio',
+                'format' => 'raw',
+                'format' => 'Currency',
+                'value' => function($searchModel) {
+
+                    return$searchModel->getPrice();
+                }
+            ],
+                [
+                'attribute' => 'Duración (mins)',
+                'format' => 'raw',
+                'value' => function($searchModel) {
+
+                    return$searchModel->getDuration();
+                }
+            ],
+            //'coupon.code',
+            //'comment',
+            [
+                'attribute' => 'Usuario',
+                'format' => 'raw',
+                'value' => function($searchModel) {
+
+                    return$searchModel->getUserName();
+                }
+            ],
             // 'city_id',
-             [
-        		'attribute' => 'Especialista',
-        		'format' => 'raw',
-        		'value' =>function($searchModel){
-     				
-        					return$searchModel->getExpertName()  ;
-        		}
-        		],
-        		[
-        		'attribute' => 'Pagado',
-        		'format' => 'raw',
-        		'value' =>function($searchModel){
-        		$valido=true;
-        		($searchModel->getPayStatus()==0)?$icon= Yii::$app->params['iconDisabled']:$icon= Yii::$app->params['iconEnabled'];
-        		return $icon;}
-        		
-        		],
-        		//'serviceHistoryHasPay.pay.message',
-             ['class' => 'yii\grid\ActionColumn','template' => '{view}'],
+            [
+                'attribute' => 'Especialista',
+                'format' => 'raw',
+                'value' => function($searchModel) {
+
+                    return$searchModel->getExpertName();
+                }
+            ],
+                [
+                'attribute' => 'Pagado',
+                'format' => 'raw',
+                'value' => function($searchModel) {
+                    $valido = true;
+                    ($searchModel->getPayStatus() == 0) ? $icon = Yii::$app->params['iconDisabled'] : $icon = Yii::$app->params['iconEnabled'];
+                    return $icon;
+                }
+            ],
+            //'serviceHistoryHasPay.pay.message',
+            ['class' => 'yii\grid\ActionColumn', 'template' => '{view}'],
         ],
-    ]); ?>
+    ]);
+    ?>
 
 </div>

@@ -8,7 +8,9 @@ use yii\helpers\Html;
 $this->title = 'Nuevo Cupon';
 $this->params['breadcrumbs'][] = ['label' => 'Coupons', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
+
 <div class="coupon-create">
 
     <h1><?= Html::encode($this->title) ?></h1>
