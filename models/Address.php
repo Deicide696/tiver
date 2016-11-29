@@ -38,8 +38,8 @@ class Address extends \yii\db\ActiveRecord
             [['lat', 'lng'], 'number'],
             [['type_housing_id'], 'required'],
             [['type_housing_id'], 'integer'],
-            [['address'], 'string', 'max' => 255],
-            [['tower_apartment'], 'string', 'max' => 45],
+            [['address'], 'string', 'max' => 100],
+            [['tower_apartment'], 'string', 'max' => 100],
             [['custom_address'], 'string', 'max' => 100]
         ];
     }

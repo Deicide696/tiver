@@ -244,9 +244,9 @@ class AddressController extends Controller {
                 ->where(['user_has_address.user_id' => $model_token->FK_id_user,'address' => $address, 'tower_apartment' => $address_comp])
                 ->asArray()
                 ->all();
-
+        
         if ($model_address == null) { // No existe la direccion en DB, se guarda
-            $model_address = new \app\models\Address ();
+            $model_address = new Address();
             $model_address->address = $address;
             $model_address->tower_apartment = $address_comp;
             $model_address->id = 0;
@@ -254,22 +254,38 @@ class AddressController extends Controller {
             $model_address->lat = $lat;
             $model_address->lng = $lng;
             $model_address->type_housing_id = $type_housing;
-            if ($model_address->save()) {
-                $model_user_addr = new UserHasAddress ();
-                $model_user_addr->user_id = $model_token->FK_id_user;
-                $model_user_addr->address_id = $model_address->id;
-                $model_user_addr->save();
-                $response["success"] = true;
-                $response["data"] = ["message" => "Dirección guardada correctamente"];
-                return $response;
+            
+            if ($model_address->validate()){
+                if ($model_address->save()) {
+                    $model_user_addr = new UserHasAddress ();
+                    $model_user_addr->user_id = $model_token->FK_id_user;
+                    $model_user_addr->address_id = $model_address->id;
+                    $model_user_addr->save();
+                    $response["success"] = true;
+                    $response["data"] = ["message" => "Dirección guardada correctamente"];
+                    return $response;
+                } 
             } else {
-
-                $response["success"] = false;
-                $response["data"] = ["message" => "No se pudo guardar la dirección"];
-                return $response;
+                if (!$model_address->validate(["address"])) {
+                    $response["success"] = false;
+                    $response["data"] = ["message" => "El numero de caracteres en el campo de Dirección no debe ser mayor a 100"];
+                    return $response;
+                }else if (!$model_address->validate(["tower_apartment"])) {
+                    $response["success"] = false;
+                    $response["data"] = ["message" => "El numero de caracteres en el campo de Indicaciones no debe ser mayor a 100"];
+                    return $response;
+                }else if (!$model_address->validate(["custom_address"])) {
+                    $response["success"] = false;
+                    $response["data"] = ["message" => "El numero de caracteres en el campo de Lugar no debe ser mayor a 100"];
+                    return $response;
+                }else {
+                    $response["success"] = false;
+                    $response["data"] = ["message" => "No se pudo guardar la dirección por error desconocido."];
+                    return $response;
+                }
             }
         } else {
-            $response["success"] = true;
+            $response["success"] = false;
             $response["data"] = ["message" => "Dirección ya existe"];
             return $response;
         }
