@@ -3,7 +3,6 @@
 use yii\helpers\Html;
 use app\models\TypeIdentification;
 use app\models\Gender;
-use app\models\Rol;
 use app\models\Zone;
 use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
@@ -18,9 +17,9 @@ $this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id
 $this->params['breadcrumbs'][] = 'Modificar';
 ?>
 <div class="expert-update">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
+    <div class="row col-xs-12 col-sm-12">
+        <h1><?= Html::encode($this->title) ?></h1>
+    </div>
 
     <?php
     $form = ActiveForm::begin([
@@ -30,22 +29,27 @@ $this->params['breadcrumbs'][] = 'Modificar';
                 ]
             ]
     );
-    
-  echo FileInput::widget([
-    'name' => 'attachment_53',
-    'pluginOptions' => [
-        'showCaption' => false,
-        'showRemove' => false,
-        'showUpload' => false,
-        'browseClass' => 'btn btn-primary btn-block',
-        'browseIcon' => '<i class="glyphicon glyphicon-camera"></i> ',
-        'browseLabel' =>  'Foto de Perfil'
-    ],
-    'options' => ['accept' => 'image/*']
-]);
     ?>
-    
-   <?= $form->field($model, 'path')->fileInput() ?>
+    <div class="row form-group" >
+        <div class="col-xs-12 col-sm-6 pull-right ">
+            <input type="hidden" name="Expert[path]" value="">
+            <?php
+                echo FileInput::widget([
+                    'id' => 'expert-path',
+                    'name' => 'Expert[path]',
+                    'pluginOptions' => [
+                        'showCaption' => false,
+                        'showRemove' => false,
+                        'showUpload' => false,
+                        'browseClass' => 'btn btn-primary btn-block',
+                        'browseIcon' => '<i class="glyphicon glyphicon-camera"></i> ',
+                        'browseLabel' =>  'Foto de Perfil'
+                    ],
+                    'options' => ['accept' => 'image/*']
+                ]);
+            ?>
+        </div>
+    </div>
     <?= $form->field($model, 'rol_id')->input("hidden")->label(false); ?>
     <?= $form->field($model, 'identification'); ?>
     <?= $form->field($model, 'name'); ?>
