@@ -18,9 +18,6 @@ $this->params['breadcrumbs'][] = ['label' => 'Especialistas', 'url' => ['index']
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="expert-create">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
     <?php
     $form = ActiveForm::begin([
                 'id' => 'active-form',
@@ -29,23 +26,35 @@ $this->params['breadcrumbs'][] = $this->title;
 //                    'class' => 'text-center',
                 ]
             ]);
-    echo FileInput::widget([
-    'name' => 'attachment_53',
-    'pluginOptions' => [
-        'showCaption' => false,
-        'showRemove' => false,
-        'showUpload' => false,
-        'browseClass' => 'btn btn-primary btn-block',
-        'browseIcon' => '<i class="col-sm-6 glyphicon glyphicon-camera"></i> ',
-        'browseLabel' =>  'Select Photo'
-    ],
-    'options' => ['accept' => 'image/*']
-]);
+    ?>
+    <div class="container-fluid" >
+        <h1><?= Html::encode($this->title) ?></h1>
+        <div class="col-sm-6 pull-left">
+         <?php
+//    echo FileInput::widget([
+//    'name' => 'attachment_53',
+//    'pluginOptions' => [
+//        'showCaption' => false,
+//        'showRemove' => false,
+//        'showUpload' => false,
+//        'browseClass' => 'btn btn-primary btn-block',
+//        'browseIcon' => '<i class="glyphicon glyphicon-camera"></i> ',
+//        'browseLabel' =>  'Select Photo'
+//    ],
+//    'options' => ['accept' => 'image/*']
+//]);
+    
+    
+    ?>
+    </div>
+    </div>
     
 
-    ?>
     
-     <?php // $form->field($model, 'path')->fileInput() ?>
+    
+   
+    
+     <?=  $form->field($model, 'path')->fileInput() ?>
     
     
 
