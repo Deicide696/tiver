@@ -40,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             'showUpload' => false,
                             'browseClass' => 'btn btn-primary btn-block',
                             'browseIcon' => '<i class="glyphicon glyphicon-camera"></i> ',
-                            'browseLabel' =>  'Select Photo'
+                            'browseLabel' =>  'Foto de Perfil'
                         ],
                         'options' => ['accept' => 'image/*']
                     ]);
