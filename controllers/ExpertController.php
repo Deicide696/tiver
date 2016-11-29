@@ -1,7 +1,8 @@
 <?php
 
-namespace app\controllers;
 
+namespace app\controllers;
+require '../vendor/pusher/pusher-php-server/lib/Pusher.php';
 use Yii;
 use app\models\Expert;
 use app\models\User;
@@ -15,11 +16,6 @@ use yii\web\UploadedFile;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
-
-//use app\pusher\Pusher;
-require '../vendor/pusher/pusher-php-server/lib/Pusher.php';
-
-use app\models\ExpertHasService;
 use app\models\ExpertHasServiceSearch;
 use app\models\LogToken;
 use app\models\AssignedService;
@@ -148,7 +144,7 @@ class ExpertController extends Controller {
   
 
 //        return $this->render('upload', ['model' => $model]);
-        
+//        var_dump(Yii::$app->request->post(), $_GET, $modelU);die();
         if (Yii::$app->request->isPost) {
             if ($model->load(Yii::$app->request->post())) {
                 $model->password = $model->setPassword($model->password);
