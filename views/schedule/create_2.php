@@ -10,7 +10,8 @@ use app\models\Expert;
 /* @var $this yii\web\View */
 /* @var $model app\models\Schedule */
 
-$this->title = "Asignar disponibilidad a " . $expert->name;
+//$this->title = "Asignar disponibilidad a " . $expert->name;
+$this->title = "Asignar disponibilidad a ";
 $this->params['breadcrumbs'][] = ['label' => 'Disponibilidad', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>

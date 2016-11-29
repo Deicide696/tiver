@@ -66,7 +66,7 @@ $this->params['breadcrumbs'][] = $this->title;
         		'value' =>$icon
     		],
             'zone.name',            
-           // 'rol.name',
+            'path',
             'gender.gender',
             [
                 'attribute' => 'Fecha creación',
