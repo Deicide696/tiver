@@ -9,36 +9,30 @@ use yii\bootstrap\ActiveForm;
 
 $this->title = 'Login';
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
-<div class="site-login">
-    <h1><?= Html::encode($this->title) ?></h1>
-
-   
-
+<br>
+<br>
+<br>
+<div class="site-login col-sm-4 col-lg-4">
+    <div class="row col-xs-12 col-sm-12">
+        <h1><?= Html::encode($this->title) ?></h1>
+    </div>
     <?php $form = ActiveForm::begin([
         'id' => 'login-form',
         'options' => ['class' => 'form-horizontal'],
         'fieldConfig' => [
-            'template' => "{label}\n<div class=\"col-lg-3\">{input}</div>\n<div class=\"col-lg-8\">{error}</div>",
-            'labelOptions' => ['class' => 'col-lg-1 control-label'],
         ],
-    ]); ?>
-
+    ]); 
+    ?>
         <?= $form->field($model, 'username') ?>
-
         <?= $form->field($model, 'password')->passwordInput() ?>
-
         <?= $form->field($model, 'rememberMe')->checkbox([
-            'template' => "<div class=\"col-lg-offset-1 col-lg-3\">{input} {label}</div>\n<div class=\"col-lg-8\">{error}</div>",
         ]) ?>
 
-        <div class="form-group">
-            <div class="col-lg-offset-1 col-lg-11">
-                <?= Html::submitButton('Login', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
-            </div>
+        <div class="form-group text-center">
+            <?= Html::submitButton('Login', ['class' => 'col-xs-12 col-sm-6 btn btn-primary', 'name' => 'login-button']) ?>
         </div>
 
     <?php ActiveForm::end(); ?>
-
-   
 </div>
