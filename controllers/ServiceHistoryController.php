@@ -8,9 +8,11 @@ use app\models\ServiceHistorySearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\models\User;
 use app\models\LogToken;
 use app\models\VwServiceHistory;
 use app\models\VwActualService;
+use yii\filters\auth\HttpBasicAuth;
 
 /**
  * ServiceHistoryController implements the CRUD actions for ServiceHistory model.
@@ -18,6 +20,7 @@ use app\models\VwActualService;
 class ServiceHistoryController extends Controller {
 
     public function behaviors() {
+        
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
@@ -26,8 +29,45 @@ class ServiceHistoryController extends Controller {
                         'post'
                     ]
                 ]
+            ],
+            'authenticator' => [
+                'class' => HttpBasicAuth::className(),
+                'auth' => [$this, 'auth'],
+                'except' => ['index', 'view', 'create', 'update']
             ]
         ];
+    }
+    /**
+     * Finds user by user_email and user_password
+     *
+     * @param string $email
+     * @param string $password
+     * @return static|null
+     */
+    public function Auth($email, $password) {
+        // username, password are mandatory fields
+        if(empty($email) || empty($password)){
+            return null;
+        }
+        // get user using requested email
+        $email = User::findOne([
+            'email' => $email,
+        ]);
+    
+        // if no record matching the requested user
+        if(empty($email)){
+            return null;    
+        }
+        // validate password        
+        $isPass = Yii::$app->security->validatePassword($password, $email->password);
+    
+        // if password validation fails
+        if(!$isPass){                
+            return null;            
+        }            
+    
+        // if user validates (both user_email, user_password are valid)
+        return $email;
     }
 
     /**
@@ -146,31 +186,21 @@ class ServiceHistoryController extends Controller {
     public function actionHistory() {
         
         Yii::$app->response->format = 'json';
-        $token = Yii::$app->request->post("token", null);
-
-        $model_token = LogToken::find()
-            ->where(['token' => $token])
-            ->one();
-
-        if ($model_token != null) {
-            $model_history = VwServiceHistory::find()
-                    ->where(['user_id' => $model_token->FK_id_user, 'status' => 1])
-                    ->orderBy(['date' => SORT_DESC])
-                    ->asArray()
-                    ->all();
-            if ($model_history != null) {
-                $response ["success"] = true;
-                $response ['data'] = $model_history;
-            } else {
-                $response ["success"] = true;
-                $response ["data"] = null;
-            }
+        $id = Yii::$app->user->identity->id;
+      
+        $model_history = VwServiceHistory::find()
+                ->where(['user_id' => $id, 'status' => 1])
+                ->orderBy(['date' => SORT_DESC])
+                ->asArray()
+                ->all();
+        if ($model_history != null) {
+            $response ["success"] = true;
+            $response ['data'] = $model_history;
         } else {
-            $response ["success"] = false;
-            $response ["data"] = [
-                "message" => "Token inválido"
-            ];
+            $response ["success"] = true;
+            $response ["data"] = null;
         }
+       
         return $response;
     }
 
@@ -209,6 +239,7 @@ class ServiceHistoryController extends Controller {
     }
 
     public function actionPendingService() {
+        
         Yii::$app->response->format = 'json';
 
         $token = Yii::$app->request->post("token", null);
@@ -263,11 +294,12 @@ class ServiceHistoryController extends Controller {
      */
     
     public function actionQualifyService() {
-        
+     
         Yii::$app->response->format = 'json';
+        
+        $id = Yii::$app->user->identity->id;
         $expert_id = Yii::$app->request->post("expert_id", null);
         $service_id= Yii::$app->request->post("service_id", null);
-        $token = Yii::$app->request->post("token", null);
         $qualify= Yii::$app->request->post("qualify", null);
         $observations= Yii::$app->request->post("observations", null);
         
@@ -285,29 +317,10 @@ class ServiceHistoryController extends Controller {
             ];
             return $response;
         }
-        if(is_null($token) || empty($token)){
-            $response ["success"] = false;
-            $response ["data"] = [
-                "message" => "El Token del Usuario no debe ser Nulo o Vacío."
-            ];
-            return $response;
-        }
         if(is_null($qualify) || empty($qualify)){
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "La Calificación de Experto no debe ser Nulo o Vacío."
-            ];
-            return $response;
-        }
-        
-        $model_token = LogToken::find()->where([
-                    'token' => $token
-                ])->one();
-
-        if ($model_token == null) {
-            $response ["success"] = false;
-            $response ["data"] = [
-                "message" => "Token inválido"
             ];
             return $response;
         }
@@ -318,7 +331,7 @@ class ServiceHistoryController extends Controller {
                     'id' => $service_id,
                     'state' => 1,
                     'expert_id' => $expert_id ,
-                    'user_id' => $model_token->FK_id_user
+                    'user_id' => $id
                 ])
                 ->asArray()
                 ->one();
@@ -350,5 +363,4 @@ class ServiceHistoryController extends Controller {
         }
         return true;
     }
-
 }
