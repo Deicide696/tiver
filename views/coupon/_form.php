@@ -12,27 +12,23 @@ use yii\helpers\ArrayHelper;
 ?>
 <div class="coupon-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin([
+//        'enableAjaxValidation' => true,
+//        'enableClientValidation' => false,
+    ]); ?>
     
         <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
         <?= $form->field($model, 'code')->textInput(['maxlength' => true]) ?>
-        <?= $form->field($model, 'type_coupon_id')->dropDownList(ArrayHelper::map(TypeCoupon::find()->asArray()->all(), 'id', 'description')) ?>
+        <?= $form->field($model, 'type_coupon_id')->dropDownList(ArrayHelper::map(TypeCoupon::find()->asArray()->all(), 'id', 'description'), ['prompt'=>'--Seleccione--']) ?>
+ 
         <div class="form-group required">
-            <label class="control-label" for="asignar1">Asignar (Categoria/Servicio)</label>
-            <select id="asignar1" class="form-control" name="asignar1">
-                <option value="0">Seleccione</option>
-                <option value="1">Categoria de Servicio</option>
-                <option value="2">Servicio</option>
-            </select>
-            <div class="help-block"></div>
-        </div>
-        <div class="form-group required">
+            <label class="control-label" for="coupon-type_coupon_id"></label>
             <select id="asignar2" class="form-control" name="asignar2" disabled>
-                <option value = "0">Seleccione</option>
+                <option value = "0">--Seleccione--</option>
             </select>
             <div class="help-block"></div>
         </div>
-
+        <br>
         <div class="form-group">
             <?= Html::submitButton($model->isNewRecord ? 'Crear' : 'Actualizar', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
         </div>
@@ -41,9 +37,9 @@ use yii\helpers\ArrayHelper;
 </div>
 <?php
 $this->registerJs('
- $("#asignar1").change(function(){
-    var e=$("#asignar1").val();
-    if(e == 0){
+ $("#coupon-type_coupon_id").change(function(){
+    var e = $("#coupon-type_coupon_id").val();
+    if(e == ""){
         $("#asignar2").val("0");
         document.getElementById("asignar2").disabled=true;
     }else{

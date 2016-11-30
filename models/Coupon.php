@@ -1,6 +1,7 @@
 <?php
 
 namespace app\models;
+use yii\db\Expression;
 
 use Yii;
 
@@ -43,9 +44,9 @@ class Coupon extends \yii\db\ActiveRecord
         return [
             [['enable', 'used', 'type_coupon_id'], 'integer'],
           //  [['created_date', 'updated_date'], 'safe'],
-            [['type_coupon_id'], 'required'],
+            [['type_coupon_id','code'], 'required'],
             [['name', 'code'], 'string', 'max' => 45],
-            [['code'], 'unique']
+            [['code'], 'unique', 'message' => 'Este cupon ya se encuantra registrado.']
         ];
     }
     public function behaviors()
@@ -56,12 +57,14 @@ class Coupon extends \yii\db\ActiveRecord
                'attributes' => [
                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_date'],                   
                ],
+               'value' => new Expression('NOW()'),
            ],
            'timestamp' => [
                'class' => 'yii\behaviors\TimestampBehavior',
                'attributes' => [
                    \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_date'],                   
                ],
+               'value' => new Expression('NOW()'),
            ],
            'activeBehavior' => [
                'class' => 'yii\behaviors\AttributeBehavior',

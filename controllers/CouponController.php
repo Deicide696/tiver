@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use Yii;
+use app\models\User;
 use app\models\Coupon;
 use app\models\LogToken;
 use app\models\CouponSearch;
@@ -10,10 +11,10 @@ use app\models\CouponHasCategoryService;
 use app\models\CouponHasService;
 use app\models\CategoryService;
 use app\models\Service;
+use app\models\UserHasCoupon;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use app\models\UserHasCoupon;
 
 /**
  * CouponController implements the CRUD actions for Coupon model.
@@ -55,8 +56,15 @@ class CouponController extends Controller {
      * @return mixed
      */
     public function actionView($id) {
+        $model = $this->findModel($id);
+        $user = new User();
+        $userHasCoupon = new UserHasCoupon();
+//        print_r($model);die();
+        
         return $this->render('view', [
-                    'model' => $this->findModel($id)
+            'model' => $model,
+            'user' => $user,
+            'userHasCoupon' => $userHasCoupon,
         ]);
     }
 
@@ -69,14 +77,28 @@ class CouponController extends Controller {
     public function actionCreate() {
         
         $model = new Coupon ();
+        $UserHasCoupon = new UserHasCoupon();
         $CcategoryService = new CouponHasCategoryService();
         $Cservice = new CouponHasService();
 
-        if(isset($_POST["Coupon"]) && isset($_POST["asignar1"]) && isset($_POST["asignar2"])){
+        if(isset($_POST["Coupon"]) && isset($_POST["asignar2"])){
             
             $model->attributes= $_POST["Coupon"];
+
             if($model->save()){
-                if($_POST["asignar1"] == 1){
+                //  Asignamos un cupon a un Usuario
+                if($model->type_coupon_id == 1){
+                    $UserHasCoupon->coupon_id = $model->id;
+                    $UserHasCoupon->user_id = $_POST["asignar2"];
+                     if($UserHasCoupon->save()){
+                        return $this->redirect([
+                            'view',
+                            'id' => $model->id
+                        ]);
+                     }
+                } // Asiganamos un cupon a una Categoria
+                else if ($model->type_coupon_id  == 2){
+//                    var_dump($CcategoryService);die();
                     $CcategoryService->coupon_id = $model->id;
                     $CcategoryService->category_service_id = $_POST["asignar2"];
                      if($CcategoryService->save()){
@@ -85,7 +107,8 @@ class CouponController extends Controller {
                             'id' => $model->id
                         ]);
                      }
-                } else if($_POST["asignar1"] == 2){
+                } // Asignamos un cupon a un Servicio 
+                else if($model->type_coupon_id  == 3){
                     $Cservice->coupon_id = $model->id;
                     $Cservice->service_id = $_POST["asignar2"];
                     if($Cservice->save()){
@@ -95,6 +118,12 @@ class CouponController extends Controller {
                         ]);
                      }
                 }    
+            } else {
+               return $this->render('create', [
+                        'model' => $model,
+                        'CcategoryService' => $CcategoryService,
+                        'Cservice' => $Cservice,
+                ]);
             }
         } else {
             return $this->render('create', [
@@ -110,19 +139,26 @@ class CouponController extends Controller {
         if (isset($_POST["select"])){
             $select = $_POST["select"];
             if($select == 1){
+                $scri="<option value='0'>Seleccione</option>";
+                $model = User::find()->where(['enable' => 1])->orderBy('first_name')->asArray()->all();
+                foreach ($model as $key => $model2) {
+                     $scri.= '<option value="'.$model2["id"].'">'.$model2["first_name"].' '.$model2["last_name"].'</option>';
+                }
+            }else if($select == 2){
                 $scri="<option value='0'>Seleccione </option>";
                 $model = CategoryService::find()->asArray()->all();
                 foreach ($model as $key => $model1) {
                      $scri.= '<option value="'.$model1["id"].'">'.$model1["description"].'</option>';
       
                 }
-            }else if($select == 2){
+            }else if($select == 3){
                 $scri="<option value='0'>Seleccione</option>";
                 $model = Service::find()->asArray()->all();
                 foreach ($model as $key => $model2) {
                      $scri.= '<option value="'.$model2["id"].'">'.$model2["name"].'</option>';
                 }
             }
+            
         }
         return json_encode(['model'=> $model, 'select' => $select, 'scri'=> $scri]);
     }
@@ -221,9 +257,9 @@ class CouponController extends Controller {
                         if ($model_token != null) {
                             // buscamos la relación cupon-ususario
                             $model_search = UserHasCoupon::find()->where([
-                                        'user_id' => $model_token->FK_id_user,
-                                        'coupon_id' => $model['id']
-                                    ])->asArray()->one();
+                                'user_id' => $model_token->FK_id_user,
+                                'coupon_id' => $model['id']
+                            ])->asArray()->one();
                             if ($model_search != null) {
                                 $response ["success"] = true;
                                 $response ['data'] = $model;
