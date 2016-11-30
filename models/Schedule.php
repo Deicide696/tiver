@@ -35,7 +35,19 @@ class Schedule extends \yii\db\ActiveRecord
             [['expert_id', 'weekday_id'], 'integer']
         ];
     }
-
+    
+    public function behaviors()
+    {
+       return [           
+           'timestamp' => [
+               'class' => 'yii\behaviors\TimestampBehavior',
+               'attributes' => [
+                   \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['date_created'],                   
+               ],
+           ],
+       ];
+    }
+    
     /**
      * @inheritdoc
      */
@@ -50,9 +62,11 @@ class Schedule extends \yii\db\ActiveRecord
             'weekday_id' => 'Día de la semana',
         ];
     }
+    
     public function getWeekday(){
     	return $this->hasOne(Weekday::className(), ['id' => 'weekday_id']);
     }
+    
     public function getExpert(){
     	return $this->hasOne(Expert::className(), ['id' => 'expert_id']);
     }
