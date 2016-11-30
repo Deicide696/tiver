@@ -144,8 +144,8 @@ class ServiceHistoryController extends Controller {
      */
 
     public function actionHistory() {
+        
         Yii::$app->response->format = 'json';
-
         $token = Yii::$app->request->post("token", null);
 
         $model_token = LogToken::find()
@@ -255,6 +255,100 @@ class ServiceHistoryController extends Controller {
         $response ["success"] = true;
         $response ['data'] = null;
         return $response;
+    }
+    /**
+     * Set qualify of service 
+     * 
+     * @return json response
+     */
+    
+    public function actionQualifyService() {
+        
+        Yii::$app->response->format = 'json';
+        $expert_id = Yii::$app->request->post("expert_id", null);
+        $service_id= Yii::$app->request->post("service_id", null);
+        $token = Yii::$app->request->post("token", null);
+        $qualify= Yii::$app->request->post("qualify", null);
+        $observations= Yii::$app->request->post("observations", null);
+        
+        if(is_null($expert_id) || empty($expert_id)){
+            $response ["success"] = false;
+            $response ["data"] = [
+                "message" => "El ID del Especialista no debe ser Nulo o Vacío."
+            ];
+            return $response;
+        }
+        if(is_null($service_id) || empty($service_id)){
+            $response ["success"] = false;
+            $response ["data"] = [
+                "message" => "El ID del Servicio no debe ser Nulo o Vacío."
+            ];
+            return $response;
+        }
+        if(is_null($token) || empty($token)){
+            $response ["success"] = false;
+            $response ["data"] = [
+                "message" => "El Token del Usuario no debe ser Nulo o Vacío."
+            ];
+            return $response;
+        }
+        if(is_null($qualify) || empty($qualify)){
+            $response ["success"] = false;
+            $response ["data"] = [
+                "message" => "La Calificación de Experto no debe ser Nulo o Vacío."
+            ];
+            return $response;
+        }
+        
+        $model_token = LogToken::find()->where([
+                    'token' => $token
+                ])->one();
+
+        if ($model_token == null) {
+            $response ["success"] = false;
+            $response ["data"] = [
+                "message" => "Token inválido"
+            ];
+            return $response;
+        }
+        // Busca el servicio que se calificará
+        $model = ServiceHistory::find()
+                ->select(['id'])
+                ->where([
+                    'id' => $service_id,
+                    'state' => 1,
+                    'expert_id' => $expert_id ,
+                    'user_id' => $model_token->FK_id_user
+                ])
+                ->asArray()
+                ->one();
+        
+        if(isset($model)){
+            $serviceH= ServiceHistory::findOne($model["id"]);
+           
+            $serviceH->qualification = $qualify;
+            $serviceH->observations = $observations;
+            if($serviceH->update()){
+                $response ["success"] = true;
+                $response ["data"] = [
+                    "message" => "Gracias por calificar este servicio. Es muy importante para nosotros"
+                ];
+                return $response;
+            } else {
+                $response ["success"] = true;
+                $response ["data"] = [
+                    "message" => "Hemos tenido un problema al registrar tu calificación. Intenta de nuevo"
+                ];
+                return $response;
+            }  
+        } else {
+            $response ["success"] = false;
+            $response ["data"] = [
+                "message" => "Este servicio no está en nuestros registros."
+            ];
+            return $response;
+        }
+        return true;
     }
 
 }
