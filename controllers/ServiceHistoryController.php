@@ -300,11 +300,11 @@ class ServiceHistoryController extends Controller {
      
         Yii::$app->response->format = 'json';
         
-        $id = Yii::$app->user->identity->id;
         $expert_id = Yii::$app->request->post("expert_id", null);
         $service_id= Yii::$app->request->post("service_id", null);
         $qualify= Yii::$app->request->post("qualify", null);
         $observations= Yii::$app->request->post("observations", null);
+        $token = Yii::$app->request->post("token", null);
         
         if(is_null($expert_id) || empty($expert_id)){
             $response ["success"] = false;
@@ -326,6 +326,31 @@ class ServiceHistoryController extends Controller {
                 "message" => "La Calificación de Experto no debe ser Nulo o Vacío."
             ];
             return $response;
+        }if(is_null($qualify) || empty($qualify)){
+            $response ["success"] = false;
+            $response ["data"] = [
+                "message" => "La Calificación de Experto no debe ser Nulo o Vacío."
+            ];
+            return $response;
+        }if(is_null($token) || empty($token)){
+            $response ["success"] = false;
+            $response ["data"] = [
+                "message" => "El token del Usuario no debe ser Nulo o Vacío."
+            ];
+            return $response;
+        }
+      
+        $model_token = LogToken::find()->where([
+            'token' => $token
+        ])->one();
+        
+        if ($model_token == null) {
+            $response ["success"] = false;
+            $response ["data"] = [
+                "message" => "Token inválido"
+            ];
+
+            return $response;
         }
         // Busca el servicio que se calificará
         $model = ServiceHistory::find()
@@ -334,7 +359,7 @@ class ServiceHistoryController extends Controller {
                     'id' => $service_id,
                     'state' => 1,
                     'expert_id' => $expert_id ,
-                    'user_id' => $id
+                    'user_id' => $model_token->FK_id_user
                 ])
                 ->asArray()
                 ->one();
