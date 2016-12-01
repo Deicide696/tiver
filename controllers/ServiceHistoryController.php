@@ -369,7 +369,7 @@ class ServiceHistoryController extends Controller {
            
             $serviceH->qualification = $qualify;
             $serviceH->observations = $observations;
-            if($serviceH->update()){
+            if($serviceH->save(true, ['qualification','observations'])){
                 $response ["success"] = true;
                 $response ["data"] = [
                     "message" => "Gracias por calificar este servicio. Es muy importante para nosotros"
