@@ -12,7 +12,6 @@ use app\models\User;
 use app\models\LogToken;
 use app\models\VwServiceHistory;
 use app\models\VwActualService;
-use yii\filters\auth\HttpBasicAuth;
 
 /**
  * ServiceHistoryController implements the CRUD actions for ServiceHistory model.
@@ -30,11 +29,6 @@ class ServiceHistoryController extends Controller {
                     ]
                 ]
             ],
-            'authenticator' => [
-                'class' => HttpBasicAuth::className(),
-                'auth' => [$this, 'auth'],
-                'except' => ['index', 'view', 'create', 'update']
-            ]
         ];
     }
     /**
@@ -182,25 +176,34 @@ class ServiceHistoryController extends Controller {
      * @param string token user
      * @return json response service
      */
-
     public function actionHistory() {
         
         Yii::$app->response->format = 'json';
-        $id = Yii::$app->user->identity->id;
-      
-        $model_history = VwServiceHistory::find()
-                ->where(['user_id' => $id, 'status' => 1])
-                ->orderBy(['date' => SORT_DESC])
-                ->asArray()
-                ->all();
-        if ($model_history != null) {
-            $response ["success"] = true;
-            $response ['data'] = $model_history;
+        $token = Yii::$app->request->post ( "token", null );
+        
+        $model_token = LogToken::find ()->where ( [ 
+            'token' => $token 
+        ])->one ();
+//var_dump($model_token);die();
+        if ($model_token != null) {
+            $model_history = VwServiceHistory::find()
+                    ->where(['user_id' => $model_token->FK_id_user, 'status' => 1])
+                    ->orderBy(['date' => SORT_DESC])
+                    ->asArray()
+                    ->all();
+            if ($model_history != null) {
+                $response ["success"] = true;
+                $response ['data'] = $model_history;
+            } else {
+                $response ["success"] = true;
+                $response ["data"] = null;
+            }
         } else {
-            $response ["success"] = true;
-            $response ["data"] = null;
+            $response ["success"] = false;
+            $response ["data"] = [ 
+                            "message" => "Token inválido" 
+            ];
         }
-       
         return $response;
     }
 
