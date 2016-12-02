@@ -372,13 +372,13 @@ class ServiceHistoryController extends Controller {
             if($serviceH->save(true, ['qualification','observations'])){
                 $response ["success"] = true;
                 $response ["data"] = [
-                    "message" => "Gracias por calificar este servicio. Es muy importante para nosotros"
+                    "message" => "Gracias por calificar este servicio. Tu opinión es muy importante para nosotros"
                 ];
                 return $response;
             } else {
                 $response ["success"] = true;
                 $response ["data"] = [
-                    "message" => "Hemos tenido un problema al registrar tu calificación. Intenta de nuevo"
+                    "message" => "Hemos tenido un problema al registrar tu calificación. Porfavor intenta de nuevo"
                 ];
                 return $response;
             }  

@@ -60,11 +60,11 @@ class CouponController extends Controller {
         $user = new User();
         $userHasCoupon = new UserHasCoupon();
 //        print_r($model);die();
-        
+
         return $this->render('view', [
-            'model' => $model,
-            'user' => $user,
-            'userHasCoupon' => $userHasCoupon,
+                    'model' => $model,
+                    'user' => $user,
+                    'userHasCoupon' => $userHasCoupon,
         ]);
     }
 
@@ -75,54 +75,54 @@ class CouponController extends Controller {
      * @return mixed
      */
     public function actionCreate() {
-        
+
         $model = new Coupon ();
         $UserHasCoupon = new UserHasCoupon();
         $CcategoryService = new CouponHasCategoryService();
         $Cservice = new CouponHasService();
 
-        if(isset($_POST["Coupon"]) && isset($_POST["asignar2"])){
-            
-            $model->attributes= $_POST["Coupon"];
+        if (isset($_POST["Coupon"]) && isset($_POST["asignar2"])) {
 
-            if($model->save()){
+            $model->attributes = $_POST["Coupon"];
+
+            if ($model->save()) {
                 //  Asignamos un cupon a un Usuario
-                if($model->type_coupon_id == 1){
+                if ($model->type_coupon_id == 1) {
                     $UserHasCoupon->coupon_id = $model->id;
                     $UserHasCoupon->user_id = $_POST["asignar2"];
-                     if($UserHasCoupon->save()){
+                    if ($UserHasCoupon->save()) {
                         return $this->redirect([
-                            'view',
-                            'id' => $model->id
+                                    'view',
+                                    'id' => $model->id
                         ]);
-                     }
+                    }
                 } // Asiganamos un cupon a una Categoria
-                else if ($model->type_coupon_id  == 2){
+                else if ($model->type_coupon_id == 2) {
 //                    var_dump($CcategoryService);die();
                     $CcategoryService->coupon_id = $model->id;
                     $CcategoryService->category_service_id = $_POST["asignar2"];
-                     if($CcategoryService->save()){
+                    if ($CcategoryService->save()) {
                         return $this->redirect([
-                            'view',
-                            'id' => $model->id
+                                    'view',
+                                    'id' => $model->id
                         ]);
-                     }
+                    }
                 } // Asignamos un cupon a un Servicio 
-                else if($model->type_coupon_id  == 3){
+                else if ($model->type_coupon_id == 3) {
                     $Cservice->coupon_id = $model->id;
                     $Cservice->service_id = $_POST["asignar2"];
-                    if($Cservice->save()){
+                    if ($Cservice->save()) {
                         return $this->redirect([
-                            'view',
-                            'id' => $model->id
+                                    'view',
+                                    'id' => $model->id
                         ]);
-                     }
-                }    
+                    }
+                }
             } else {
-               return $this->render('create', [
-                        'model' => $model,
-                        'CcategoryService' => $CcategoryService,
-                        'Cservice' => $Cservice,
+                return $this->render('create', [
+                            'model' => $model,
+                            'CcategoryService' => $CcategoryService,
+                            'Cservice' => $Cservice,
                 ]);
             }
         } else {
@@ -131,36 +131,34 @@ class CouponController extends Controller {
                         'CcategoryService' => $CcategoryService,
                         'Cservice' => $Cservice,
             ]);
-        }  
+        }
     }
-    
-    public function actionGetmodel(){
-        
-        if (isset($_POST["select"])){
+
+    public function actionGetmodel() {
+
+        if (isset($_POST["select"])) {
             $select = $_POST["select"];
-            if($select == 1){
-                $scri="<option value='0'>Seleccione</option>";
+            if ($select == 1) {
+                $scri = "<option value='0'>Seleccione</option>";
                 $model = User::find()->where(['enable' => 1])->orderBy('first_name')->asArray()->all();
                 foreach ($model as $key => $model2) {
-                     $scri.= '<option value="'.$model2["id"].'">'.$model2["first_name"].' '.$model2["last_name"].'</option>';
+                    $scri .= '<option value="' . $model2["id"] . '">' . $model2["first_name"] . ' ' . $model2["last_name"] . '</option>';
                 }
-            }else if($select == 2){
-                $scri="<option value='0'>Seleccione </option>";
+            } else if ($select == 2) {
+                $scri = "<option value='0'>Seleccione </option>";
                 $model = CategoryService::find()->asArray()->all();
                 foreach ($model as $key => $model1) {
-                     $scri.= '<option value="'.$model1["id"].'">'.$model1["description"].'</option>';
-      
+                    $scri .= '<option value="' . $model1["id"] . '">' . $model1["description"] . '</option>';
                 }
-            }else if($select == 3){
-                $scri="<option value='0'>Seleccione</option>";
+            } else if ($select == 3) {
+                $scri = "<option value='0'>Seleccione</option>";
                 $model = Service::find()->asArray()->all();
                 foreach ($model as $key => $model2) {
-                     $scri.= '<option value="'.$model2["id"].'">'.$model2["name"].'</option>';
+                    $scri .= '<option value="' . $model2["id"] . '">' . $model2["name"] . '</option>';
                 }
             }
-            
         }
-        return json_encode(['model'=> $model, 'select' => $select, 'scri'=> $scri]);
+        return json_encode(['model' => $model, 'select' => $select, 'scri' => $scri]);
     }
 
     /**
@@ -223,9 +221,10 @@ class CouponController extends Controller {
     }
 
     public function actionCheckCoupon() {
+
         $cupon = Yii::$app->request->post('cupon', '');
         $token = Yii::$app->request->post('token', '');
-
+        $id = Yii::$app->request->post('service_id', '');
         Yii::$app->response->format = 'json';
 
         $model = Coupon::find()->where([
@@ -236,56 +235,70 @@ class CouponController extends Controller {
                 ])->joinwith([
                     'couponHasService'
                 ])->asArray()->one();
-        // $model=CategoryService::find()->select(['category_service.id','description','status','icon'])->where(['status'=>'1'])->joinwith('service')->asArray()->all();
-        // print_r($model);
-        if ($model != null) {
 
-            if ($model ['used'] == '1') {
-                $response ["success"] = false;
-                $response ["data"] = [
-                    'message' => 'Lo sentimos, este cupón ya ha sido utilizado'
-                ];
-                return $response;
-            } else {
-                //
-                switch ($model['type_coupon_id']) {
-                    case 1 : // Caso coupon - usuario
-                        $model_token = LogToken::find()->where([
-                                    'token' => $token
-                                ])->one();
+        if (isset($model)) {
+            // Validacion si este servicio esta asociado a este cupon
+            $modelS = Coupon::find()->where([
+                        'type_coupon_id' => 3,
+                        'enable' => '1',
+                        'coupon_has_service.service_id' => $id
+                    ])->joinwith([
+                    'couponHasService'
+                    ])->asArray()->one();
+//            return var_dump($modelS);
+            if (isset($modelS)) {
+                if ($model ['used'] == '1') {
+                    $response ["success"] = false;
+                    $response ["data"] = [
+                        'message' => 'Lo sentimos, este cupón ya ha sido utilizado'
+                    ];
+                    return $response;
+                } else {
+                    switch ($model['type_coupon_id']) {
+                        case 1 : // Caso coupon - usuario
+                            $model_token = LogToken::find()->where([
+                                        'token' => $token
+                                    ])->one();
 
-                        if ($model_token != null) {
-                            // buscamos la relación cupon-ususario
-                            $model_search = UserHasCoupon::find()->where([
-                                'user_id' => $model_token->FK_id_user,
-                                'coupon_id' => $model['id']
-                            ])->asArray()->one();
-                            if ($model_search != null) {
-                                $response ["success"] = true;
-                                $response ['data'] = $model;
-                                return $response;
+                            if ($model_token != null) {
+                                // buscamos la relación cupon-ususario
+                                $model_search = UserHasCoupon::find()->where([
+                                            'user_id' => $model_token->FK_id_user,
+                                            'coupon_id' => $model['id']
+                                        ])->asArray()->one();
+                                if ($model_search != null) {
+                                    $response ["success"] = true;
+                                    $response ['data'] = $model;
+                                    return $response;
+                                } else {
+                                    $response ["success"] = false;
+                                    $response ["data"] = [
+                                        "message" => "Este cupón se encuentra asignado a otro usuario"
+                                    ];
+                                    return $response;
+                                }
                             } else {
                                 $response ["success"] = false;
                                 $response ["data"] = [
-                                    "message" => "Este cupón se encuentra asignado a otro usuario"
+                                    "message" => "Token inválido"
                                 ];
                                 return $response;
                             }
-                        } else {
-                            $response ["success"] = false;
-                            $response ["data"] = [
-                                "message" => "Token inválido"
-                            ];
-                            return $response;
-                        }
 
-                        break;
-                    case 2://CAso cuponcategoria
-                        $response ["success"] = true;
-                        $response ['data'] = $model;
-                        return $response;
-                        break;
+                            break;
+                        case 2://CAso cuponcategoria
+                            $response ["success"] = true;
+                            $response ['data'] = $model;
+                            return $response;
+                            break;
+                    }
                 }
+            } else {
+                $response ["success"] = false;
+                $response ["data"] = [
+                    'message' => 'Lo sentimos, este cupón no está asignado a este servicio.'
+                ];
+                return $response;
             }
         } else {
             $response ["success"] = false;
