@@ -683,6 +683,20 @@ class ExpertController extends Controller {
         
         Yii::$app->response->format = 'json';
         $id = Yii::$app->request->post("id", null);
+        $token = Yii::$app->request->post("token", null);
+         
+        $model_token = LogToken::find()->where([
+            'token' => $token
+        ])->one();
+        
+        if ($model_token == null) {
+            $response ["success"] = false;
+            $response ["data"] = [
+                "message" => "Token inválido"
+            ];
+
+            return $response;
+        }
         
         $expert = Expert::find()
                 ->where(['id' => $id])->one();

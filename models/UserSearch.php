@@ -71,7 +71,7 @@ class UserSearch extends User
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
-
+//        var_dump($params);die();
         $this->load($params);
 
         if (!$this->validate()) {
