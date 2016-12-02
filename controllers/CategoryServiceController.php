@@ -150,6 +150,8 @@ class CategoryServiceController extends Controller {
                 //Modificamos precio del servicio
                 if ($model[$i]['service'][$j]['tax'] == 1) {
                     $model[$i]['service'][$j]['price'] = (int)round($model[$i]['service'][$j]['price'] + ($model[$i]['service'][$j]['price'] * Yii::$app->params ['tax_percent']), -2, PHP_ROUND_HALF_UP);
+                }else{
+                    $model[$i]['service'][$j]['price'] = (int)$model[$i]['service'][$j]['price'];
                 }
                 //Buscamos modificadores y se reajusta el precio del servicio
                 $modificadores = $model[$i]['service'][$j]['serviceHasModifier'];
@@ -163,6 +165,8 @@ class CategoryServiceController extends Controller {
                                 $aux = $model[$i]['service'][$j]['serviceHasModifier'][$k];
                                 $model[$i]['service'][$j]['serviceHasModifier'][$k] = $model[$i]['service'][$j]['serviceHasModifier'][$k + 1];
                                 $model[$i]['service'][$j]['serviceHasModifier'][$k + 1] =  $aux;
+                            }else {
+                                $model[$i]['service'][$j]['serviceHasModifier'][$k]['modifier']['price'] = intval($model[$i]['service'][$j]['serviceHasModifier'][$k]['modifier']['price'] );
                             }
                         }
                         if ($model[$i]['service'][$j]['serviceHasModifier'][$k1]['modifier']['tax'] == 1) {
