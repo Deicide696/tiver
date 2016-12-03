@@ -1235,7 +1235,7 @@ class AssignedServiceController extends Controller {
                     "time" => $time,
                     "state" => 1
                 ])->joinWith('service')->one();
-
+        
         if ($services == null) {
             $response ["success"] = false;
             $response ["data"] = [
@@ -1246,7 +1246,10 @@ class AssignedServiceController extends Controller {
         }
 
         // Obtener precio del servicio
-        $value = $services->getPrice();
+       if($value == ""){
+           $value = $services->getPrice();
+       } 
+       
         $tax = $services->getTax();
 
         $duracion = ($services->getDuration()) - 15;
