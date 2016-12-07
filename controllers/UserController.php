@@ -53,7 +53,7 @@ class UserController extends Controller {
                     'index'
                 ],
                 'rules' => [
-                    [
+                        [
                         'actions' => [
                             'view',
                             'index'
@@ -78,7 +78,7 @@ class UserController extends Controller {
      * @return mixed
      */
     public function actionIndex() {
-        
+
         if(isset($_GET["UserSearch"]) && isset($_GET["success"])){
             $_GET["success"] = 0;
         }
@@ -86,8 +86,8 @@ class UserController extends Controller {
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
         ]);
     }
 
@@ -111,9 +111,9 @@ class UserController extends Controller {
         // $dataProvider = $searchModel->search(['expert_id' => $id]);
 
         return $this->render('view', [
-            'model' => $this->findModel($id),
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider
+                    'model' => $this->findModel($id),
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider
         ]);
     }
 
@@ -124,8 +124,8 @@ class UserController extends Controller {
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect([
-                'view',
-                'id' => $model->id
+                        'view',
+                        'id' => $model->id
             ]);
         } else if (Yii::$app->request->isPost) {
             // se define el layout
@@ -176,14 +176,15 @@ class UserController extends Controller {
                                 $sendGrid = new \SendGrid(Yii::$app->params ['sengrid_user'], Yii::$app->params ['sendgrid_pass']);
                                 $email = new \SendGrid\Email ();
                                 $email
-                                ->setFrom(Yii::$app->params ['sendgrid_from'])
-                                ->setFromName(Yii::$app->params ['sendgrid_from_name'])
-                                ->addTo($user->email)
-                                ->setSubject(' ')
-                                ->setHtml(' ')
-                                ->addSubstitution('{{ username }}', [$user->first_name])
-                                ->addFilter('templates', 'enabled', 1)
-                                ->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_welcome']);
+                                        ->setFrom(Yii::$app->params ['sendgrid_from'])
+                                        ->setFromName(Yii::$app->params ['sendgrid_from_name'])
+                                        ->addTo($user->email)
+                                        ->setSubject(' ')
+                                        ->setHtml(' ')
+                                        ->addSubstitution('{{ username }}', [$user->first_name])
+                                        ->addSubstitution('{{ personal_code }}', [$user->personal_code])
+                                        ->addFilter('templates', 'enabled', 1)
+                                        ->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_welcome']);
                                 $resp = $sendGrid->send($email);
                                 //	var_dump($resp);
                             }
@@ -234,7 +235,7 @@ class UserController extends Controller {
             $model = new User($id);
 
             return $this->render('create', [
-                'model' => $model
+                        'model' => $model
             ]);
         }
     }
@@ -353,11 +354,11 @@ class UserController extends Controller {
             $user = User::find()->where("enable='1' and(fb_id='$user_id' or email='$email') and FK_id_rol=1")->one();
             if ($user) {
                 $updateTokens = LogToken::updateAll([
-                    'status' => 0
-                ], [
-                    'FK_id_user' => $user->id,
-                    'FK_id_token_type' => $typeToken->id,
-                    'status' => 1
+                            'status' => 0
+                                ], [
+                            'FK_id_user' => $user->id,
+                            'FK_id_token_type' => $typeToken->id,
+                            'status' => 1
                 ]);
                 // se crea el token del nuevo usuario mmz
                 $tokenMmz = new LogToken ();
@@ -382,9 +383,9 @@ class UserController extends Controller {
 
                     // Buscamos y actualizamos el token GCM
                     $gcm_token = GcmToken::find()->where([
-                        "user_id" => $user->id,
-                        "type_token_id" => $device
-                    ])->one();
+                                "user_id" => $user->id,
+                                "type_token_id" => $device
+                            ])->one();
                     if ($gcm_token != null) {
                         $gcm_token->token = $gcm_id;
                         $gcm_token->one_signal_token = $os_id;
@@ -402,19 +403,19 @@ class UserController extends Controller {
                     // var_dump($gcm_token->getErrors());
 
                     $model_history = VwActualService::find()->where([
-                        'user_id' => $user->id
-                    ])->
-                    // 'status' => '1'
-                    asArray()->one();
+                                        'user_id' => $user->id
+                                    ])->
+                                    // 'status' => '1'
+                                    asArray()->one();
                     $actual_service = false;
                     if ($model_history != null) {
                         $actual_service = true;
                     }
 
                     $model_cc = CreditCard::find()->where([
-                        'user_id' => $user->id,
-                        'enable' => '1'
-                    ])->count();
+                                'user_id' => $user->id,
+                                'enable' => '1'
+                            ])->count();
                     $credit_card = $model_cc;
 
                     return [
@@ -486,14 +487,14 @@ class UserController extends Controller {
                                     $sendGrid = new \SendGrid(Yii::$app->params ['sengrid_user'], Yii::$app->params ['sendgrid_pass']);
                                     $email = new \SendGrid\Email ();
                                     $email
-                                    ->setFrom(Yii::$app->params ['sendgrid_from'])
-                                    ->setFromName(Yii::$app->params ['sendgrid_from_name'])
-                                    ->addTo($user->email)
-                                    ->setSubject(' ')
-                                    ->setHtml(' ')
-                                    ->addSubstitution('{{ username }}', [$user->first_name])
-                                    ->addFilter('templates', 'enabled', 1)
-                                    ->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_welcome']);
+                                            ->setFrom(Yii::$app->params ['sendgrid_from'])
+                                            ->setFromName(Yii::$app->params ['sendgrid_from_name'])
+                                            ->addTo($user->email)
+                                            ->setSubject(' ')
+                                            ->setHtml(' ')
+                                            ->addSubstitution('{{ username }}', [$user->first_name])
+                                            ->addFilter('templates', 'enabled', 1)
+                                            ->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_welcome']);
                                     $resp = $sendGrid->send($email);
                                 }
                             } catch (\Exception $e) {
@@ -562,7 +563,7 @@ class UserController extends Controller {
             }
         } else {
             return $this->render('create', [
-                'model' => $model
+                        'model' => $model
             ]);
         }
     }
@@ -581,15 +582,15 @@ class UserController extends Controller {
             $model = $this->findModel($id);
             if ($model->load(Yii::$app->request->post()) && $model->save()) {
                 return $this->redirect([
-                    'view',
-                    'id' => $model->id
+                            'view',
+                            'id' => $model->id
                 ]);
             } else {
 
                 $model = $this->findModel($id);
                 $model->updated_date = date('Y-m-d H:i:s');
                 return $this->render('update', [
-                    'model' => $model
+                            'model' => $model
                 ]);
             }
         } elseif (Yii::$app->request->isPost) {
@@ -612,7 +613,7 @@ class UserController extends Controller {
             $token = Yii::$app->request->post("token", null);
             try {
                 $modelToken = LogToken::findOne([
-                    'token' => $token
+                            'token' => $token
                 ]);
                 if (!empty($modelToken)) {
                     if ($modelToken->status) {
@@ -710,7 +711,7 @@ class UserController extends Controller {
         $this->findModel($id)->delete();
 
         return $this->redirect([
-            'index'
+                    'index'
         ]);
     }
 
@@ -770,9 +771,9 @@ class UserController extends Controller {
         }
 
         $user = User::findOne([
-            'email' => $email,
-            'enable' => User::STATUS_ACTIVE,
-            'FK_id_rol' => '1'
+                    'email' => $email,
+                    'enable' => User::STATUS_ACTIVE,
+                    'FK_id_rol' => '1'
         ]);
         if ($user == null) {
             return [
@@ -843,11 +844,11 @@ class UserController extends Controller {
         $tokenMmz = new LogToken ();
         $token = MD5($user->id . $user->email . time());
         $updateTokens = LogToken::updateAll([
-            'status' => 0
-        ], [
-            'FK_id_user' => $user->id,
-            'FK_id_token_type' => $typeToken->id,
-            'status' => 1
+                    'status' => 0
+                        ], [
+                    'FK_id_user' => $user->id,
+                    'FK_id_token_type' => $typeToken->id,
+                    'status' => 1
         ]);
         $arrayLog = [
             'LogToken' => [
@@ -878,9 +879,9 @@ class UserController extends Controller {
 
         // Buscamos y actualizamos el token GCM
         $gcm_token = GcmToken::find()->where([
-            "user_id" => $user->id,
-            "type_token_id" => $device
-        ])->one();
+                    "user_id" => $user->id,
+                    "type_token_id" => $device
+                ])->one();
         if ($gcm_token != null) {
             $gcm_token->token = $gcm_id;
             $gcm_token->one_signal_token = $os_id;
@@ -897,19 +898,19 @@ class UserController extends Controller {
         }
 
         $model_history = VwActualService::find()->where([
-            'user_id' => $user->id
-        ])->
-        // 'status' => '1'
-        asArray()->one();
+                            'user_id' => $user->id
+                        ])->
+                        // 'status' => '1'
+                        asArray()->one();
         $actual_service = false;
         if ($model_history != null) {
             $actual_service = true;
         }
 
         $model_cc = CreditCard::find()->where([
-            'user_id' => $user->id,
-            'enable' => '1'
-        ])->count();
+                    'user_id' => $user->id,
+                    'enable' => '1'
+                ])->count();
         $credit_card = $model_cc;
 
         return [
@@ -978,16 +979,16 @@ class UserController extends Controller {
                 if (!empty($typeToken)) {
                     if ($model->login()) {
                         $user = User::findOne([
-                            'email' => $email,
-                            'enable' => 1
+                                    'email' => $email,
+                                    'enable' => 1
                         ]);
                         if ($user) {
                             $updateTokens = LogToken::updateAll([
-                                'status' => 0
-                            ], [
-                                'FK_id_user' => $user->id,
-                                'FK_id_token_type' => $typeToken->id,
-                                'status' => 1
+                                        'status' => 0
+                                            ], [
+                                        'FK_id_user' => $user->id,
+                                        'FK_id_token_type' => $typeToken->id,
+                                        'status' => 1
                             ]);
                             // se crea el token del nuevo usuario mmz
                             $tokenMmz = new LogToken ();
@@ -1013,9 +1014,9 @@ class UserController extends Controller {
 
                                 // Buscamos y actualizamos el token GCM
                                 $gcm_token = GcmToken::find()->where([
-                                    "user_id" => $user->id,
-                                    "type_token_id" => $device
-                                ])->one();
+                                            "user_id" => $user->id,
+                                            "type_token_id" => $device
+                                        ])->one();
                                 if ($gcm_token != null) {
                                     $gcm_token->token = $gcm_id;
                                     $gcm_token->one_signal_token = $os_id;
@@ -1032,19 +1033,19 @@ class UserController extends Controller {
                                 }
 
                                 $model_history = VwActualService::find()->where([
-                                    'user_id' => $user->id
-                                ])->
-                                // 'status' => '1'
-                                asArray()->one();
+                                                    'user_id' => $user->id
+                                                ])->
+                                                // 'status' => '1'
+                                                asArray()->one();
                                 $actual_service = false;
                                 if ($model_history != null) {
                                     $actual_service = true;
                                 }
 
                                 $model_cc = CreditCard::find()->where([
-                                    'user_id' => $user->id,
-                                    'enable' => '1'
-                                ])->count();
+                                            'user_id' => $user->id,
+                                            'enable' => '1'
+                                        ])->count();
                                 $credit_card = $model_cc;
 
                                 return [
@@ -1133,11 +1134,11 @@ class UserController extends Controller {
         if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->resetPassword()) {
             Yii::$app->session->setFlash('success', 'New password was saved.');
             return $this->render('password_change', [
-                'model' => null
+                        'model' => null
             ]);
         }
         return $this->render('password_change', [
-            'model' => $model
+                    'model' => $model
         ]);
         // } else {
         // throw new \yii\web\HttpException(500, 'Ingreso inválido.'); //mensaje con la ecxepcion
@@ -1187,7 +1188,7 @@ class UserController extends Controller {
             }
 
             return $this->render('requestPasswordResetToken', [
-                'model' => $model
+                        'model' => $model
             ]);
         } else {
 //            var_dump("Entro");die();
@@ -1214,7 +1215,7 @@ class UserController extends Controller {
             }
 
             return $this->render('requestPasswordResetToken', [
-                'model' => $model
+                        'model' => $model
             ]);
         }
     }
@@ -1228,22 +1229,22 @@ class UserController extends Controller {
         $data = json_decode($_POST ['request'], true);
         $token = $data ['token'];
         $model_token = LogToken::find()->where([
-            'token' => $token
-        ])->one();
+                    'token' => $token
+                ])->one();
 
         // var_dump($searched);
 
         if ($model_token != null) {
 
             $model_user = User::find()->select([
-                'id',
-                'name',
-                'last_name',
-                'email',
-                'phone'
-            ])->where([
-                'id' => $model_token->user_id
-            ])->asArray()->all();
+                        'id',
+                        'name',
+                        'last_name',
+                        'email',
+                        'phone'
+                    ])->where([
+                        'id' => $model_token->user_id
+                    ])->asArray()->all();
             if ($model_user != null) {
                 $response ["success"] = true;
                 $response ['data'] = $model_user;

@@ -308,5 +308,70 @@ class CouponController extends Controller {
             return $response;
         }
     }
-
+    
+    /**
+     * Check Coupon Redemption
+     * 
+     * return json response
+     */
+    public function actionRedemptionCoupon(){
+        
+        Yii::$app->response->format = 'json';
+        $id_user = Yii::$app->request->post('id_user', '');
+        $id_service = Yii::$app->request->post('id_service', '');
+       
+        $userCoupon = UserHasCoupon::find()
+                ->where(['user_id' => $id_user, 'user.enable' => 1])
+                ->joinWith('user')
+                ->asArray()
+                ->all();
+        if(isset($userCoupon) && !empty($userCoupon)){
+            $search = false;
+            $nomCoupon = "";
+            $valServicio = 0;
+            foreach ($userCoupon as $key => $value) {
+                $couponSer = CouponHasService::find()
+                ->where(['coupon_id' => $value['coupon_id'], 
+                    'service_id' => $id_service,
+                    'service.status' => 1])
+                ->joinWith('service')
+                ->joinWith('coupon')
+                ->asArray()
+                ->one();
+                if(isset($couponSer) && !empty($couponSer)){
+                    $nomCoupon = $couponSer['coupon']['name'];
+                    $valServicio = $couponSer['service']['price'];
+                    $search = true;
+                    break;
+                } else {
+                    $search = false;
+                }
+            }
+            if($search){
+                $response ["success"] = true;
+                $response ["data"] = [
+                    'nomCoupon' => $nomCoupon,
+                    'valService' => $valServicio,
+                    'message' => 'Este Usuario tiene un Cupón asociado a este servicio.'
+                ];
+                return $response;
+            }else {
+                $response ["success"] = false;
+                $response ["data"] = [
+                    'nomCoupon' => null,
+                    'valCoupon' => null,
+                    'message' => 'Lo sentimos, este Cupón no está asociado a este servicio.'
+                ];
+                return $response;
+            }
+        } else {
+            $response ["success"] = false;
+            $response ["data"] = [
+                'nomCoupon' => null,
+                'valCoupon' => null,
+                'message' => 'Lo sentimos, este usuario no tiene cupones asociados.'
+            ];
+            return $response;
+        }
+    }
 }
