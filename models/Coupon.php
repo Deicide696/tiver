@@ -13,9 +13,12 @@ use Yii;
  * @property string $code
  * @property integer $enable
  * @property integer $used
+ * @property integer $type_coupon_id
+ * @property integer $discount
+ * @property integer $amount
  * @property string $created_date
  * @property string $updated_date
- * @property integer $type_coupon_id
+ * @property string $due_date
  *
  * @property AssignedService[] $assignedServices
  * @property TypeCoupon $typeCoupon
@@ -23,6 +26,7 @@ use Yii;
  * @property CategoryService[] $categoryServices
  * @property CouponHasService[] $couponHasServices
  * @property Service[] $services
+ * @property ServiceHistory[] $serviceHistories
  * @property UserHasCoupon[] $userHasCoupons
  * @property User[] $users
  */
@@ -41,14 +45,16 @@ class Coupon extends \yii\db\ActiveRecord
      */
     public function rules()
     {
-        return [
-            [['enable', 'used', 'type_coupon_id'], 'integer'],
-          //  [['created_date', 'updated_date'], 'safe'],
-            [['type_coupon_id','code'], 'required'],
+         return [
+            [['enable', 'used', 'type_coupon_id', 'discount', 'amount'], 'integer'],
+            [['type_coupon_id'], 'required'],
+            [['created_date', 'updated_date', 'due_date'], 'safe'],
             [['name', 'code'], 'string', 'max' => 45],
-            [['code'], 'unique', 'message' => 'Este cupon ya se encuantra registrado.']
+            [['code'], 'unique', 'message' => 'Este cupon ya se encuantra registrado.'],
+            [['type_coupon_id'], 'exist', 'skipOnError' => true, 'targetClass' => TypeCoupon::className(), 'targetAttribute' => ['type_coupon_id' => 'id']],
         ];
     }
+    
     public function behaviors()
     {
        return [           
@@ -90,15 +96,18 @@ class Coupon extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Descripción',
-            'code' => 'Cupón',
+            'name' => 'Nombre',
+            'code' => 'Codigo de Cupón',
             'enable' => 'Activo',
             'used' => 'Usado',
-            'created_date' => 'Fecha creación',
-            'updated_date' => 'Fecha actualización',
-            'type_coupon_id' => 'Tipo de cupón',
+            'type_coupon_id' => 'Tipo de Cupón',
+            'discount' => 'Porcentaje de Descuento',
+            'amount' => 'Monto',
+            'created_date' => 'Fecha de Creación',
+            'updated_date' => 'Fecha de Actualización',
+            'due_date' => 'Fecha de Vencimiento',
         ];
-    }
+    }   
 
     /**
      * @return \yii\db\ActiveQuery
@@ -119,7 +128,7 @@ class Coupon extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCouponHasCategoryService()
+    public function getCouponHasCategoryServices()
     {
         return $this->hasMany(CouponHasCategoryService::className(), ['coupon_id' => 'id']);
     }
@@ -127,7 +136,7 @@ class Coupon extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCategoryService()
+    public function getCategoryServices()
     {
         return $this->hasMany(CategoryService::className(), ['id' => 'category_service_id'])->viaTable('coupon_has_category_service', ['coupon_id' => 'id']);
     }
@@ -135,7 +144,7 @@ class Coupon extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCouponHasService()
+    public function getCouponHasServices()
     {
         return $this->hasMany(CouponHasService::className(), ['coupon_id' => 'id']);
     }
@@ -143,7 +152,7 @@ class Coupon extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getService()
+    public function getServices()
     {
         return $this->hasMany(Service::className(), ['id' => 'service_id'])->viaTable('coupon_has_service', ['coupon_id' => 'id']);
     }
@@ -151,7 +160,15 @@ class Coupon extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getUserHasCoupon()
+    public function getServiceHistories()
+    {
+        return $this->hasMany(ServiceHistory::className(), ['coupon_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUserHasCoupons()
     {
         return $this->hasMany(UserHasCoupon::className(), ['coupon_id' => 'id']);
     }
@@ -159,7 +176,7 @@ class Coupon extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getUser()
+    public function getUsers()
     {
         return $this->hasMany(User::className(), ['id' => 'user_id'])->viaTable('user_has_coupon', ['coupon_id' => 'id']);
     }

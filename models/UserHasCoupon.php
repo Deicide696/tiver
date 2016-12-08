@@ -29,7 +29,8 @@ class UserHasCoupon extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'coupon_id'], 'required'],
+            [['user_id'], 'required', 'message' => "Debe seleccionar un Usuario."],
+            [['coupon_id'], 'required', 'message' => "Debe seleccionar un Cupón."],
             [['user_id', 'coupon_id'], 'integer']
         ];
     }

@@ -10,6 +10,7 @@ use app\models\User;
 $this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => 'Coupons', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="coupon-view">
 
@@ -20,11 +21,13 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'name',
             'code',
-            'enable',
+            'amount',
             'used',
+            'enable',
+            'type_coupon_id',
             'created_date',
             'updated_date',
-            'type_coupon_id',
+            'due_date'
         ],
     ]) ?>
     <p>

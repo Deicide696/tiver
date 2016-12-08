@@ -1153,8 +1153,6 @@ class UserController extends Controller {
     public function actionRequestPasswordReset() {
 
         if (Yii::$app->request->isPost) {
-            var_dump("Entro POST");
-            die();
             $this->layout = "json";
             Yii::$app->response->format = 'json';
             $email = Yii::$app->request->post('email', null);
@@ -1191,9 +1189,6 @@ class UserController extends Controller {
                         'model' => $model
             ]);
         } else {
-//            var_dump("Entro");die();
-//            $this->layout = "json";
-//            Yii::$app->response->format = 'json';
             $email = Yii::$app->request->get('email', null);
             $model = new \app\models\PasswordResetRequestForm ();
             $model->attributes = \Yii::$app->request->get();
