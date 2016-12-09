@@ -33,185 +33,81 @@ AppAsset::register($this);
                     'class' => 'navbar-inverse navbar-fixed-top'
                 ]
             ]);
-            echo Nav::widget([
-                'options' => [
-                    'class' => 'navbar-nav navbar-right'
-                ],
-                'encodeLabels' => false,
-                'items' => Yii::$app->user->isGuest ? [
-                        [
-                        'label' => 'Login',
-                        'url' => [
-                            '/site/login'
-                        ]
-                    ]
-                        ] : [
-                        [
-                        'label' => '<span class="glyphicon glyphicon-calendar"></span> Servicios asignados',
-                        'items' => [
-                                [
-                                'label' => 'Servicios actuales',
-                                'url' => [
-                                    '/assigned-service'
-                                ]
-                            ],
-                                [
-                                'label' => 'Historial de servicios',
-                                'url' => [
-                                    '/service-history'
-                                ]
-                            ],
-                        ]
-                    ],
-                        [
-                        'label' => '<span class="glyphicon glyphicon-leaf"></span> Servicios',
-                        'items' => [
-                                [
-                                'label' => 'Categorías',
-                                'url' => [
-                                    '/category-service'
-                                ]
-                            ],
-                                [
-                                'label' => 'Servicios',
-                                'url' => [
-                                    '/service'
-                                ]
-                            ],
-                                [
-                                'label' => 'Modificadores',
-                                'url' => [
-                                    '/modifier/'
-                                ]
-                            ],
-                                [
-                                'label' => 'Modificadores & servicios',
-                                'url' => [
-                                    '/service-has-modifier'
-                                ]
+                if(Yii::$app->user->isGuest){
+                    $menuItems[] = ['label' => 'Iniciar sesión', 'url' => ['/site/login']];
+                } else {
+                    if(Yii::$app->user->can('admin')) {
+                        $menuItems[] = [
+                            'label' => '<span class="glyphicon glyphicon-calendar"></span> Servicios asignados',
+                            'items' => [
+                                        ['label' => 'Servicios actuales', 'url' => ['/assigned-service']],
+                                        ['label' => 'Historial de servicios','url' => ['/service-history']],
                             ]
-                        ]
-                    ],
-                        [
-                        'label' => '<span class="glyphicon glyphicon-briefcase"></span> Especialistas',
-                        'items' => [
-                                [
-                                'label' => 'Especialistas',
-                                'url' => [
-                                    '/expert'
-                                ]
-                            ],
-                                [
-                                'label' => 'Disponibilidad',
-                                'url' => [
-                                    '/schedule'
-                                ]
-                            ],
-                                [
-                                'label' => 'Especialistas & servicios',
-                                'url' => [
-                                    '/expert-has-service'
-                                ]
+                        ];
+                        $menuItems[] = [
+                            'label' => '<span class="glyphicon glyphicon-leaf"></span> Servicios',
+                            'items' => [
+                                ['label' => 'Categorías', 'url' => ['/category-service']],
+                                ['label' => 'Servicios', 'url' => ['/service']],
+                                ['label' => 'Modificadores', 'url' => ['/modifier/']],
+                                ['label' => 'Modificadores & servicios', 'url' => ['/service-has-modifier']]
                             ]
-                        ]
-                    ]
-                    ,
-                        [
-                        'label' => '<span class="glyphicon glyphicon-user"></span> Usuarios',
-                        'items' => [
-                                [
-                                'label' => 'Usuarios',
-                                'url' => [
-                                    '/user'
-                                ]
-                            ],
-                                [
-                                'label' => 'Direcciones',
-                                'url' => [
-                                    '/address'
-                                ]
-                            ],
-                        /* [ 
-                          'label' => 'Medios de pago',
-                          'url' => [
-                          '/credit-card'
-                          ]
-                          ], */
-                        // [ 
-                        // 		'label' => 'Usuarios & direcciones',
-                        // 		'url' => [ 
-                        // 				'/user-has-address' 
-                        // 		] 
-                        // ] 
-                        ]
-                    ]
-                    ,
-                        [
-                        'label' => '<span class="glyphicon glyphicon-cog"></span> Parámetros',
-                        'items' => [
-                                [
-                                'label' => 'Cupones',
-                                'url' => [
-                                    '/coupon'
-                                ]
-                            ],
-                                [
-                                'label' => 'Tipos de dirección',
-                                'url' => [
-                                    '/type-housing'
-                                ]
-                            ],
-                                [
-                                'label' => 'Niveles de modificadores',
-                                'url' => [
-                                    '/type-modifier'
-                                ]
-                            ],
-                                [
-                                'label' => 'Tipos de identificación',
-                                'url' => [
-                                    '/type-identification'
-                                ]
-                            ],
-                                [
-                                'label' => 'Roles',
-                                'url' => [
-                                    '/rol'
-                                ]
-                            ],
-                                [
-                                'label' => 'Zonas',
-                                'url' => [
-                                    '/zone'
-                                ]
-                            ],
-                                [
-                                'label' => 'Ciudades',
-                                'url' => [
-                                    '/city'
-                                ]
+                        ];
+                        $menuItems[] = [
+                            'label' => '<span class="glyphicon glyphicon-briefcase"></span> Especialistas',
+                            'items' => [
+                                ['label' => 'Especialistas', 'url' => ['/expert']],
+                                ['label' => 'Disponibilidad', 'url' => ['/schedule']],
+                                ['label' => 'Especialistas & servicios', 'url' => ['/expert-has-service']]
                             ]
-                        ]
-                    ]
-                    ,
-                        [
+                        ];
+                        $menuItems[] = [
+                            'label' => '<span class="glyphicon glyphicon-user"></span> Usuarios',
+                            'items' => [
+                                ['label' => 'Usuarios', 'url' => ['/user']],
+                                ['label' => 'Direcciones', 'url' => ['/address']],
+                            ]
+                        ];
+                        $menuItems[] = [
+                            'label' => '<span class="glyphicon glyphicon-cog"></span> Parámetros',
+                            'items' => [
+                                ['label' => 'Cupones', 'url' => ['/coupon']],
+                                ['label' => 'Tipos de dirección', 'url' => ['/type-housing']],
+                                ['label' => 'Niveles de modificadores', 'url' => ['/type-modifier']],
+                                ['label' => 'Tipos de identificación', 'url' => ['/type-identification']],
+                                ['label' => 'Roles', 'url' => ['/rol']],
+                                ['label' => 'Zonas', 'url' => ['/zone']],
+                                ['label' => 'Ciudades', 'url' => ['/city']]
+                            ]
+                        ];
+                    }
+                    if(Yii::$app->user->can('super-admin')) {
+                        $menuItems[] = [
+                            'label' => 'Administración', 
+                                'items' => [
+                                    ['label' => 'Asignacion', 'url' => ['/admin']],
+                                    ['label' => 'Roles', 'url' => ['/admin/role']],
+                                    ['label' => 'Permisos', 'url' => ['/admin/permission']],
+                                ]
+                        ];
+                    }
+                    $menuItems[] = [
                         'label' => Yii::$app->user->identity->first_name,
                         'items' => [
-                                [
-                                'label' => '<span class="glyphicon glyphicon-off"></span> Cerrar sesión',
-                                'url' => [
-                                    '/site/logout'
-                                ],
+                            ['label' => '<span class="glyphicon glyphicon-off"></span> Cerrar sesión', 
+                                'url' => ['/site/logout'],
                                 'linkOptions' => [
                                     'data-method' => 'post'
                                 ]
                             ]
                         ]
-                    ]
-                        ]
-                    ]
-            );
-
+                    ];
+                }
+                echo Nav::widget([
+                    'options' => ['class' => 'nav navbar-nav navbar-right'],
+                    'items' => $menuItems,
+                    'encodeLabels' => false,
+                ]);
             NavBar::end();
 
             /*
@@ -235,7 +131,7 @@ AppAsset::register($this);
             ?>
 
             <div class="container">
-                <?= Yii::$app->user->isGuest ? '<div class="row">gg</div>':Breadcrumbs::widget(['links' => isset($this->params ['breadcrumbs']) ? $this->params ['breadcrumbs'] : []]) ?>
+                <?= Yii::$app->user->isGuest ? '<div class="row">gg</div>' : Breadcrumbs::widget(['links' => isset($this->params ['breadcrumbs']) ? $this->params ['breadcrumbs'] : []]) ?>
                 <?= $content ?>
             </div>
         </div>
@@ -248,7 +144,7 @@ AppAsset::register($this);
             </div>
         </footer>
 
-<?php $this->endBody() ?>
+        <?php $this->endBody() ?>
     </body>
 </html>
 <?php $this->endPage() ?>

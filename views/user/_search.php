@@ -17,7 +17,7 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'id') ?>
 
-    <?= $form->field($model, 'name') ?>
+    <?= $form->field($model, 'first_name') ?>
 
     <?= $form->field($model, 'last_name') ?>
 
@@ -33,21 +33,29 @@ use yii\widgets\ActiveForm;
 
     <?php // echo $form->field($model, 'receive_interest_info') ?>
 
-    <?php // echo $form->field($model, 'status') ?>
+    <?php // echo $form->field($model, 'enable') ?>
 
     <?php // echo $form->field($model, 'last_login') ?>
 
     <?php // echo $form->field($model, 'imei') ?>
 
-    <?php // echo $form->field($model, 'created_data') ?>
+    <?php // echo $form->field($model, 'fb_id') ?>
 
-    <?php // echo $form->field($model, 'rol_idrol') ?>
+    <?php // echo $form->field($model, 'tpaga_id') ?>
 
-    <?php // echo $form->field($model, 'gender_id') ?>
+    <?php // echo $form->field($model, 'created_date') ?>
 
-    <?php // echo $form->field($model, 'type_identification_id') ?>
+    <?php // echo $form->field($model, 'updated_date') ?>
 
-    <?php // echo $form->field($model, 'city_id') ?>
+    <?php // echo $form->field($model, 'FK_id_rol') ?>
+
+    <?php // echo $form->field($model, 'FK_id_gender') ?>
+
+    <?php // echo $form->field($model, 'FK_id_type_identification') ?>
+
+    <?php // echo $form->field($model, 'FK_id_city') ?>
+
+    <?php // echo $form->field($model, 'personal_code') ?>
 
     <div class="form-group">
         <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>

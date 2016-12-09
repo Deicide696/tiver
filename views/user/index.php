@@ -36,7 +36,9 @@ if (isset($_GET['success']) && $_GET['success'] == true) {
 <div class="user-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-
+    <p>
+        <?= Html::a('Nuevo usuario', ['create'], ['class' => 'btn btn-success']) ?>
+    </p>
     <?=
     GridView::widget([
         'dataProvider' => $dataProvider,

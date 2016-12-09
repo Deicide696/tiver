@@ -48,108 +48,27 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
     /**
      * @inheritdoc
      */
-    public function rules() {
+    public function rules()
+    {
         return [
-                [
-                    [
-                    'email',
-                    'first_name',
-                    'last_name',
-                    'FK_id_rol',
-                    'enable',
-                    'FK_id_type_identification',
-                    'FK_id_gender'
-                ],
-                'required'
-            ],
-                [
-                    [
-                    'email',
-                    'password',
-                    'phone'
-                ],
-                'safe'
-            ],
-                [
-                    [
-                    'FK_id_city',
-                    'FK_id_type_identification',
-                    'FK_id_rol',
-                    'FK_id_gender',
-                    'enable',
-                    'receive_interest_info',
-                ],
-                'integer'
-            ],
-                [
-                    [
-                    'birth_date'
-                ],
-                'date',
-                'format' => 'yyyy-M-d'
-            ],
-                [
-                    [
-                    'created_date',
-                    'updated_date',
-                    'last_login'
-                ],
-                'date',
-                'format' => 'yyyy-M-d H:m:s'
-            ],
-                [
-                    [
-                    'email',
-                    'first_name',
-                    'last_name',
-                    'phone',
-                    'fb_id',
-                    'tpaga_id',
-                    'imei'
-                ],
-                'string',
-                'max' => 45
-            ],
-                [
-                    [
-                    'password'
-                ],
-                'string',
-                'max' => 225
-            ],
-                [
-                'email',
-                'email',
-                'checkDNS' => true
-            ],
-                [
-                    [
-                    'email'
-                ],
-                'unique'
-            ],
-                [
-                'enable',
-                'default',
-                'value' => self::STATUS_ACTIVE
-            ],
-                [
-                'enable',
-                'in',
-                'range' => [
-                    self::STATUS_ACTIVE,
-                    self::STATUS_DELETED
-                ]
-            ],
-                [
-                'FK_id_rol',
-                'in',
-                'range' => [
-                    self::ROLE_USER,
-                    self::ROLE_ADMIN,
-                    self::ROLE_SUPER
-                ]
-            ]
+            [['first_name', 'email', 'receive_interest_info', 'enable', 'last_login', 'imei', 'FK_id_rol', 'FK_id_gender', 'FK_id_type_identification', 'FK_id_city'], 'required'],
+            [['phone', 'receive_interest_info', 'enable', 'FK_id_rol', 'FK_id_gender', 'FK_id_type_identification', 'FK_id_city'], 'integer'],
+            [['birth_date', 'last_login', 'created_date', 'updated_date'], 'safe'],
+            [['birth_date'], 'date', 'format' => 'yyyy-M-d'],
+            [['created_date', 'updated_date', 'last_login'], 'date', 'format' => 'yyyy-M-d H:m:s'],
+            [['first_name', 'last_name', 'email', 'password'], 'string', 'max' => 100],
+            ['email', 'email', 'checkDNS' => true],
+            [['identification'], 'string', 'max' => 15],
+            [['imei', 'fb_id', 'tpaga_id'], 'string', 'max' => 45],
+            [['personal_code'], 'string', 'max' => 6],
+            [['FK_id_city'], 'exist', 'skipOnError' => true, 'targetClass' => City::className(), 'targetAttribute' => ['FK_id_city' => 'id']],
+            [['FK_id_type_identification'], 'exist', 'skipOnError' => true, 'targetClass' => TypeIdentification::className(), 'targetAttribute' => ['FK_id_type_identification' => 'id']],
+            [['FK_id_gender'], 'exist', 'skipOnError' => true, 'targetClass' => Gender::className(), 'targetAttribute' => ['FK_id_gender' => 'id']],
+            [['FK_id_rol'], 'exist', 'skipOnError' => true, 'targetClass' => Rol::className(), 'targetAttribute' => ['FK_id_rol' => 'id']],
+            [['email'], 'unique'],
+            ['enable', 'default', 'value' => self::STATUS_ACTIVE],
+            ['enable', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
+            ['FK_id_rol', 'in', 'range' => [self::ROLE_USER, self::ROLE_ADMIN, self::ROLE_SUPER]]
         ];
     }
 

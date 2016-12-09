@@ -32,7 +32,8 @@
 		"bryglen/yii2-sendgrid" : "*",
                 "kartik-v/yii2-widget-fileinput": "@dev",
                 "kartik-v/yii2-widget-growl": "*",
-                "kartik-v/yii2-dialog": "@dev"
+                "kartik-v/yii2-dialog": "@dev",
+                "mdmsoft/yii2-admin": "~2.7"
 	},
 	"require-dev" : {
 		"yiisoft/yii2-debug": "~2.0.0",

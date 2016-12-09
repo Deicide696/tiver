@@ -2,8 +2,8 @@
 
 return [
     'adminEmail' => 'admin@example.com',
-		'iconEnabled' => '<span class="glyphicon glyphicon-ok"></span>',
-		'iconDisabled' => '<span class="glyphicon glyphicon-remove"></span>',
+		'iconEnabled' => '<div style="text-align: center"><span class="glyphicon glyphicon-ok"></span></div>',
+		'iconDisabled' => '<div style="text-align: center"><span class="glyphicon glyphicon-remove"></span></div>',
 		
 		//tipo de notificaciones que se envían
 		

@@ -232,7 +232,7 @@ class UserController extends Controller {
                 ];
             }
         } else {
-            $model = new User($id);
+            $model = new User();
 
             return $this->render('create', [
                         'model' => $model

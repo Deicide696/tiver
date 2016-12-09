@@ -7,22 +7,21 @@ $db = require(__DIR__ . '/db.php');
 
 return [
     'id' => 'basic-console',
-	'language' => 'es',	//
-		'timeZone' => 'America/Bogota',
+    'language' => 'es', //
+    'timeZone' => 'America/Bogota',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log', 'gii'],
     'controllerNamespace' => 'app\commands',
     'modules' => [
         'gii' => 'yii\gii\Module',
     ],
-  'components' => [ 
-				'TPaga' => [ 
-						'class' => 'app\components\TPaga' 
-				],
-				'PushNotifier' => [ 
-						'class' => 'app\components\PushNotifier' 
-				],
-				
+    'components' => [
+        'TPaga' => [
+            'class' => 'app\components\TPaga'
+        ],
+        'PushNotifier' => [
+            'class' => 'app\components\PushNotifier'
+        ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
@@ -35,6 +34,19 @@ return [
             ],
         ],
         'db' => $db,
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager',
+        ],
     ],
+    'aliases' => [
+        '@mdm/admin' => '@app/vendor/mdmsoft/yii2-admin',
+    ],
+//    'as access' => [
+//        'class' => 'mdm\admin\components\AccessControl',
+//        'allowActions' => [
+//            'site/*',
+//            'admin/*',
+//        ]
+//    ],
     'params' => $params,
 ];
