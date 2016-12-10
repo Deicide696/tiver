@@ -62,37 +62,40 @@ AppAsset::register($this);
                             ]
                         ];
                         $menuItems[] = [
-                            'label' => '<span class="glyphicon glyphicon-user"></span> Usuarios',
-                            'items' => [
-                                ['label' => 'Usuarios', 'url' => ['/user']],
-                                ['label' => 'Direcciones', 'url' => ['/address']],
-                            ]
-                        ];
-                        $menuItems[] = [
-                            'label' => '<span class="glyphicon glyphicon-cog"></span> Parámetros',
+                            'label' => '<span class="glyphicon glyphicon-cog"></span> Configuración',
                             'items' => [
                                 ['label' => 'Cupones', 'url' => ['/coupon']],
                                 ['label' => 'Tipos de dirección', 'url' => ['/type-housing']],
                                 ['label' => 'Niveles de modificadores', 'url' => ['/type-modifier']],
                                 ['label' => 'Tipos de identificación', 'url' => ['/type-identification']],
-                                ['label' => 'Roles', 'url' => ['/rol']],
                                 ['label' => 'Zonas', 'url' => ['/zone']],
                                 ['label' => 'Ciudades', 'url' => ['/city']]
                             ]
                         ];
-                    }
-                    if(Yii::$app->user->can('super-admin')) {
-                        $menuItems[] = [
-                            'label' => 'Administración', 
+                        if(Yii::$app->user->can('super-admin')) {
+                            $menuItems[] = [
+                                'label' => '<span class="glyphicon glyphicon-lock"></span> Administración', 
+                                    'items' => [
+                                        ['label' => 'Usuarios', 'url' => ['/user']],
+                                        ['label' => 'Direcciones', 'url' => ['/address']],
+                                        ['label' => 'Asignaciones', 'url' => ['/admin']],
+                                        ['label' => 'Roles', 'url' => ['/admin/role']],
+                                        ['label' => 'Permisos', 'url' => ['/admin/permission']],
+                                    ]
+                            ];
+                        } else {
+                            $menuItems[] = [
+                                'label' => '<span class="glyphicon glyphicon-lock"></span> Administración',
                                 'items' => [
-                                    ['label' => 'Asignacion', 'url' => ['/admin']],
-                                    ['label' => 'Roles', 'url' => ['/admin/role']],
-                                    ['label' => 'Permisos', 'url' => ['/admin/permission']],
+                                    ['label' => 'Usuarios', 'url' => ['/user']],
+                                    ['label' => 'Direcciones', 'url' => ['/address']],
                                 ]
-                        ];
+                            ];
+                        }
                     }
+                    
                     $menuItems[] = [
-                        'label' => Yii::$app->user->identity->first_name,
+                        'label' => '<span class="glyphicon glyphicon-user"></span> <b>'.ucfirst(Yii::$app->user->identity->first_name).'</b>',
                         'items' => [
                             ['label' => '<span class="glyphicon glyphicon-off"></span> Cerrar sesión', 
                                 'url' => ['/site/logout'],
@@ -109,29 +112,10 @@ AppAsset::register($this);
                     'encodeLabels' => false,
                 ]);
             NavBar::end();
-
-            /*
-             * echo SideNav::widget([
-             * 'type' => SideNav::TYPE_DEFAULT,
-             * 'heading' => 'Menú de opciones',
-             *
-             * 'items' => [
-             * ['label' => 'Servicios asignados','icon' => 'shopping-cart', 'url' => ['/assigned-service']],
-             * ['label' => 'Servicios', 'icon' => 'th','items'=>[['label' => 'Categorías', 'url' => ['/category-service']],['label' => 'Servicios', 'url' => ['/service']],
-             * ['label' => 'Modificadores', 'url' => ['/modifier/']],['label' => 'Modificadores & servicios', 'url' => ['/service-has-modifier']],]],
-             * ['label' => 'Especialistas', 'icon' => 'certificate','items'=>[['label' => 'Especialistas', 'url' => ['/expert']], ['label' => 'Disponibilidad', 'url' => ['/schedule']],['label' => 'Servicios asignados', 'url' => ['/assigned-service']],['label' => 'Especialistas & servicios', 'url' => ['/expert-has-service']],]],
-             * ['label' => 'Usuarios', 'icon' => 'user','items'=>[ ['label' => 'Usuarios', 'url' => ['/user']],['label' => 'Direcciones', 'url' => ['/address']],['label' => 'Medios de pago', 'url' => ['/credit-card']],['label' => 'Servicios asignados', 'url' => ['/assigned-service']],]],
-             *
-             *
-             *
-             *
-             * ],
-             * ]);
-             */
             ?>
 
-            <div class="container">
-                <?= Yii::$app->user->isGuest ? '<div class="row">gg</div>' : Breadcrumbs::widget(['links' => isset($this->params ['breadcrumbs']) ? $this->params ['breadcrumbs'] : []]) ?>
+            <div class="container" style="padding-top: 70px">
+                <?= Yii::$app->user->isGuest ? '' : Breadcrumbs::widget(['links' => isset($this->params ['breadcrumbs']) ? $this->params ['breadcrumbs'] : []]) ?>
                 <?= $content ?>
             </div>
         </div>

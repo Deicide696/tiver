@@ -37,7 +37,7 @@ if (isset($_GET['success']) && $_GET['success'] == true) {
 
     <h1><?= Html::encode($this->title) ?></h1>
     <p>
-        <?= Html::a('Nuevo usuario', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= yii::$app->user->can('super-admin') ? Html::a('Crear Usuario', ['create'], ['class' => 'btn btn-success']): '' ?>
     </p>
     <?=
     GridView::widget([

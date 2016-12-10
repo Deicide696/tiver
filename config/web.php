@@ -43,7 +43,33 @@ $config = [
                             }
                         ],
                      ]
-                ]
+                ],
+//                'assignment' => [
+//                    'class' => 'mdm\admin\controllers\RoleController',
+//                    'userIdentityClass' => 'app\models\User',
+//                    'searchClass' => 'app\models\UserSearch',
+//                    'idField' => 'id',
+//                    'usernameField' => 'email',
+//                    'extraColumns' => [
+//                         'first_name',
+//                         'last_name',
+//                         [
+//                            'attribute' => 'Activo',
+//                            'format' => 'html',
+//                            'value' => function($searchModel) {
+//                                $valido = true;
+//                                if ($searchModel->enable == 0){
+//                                    $valido = false;
+//                                }   
+//                                if($valido){
+//                                    return Yii::$app->params['iconEnabled'];
+//                                } else {
+//                                    return Yii::$app->params['iconDisabled'];
+//                                }
+//                            }
+//                        ],
+//                     ]
+//                ]
             ],
         ],
     ],

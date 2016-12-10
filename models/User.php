@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\web\IdentityInterface;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "user".
@@ -54,7 +55,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
             [['first_name', 'email', 'receive_interest_info', 'enable', 'last_login', 'imei', 'FK_id_rol', 'FK_id_gender', 'FK_id_type_identification', 'FK_id_city'], 'required'],
             [['phone', 'receive_interest_info', 'enable', 'FK_id_rol', 'FK_id_gender', 'FK_id_type_identification', 'FK_id_city'], 'integer'],
             [['birth_date', 'last_login', 'created_date', 'updated_date'], 'safe'],
-            [['birth_date'], 'date', 'format' => 'yyyy-M-d'],
+//            [['birth_date'], 'date', 'format' => 'yyyy-M-d'],
             [['created_date', 'updated_date', 'last_login'], 'date', 'format' => 'yyyy-M-d H:m:s'],
             [['first_name', 'last_name', 'email', 'password'], 'string', 'max' => 100],
             ['email', 'email', 'checkDNS' => true],
@@ -80,7 +81,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
             'id' => 'ID',
             'FK_id_city' => 'Ciudad',
             'imei' => 'IMEI	',
-            'identification' => 'Identificación	',
+            'identification' => 'Nº Identificación',
             'birth_date' => 'Fecha de nacimiento',
             'email' => 'Correo electrónico',
             'FK_id_gender' => 'Género',
@@ -97,6 +98,40 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
             'updated_date' => "Fecha de modificación",
             'receive_interest_info' => "Recibir información de interés"
         ];
+    }
+    
+    public function behaviors()
+    {
+       return [           
+           'timestamp' => [
+               'class' => 'yii\behaviors\TimestampBehavior',
+               'attributes' => [
+                   \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_date'],                   
+               ],
+            'value' => new Expression('NOW()'),
+            ],
+           'timestamp' => [
+               'class' => 'yii\behaviors\TimestampBehavior',
+               'attributes' => [
+                   \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['last_login'],                   
+               ],
+            'value' => new Expression('NOW()'),
+            ],
+            'timestamp' => [
+                'class' => 'yii\behaviors\TimestampBehavior',
+                'attributes' => [
+                   \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_date'],                   
+                ],
+            'value' => new Expression('NOW()'),
+            ],
+            'activeBehavior' => [
+               'class' => 'yii\behaviors\AttributeBehavior',
+                'attributes' => [
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => 'enable',
+                ],
+                'value' => 1,
+           ],
+       ];
     }
 
     /**
@@ -186,7 +221,9 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
     public static function findByUsername($username) {
         // return static::findOne(['email' => $username, 'enable' => self::STATUS_ACTIVE]);
         // Solo roles diferentes a usuario and FK_id_rol>2
-        return static::find()->where("email='$username' and enable='" . self::STATUS_ACTIVE . "' and FK_id_rol>2")->one();
+        return static::find()->where("email='$username' and enable = " . self::STATUS_ACTIVE)->one();
+//    return static::find()->where("email='$username' and enable='" . self::STATUS_ACTIVE . "' and FK_id_rol>2")->one();
+        
     }
 
     public function getAuthKey() {

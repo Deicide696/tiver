@@ -7,32 +7,32 @@
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 
-$this->title = 'Login';
+$this->title = 'Inicia sesión';
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
 <br>
 <br>
 <br>
-<div class="site-login col-sm-4 col-lg-4">
-    <div class="row col-xs-12 col-sm-12">
-        <h1><?= Html::encode($this->title) ?></h1>
-    </div>
+<div class="user-form col-sm-offset-2 col-sm-8 col-md-offset-3 col-md-6 col-lg-offset-3 col-lg-6">
+    <h3 class="text-center">Inicia sesión para acceder a<br>TIVER</h3>
+    <br>
+    <br>
     <?php $form = ActiveForm::begin([
         'id' => 'login-form',
         'options' => ['class' => 'form-horizontal'],
-        'fieldConfig' => [
-        ],
     ]); 
     ?>
-        <?= $form->field($model, 'username') ?>
-        <?= $form->field($model, 'password')->passwordInput() ?>
-        <?= $form->field($model, 'rememberMe')->checkbox([
-        ]) ?>
+        <?= $form->field($model, 'username', ['inputOptions' =>['placeholder' => 'Correo Electrónico']])->label(FALSE) ?>
+        <?= $form->field($model, 'password')->passwordInput(['placeholder' => 'Contraseña'])->label(FALSE) ?>
+        <?= $form->field($model, 'rememberMe')->checkbox() ?>
 
-        <div class="form-group text-center">
-            <?= Html::submitButton('Login', ['class' => 'col-xs-12 col-sm-6 btn btn-primary', 'name' => 'login-button']) ?>
+        <div class="row col-sm-offset-3 col-sm-6 text-center padding-left-right-0">
+            <?= Html::submitButton('Ingresar', ['class' => 'btn btn-success btn-block', 'name' => 'login-button']) ?>
         </div>
+<!--        <div class="row col-sm-offset-3 col-sm-6 text-center">
+            <?php // Html::submitButton($model->isNewRecord ? 'Crear' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success btn-block' : 'btn btn-primary']) ?>
+        </div>-->
 
     <?php ActiveForm::end(); ?>
 </div>

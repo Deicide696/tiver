@@ -11,6 +11,7 @@ use app\models\Address;
 use app\models\UserSearch;
 use app\models\CreditCard;
 use yii\web\Controller;
+use yii\web\ForbiddenHttpException;
 use yii\filters\VerbFilter;
 use yii\web\NotFoundHttpException;
 use yii\filters\AccessControl;
@@ -63,9 +64,9 @@ class UserController extends Controller {
                         'roles' => [
                             '@'
                         ],
-                        'matchCallback' => function ($rule, $action) {
-                            return User::isSuper(Yii::$app->user->identity->email);
-                        }
+//                        'matchCallback' => function ($rule, $action) {
+//                            return User::isSuper(Yii::$app->user->identity->email);
+//                        }
                     ]
                 ]
             ]
@@ -78,17 +79,22 @@ class UserController extends Controller {
      * @return mixed
      */
     public function actionIndex() {
+        
+        if (Yii::$app->user->can('admin')) {
 
-        if(isset($_GET["UserSearch"]) && isset($_GET["success"])){
-            $_GET["success"] = 0;
+            if (isset($_GET["UserSearch"]) && isset($_GET["success"])) {
+                $_GET["success"] = 0;
+            }
+            $searchModel = new UserSearch ();
+            $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+            return $this->render('index', [
+                        'searchModel' => $searchModel,
+                        'dataProvider' => $dataProvider,
+            ]);
+        } else {
+            throw new ForbiddenHttpException;
         }
-        $searchModel = new UserSearch ();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-        return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
-        ]);
     }
 
     /**
@@ -118,9 +124,12 @@ class UserController extends Controller {
     }
 
     public function actionCreate() {
+
         $model = new SignupForm([
             'scenario' => SignupForm::SCENARIO_REGISTER
         ]);
+//        var_dump(Yii::$app->request->isPost, $_POST);die();
+
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect([
@@ -232,11 +241,15 @@ class UserController extends Controller {
                 ];
             }
         } else {
-            $model = new User();
+            if (Yii::$app->user->can('super-admin')) {
 
-            return $this->render('create', [
-                        'model' => $model
-            ]);
+                $model = new User();
+                return $this->render('create', [
+                            'model' => $model
+                ]);
+            } else {
+                throw new ForbiddenHttpException;
+            }
         }
     }
 
