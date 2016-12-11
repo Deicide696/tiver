@@ -37,7 +37,7 @@ if (isset($_GET['success']) && $_GET['success'] == true) {
 
     <h1><?= Html::encode($this->title) ?></h1>
     <p>
-        <?= yii::$app->user->can('super-admin') ? Html::a('Crear Usuario', ['create'], ['class' => 'btn btn-success']): '' ?>
+        <?= yii::$app->user->can('create-user') ? Html::a('Nuevo Usuario', ['create'], ['class' => 'btn btn-success']): '' ?>
     </p>
     <?=
     GridView::widget([
@@ -80,16 +80,21 @@ if (isset($_GET['success']) && $_GET['success'] == true) {
                 'attribute' => 'Contraseña',
                 'format' => 'raw',
                 'value' => function($searchModel) {
-                    return Html::a('Recuperar contraseña', ['request-password-reset?email=' . $searchModel->email], ['class' => 'btn btn-danger btn-confirm',
+                    return Html::a('<span class="glyphicon glyphicon-refresh"></span> Restablecer', ['request-password-reset?email=' . $searchModel->email], ['class' => 'btn btn-danger btn-confirm',
                     ]);
                 }
             ],
-            ['class' => 'yii\grid\ActionColumn', 'template' => '{view} {update}'],
+            [
+                'class' => 'yii\grid\ActionColumn', 
+                'headerOptions' => ['class' => 'button_h_center'],
+                'visibleButtons' => [
+                    'update' => \Yii::$app->user->can('edit-user'),
+                    'delete' => \Yii::$app->user->can('delete-user'),
+                ],
+            ],
         ],
     ]);
     ?>
-    
-    <button type="button" id="btn-confirm" class="btn btn-warning">Confirm</button>
 </div>
 <?php
 $js = <<< JS
@@ -109,5 +114,4 @@ var link = this;
 JS;
 // register your javascript
 $this->registerJs($js);
-
 ?>

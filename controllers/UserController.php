@@ -1207,7 +1207,6 @@ class UserController extends Controller {
             $model->attributes = \Yii::$app->request->get();
             if ($model->validate()) {
                 if ($model->sendEmail()) {
-
                     return $this->redirect(['index', 'success' => true]);
                 } else {
                     return $this->redirect(['index', 'success' => false]);

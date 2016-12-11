@@ -25,11 +25,19 @@ class PasswordResetRequestForm extends Model {
             ['email', 'exist',
                 'targetClass' => 'app\models\User',
                 'filter' => ['enable' => User::STATUS_ACTIVE],
-                'message' => 'There is no user with such email.'
+                'message' => 'No hay ningún usuario con este correo electrónico.'
             ],
         ];
     }
-
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+        return [
+            'email' => 'Correo electrónico',
+        ];
+    }
     /**
      * Sends an email with a link, for resetting the password.
      *
@@ -68,13 +76,10 @@ class PasswordResetRequestForm extends Model {
 
             $assetEmail = new EmailAsset();
             if ($user->email != '') {
-                /*  $arg = [ 'userName' => $user->first_name . ' ' . $user->last_name, 'email' => $user->email, 'token' => $token->token];
-                  return $assetEmail->sendMail('tiver@zugartek.com', $user->email, '¿Olvidaste tu contraseña?', 'user/reset', $arg); */
+                
                 $subs = ['{{ username }}' => $user->first_name,
                         //'{{ token }}' => $token->token
                 ];
-
-
                 $sendGrid = new \SendGrid(Yii::$app->params ['sengrid_user'], Yii::$app->params ['sendgrid_pass']);
                 $email = new \SendGrid\Email ();
                 $email
@@ -88,18 +93,9 @@ class PasswordResetRequestForm extends Model {
                         ->addSubstitution('{{ token }}', [$token->token])->addFilter('templates', 'enabled', 1)
                         ->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_pass']);
                 $resp = $sendGrid->send($email);
-
-                //var_dump($resp);
-                //exit();
                 return true;
             }
-//            return \Yii::$app->mailer->compose(['html' => 'passwordResetToken-html', 'text' => 'passwordResetToken-text'], ['user' => $user, 'token' => $token])
-//                            ->setFrom([\Yii::$app->params['supportEmail'] => \Yii::$app->name . ' robot'])
-//                            ->setTo($this->email)
-//                            ->setSubject('Password reset for ' . \Yii::$app->name)
-//                            ->send();
         }
-
         return false;
     }
 

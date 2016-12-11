@@ -5,7 +5,6 @@ use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 use app\models\Gender;
 use app\models\TypeIdentification;
-use app\models\City;
 /* @var $this yii\web\View */
 /* @var $model app\models\User */
 /* @var $form yii\widgets\ActiveForm */
@@ -38,7 +37,7 @@ use app\models\City;
     </div>
     <br>
     <div class="row col-sm-offset-3 col-sm-6 text-center">
-        <?= Html::submitButton($model->isNewRecord ? 'Crear' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success btn-block' : 'btn btn-primary']) ?>
+        <?= Html::submitButton($model->isNewRecord ? 'Crear' : 'Editar', ['class' => $model->isNewRecord ? 'btn btn-success btn-block' : 'btn btn-primary btn-block']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

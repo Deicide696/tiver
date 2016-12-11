@@ -69,7 +69,8 @@ AppAsset::register($this);
                                 ['label' => 'Niveles de modificadores', 'url' => ['/type-modifier']],
                                 ['label' => 'Tipos de identificación', 'url' => ['/type-identification']],
                                 ['label' => 'Zonas', 'url' => ['/zone']],
-                                ['label' => 'Ciudades', 'url' => ['/city']]
+                                ['label' => 'Ciudades', 'url' => ['/city']],
+                                ['label' => 'Direcciones', 'url' => ['/address']],
                             ]
                         ];
                         if(Yii::$app->user->can('super-admin')) {
@@ -77,7 +78,6 @@ AppAsset::register($this);
                                 'label' => '<span class="glyphicon glyphicon-lock"></span> Administración', 
                                     'items' => [
                                         ['label' => 'Usuarios', 'url' => ['/user']],
-                                        ['label' => 'Direcciones', 'url' => ['/address']],
                                         ['label' => 'Asignaciones', 'url' => ['/admin']],
                                         ['label' => 'Roles', 'url' => ['/admin/role']],
                                         ['label' => 'Permisos', 'url' => ['/admin/permission']],
@@ -122,9 +122,7 @@ AppAsset::register($this);
 
         <footer class="footer">
             <div class="container">
-                <p class="pull-left">&copy; Tiver <?= date('Y') ?></p>
-
-                <p class="pull-right"><?= Yii::powered() ?></p>
+                <p class="text-center">&copy; Tiver <?= date('Y') ?></p>
             </div>
         </footer>
 
