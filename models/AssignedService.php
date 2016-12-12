@@ -153,9 +153,9 @@ class AssignedService extends \yii\db\ActiveRecord {
         $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => '',':id' => $this->id]);
         $modifier_vw = $command->queryAll();
         
-//        $modifier_vw = VwActualService::findOne(['id' => $this->id]);
-        if ($modifier_vw->modifier_id != "") {
-            $modifier = Modifier::findOne(['id' => $modifier_vw->modifier_id]);
+//      $modifier_vw = VwActualService::findOne(['id' => $this->id]);
+        if (isset($modifier_vw['modifier_id']) && !empty($modifier_vw['modifier_id'])) {
+            $modifier = Modifier::findOne(['id' => $modifier_vw['modifier_id']]);
             if ($modifier->tax == 0) {
                 $price += $modifier->price;
             } else {
@@ -193,6 +193,7 @@ class AssignedService extends \yii\db\ActiveRecord {
     }
 
     public function getDuration() {
+        
         $duration = 0;
         $service = Service::findOne(['id' => $this->service_id]);
         $duration += $service->duration;
@@ -200,18 +201,16 @@ class AssignedService extends \yii\db\ActiveRecord {
         $connection = Yii::$app->getDb();
         $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => '',':id' => $this->id]);
         $modifier_vw = $command->queryAll();
-//        $modifier_vw = VwActualService::findOne(['id' => $this->id]);
-        if ($modifier_vw->modifier_id != "") {
-            $modifier = Modifier::findOne(['id' => $modifier_vw->modifier_id]);
+//      $modifier_vw = VwActualService::findOne(['id' => $this->id]);
+        if (isset($modifier_vw['modifier_id']) && !empty($modifier_vw['modifier_id'])) {
+            $modifier = Modifier::findOne(['id' => $modifier_vw['modifier_id']]);
             $duration += $modifier->duration;
         }
-
-        //var_dump($modifier);
-
         return $duration;
     }
 
     public function getServiceName() {
+        
         $name = "";
         $service = Service::findOne(['id' => $this->service_id]);
         $name .= $service->name;
@@ -219,13 +218,11 @@ class AssignedService extends \yii\db\ActiveRecord {
         $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => '',':id' => $this->id]);
         $modifier_vw = $command->queryAll();
         
-//        $modifier_vw = VwActualService::findOne(['id' => $this->id]);
-        if ($modifier_vw->modifier_id != "") {
-            $modifier = Modifier::findOne(['id' => $modifier_vw->modifier_id]);
+//      $modifier_vw = VwActualService::findOne(['id' => $this->id]);
+        if (isset($modifier_vw['modifier_id']) && !empty($modifier_vw['modifier_id'])) {
+            $modifier = Modifier::findOne(['id' => $modifier_vw['modifier_id']]);
             $name .= " - " . $modifier->name;
         }
-
-        //var_dump($modifier);
 
         return $name;
     }
@@ -244,11 +241,12 @@ class AssignedService extends \yii\db\ActiveRecord {
     }
 
     public function getModifierId() {
+        
         $modifier = "";
         $connection = Yii::$app->getDb();
         $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => '',':id' => $this->id]);
         $modifier_vw = $command->queryAll();
-//        $modifier_vw = VwActualService::findOne(['id' => $this->id]);
+//      $modifier_vw = VwActualService::findOne(['id' => $this->id]);
         if ($modifier_vw->modifier_id != "") {
             $modifier = $modifier_vw->modifier_id;
         }
