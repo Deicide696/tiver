@@ -109,7 +109,8 @@ return [
         `a`.`comment` AS `comment`,(select `service_history_has_modifier`.`modifier_id`
          FROM `service_history_has_modifier` where (`service_history_has_modifier`.`service_history_id` = `a`.`id`)) AS `modifier_id`,(select `cat`.`id` from (`category_service` `cat` join `service` `ser`) where ((`ser`.`category_service_id` = `cat`.`id`) and (`ser`.`id` = `a`.`service_id`))) AS `category_id` from (`service_history` `a` join `expert` `b`) where (`a`.`expert_id` = `b`.`id`) 
          and ((`a`.`user_id` = :user_id)
-         or (`a`.`state` = :status));
+         or (`a`.`id` = :id)
+         or (`a`.`state` = :status))
         order by `a`.`date` desc,`a`.`time` desc,`a`.`created_date` desc",
     'vw_service_history_expert' => "SELECT
         `a`.`id` AS `id`,
