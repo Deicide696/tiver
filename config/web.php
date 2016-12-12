@@ -136,13 +136,13 @@ $config = [
         ],
         'db' => require (__DIR__ . '/db.php'),
     ],
-    'as access' => [
-        'class' => 'mdm\admin\components\AccessControl',
-        'allowActions' => [
-            'site/*',
-            'admin/*',
-        ],
-    ],
+//    'as access' => [
+//        'class' => 'mdm\admin\components\AccessControl',
+//        'allowActions' => [
+//            'site/*',
+//            'admin/*',
+//        ],
+//    ],
     'params' => $params
 ];
 

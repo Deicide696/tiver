@@ -10,8 +10,6 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\models\User;
 use app\models\LogToken;
-use app\models\VwServiceHistory;
-use app\models\VwActualService;
 
 /**
  * ServiceHistoryController implements the CRUD actions for ServiceHistory model.
@@ -186,11 +184,16 @@ class ServiceHistoryController extends Controller {
         ])->one ();
 //var_dump($model_token);die();
         if ($model_token != null) {
-            $model_history = VwServiceHistory::find()
-                    ->where(['user_id' => $model_token->FK_id_user, 'status' => 1])
-                    ->orderBy(['date' => SORT_DESC])
-                    ->asArray()
-                    ->all();
+            
+            $connection = Yii::$app->getDb();
+            $command = $connection->createCommand(Yii::$app->params ['vw_service_history'],[':user_id' => $model_token->FK_id_user, ':status' => 1]);
+            $model_history = $command->queryAll();
+        
+//            $model_history = VwServiceHistory::find()
+//                    ->where(['user_id' => $model_token->FK_id_user, 'status' => 1])
+//                    ->orderBy(['date' => SORT_DESC])
+//                    ->asArray()
+//                    ->all();
             if ($model_history != null) {
                 $response ["success"] = true;
                 $response ['data'] = $model_history;
@@ -219,10 +222,14 @@ class ServiceHistoryController extends Controller {
         // var_dump($searched);
 
         if ($model_token != null) {
-
-            $model_history = VwActualService::find()->where([
-                        'user_id' => $model_token->FK_id_user
-                    ])->asArray()->all();
+            
+            $connection = Yii::$app->getDb();
+            $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => $model_token->FK_id_user,':id' => '']);
+            $model_history = $command->queryAll();
+            
+//            $model_history = VwActualService::find()->where([
+//                        'user_id' => $model_token->FK_id_user
+//                    ])->asArray()->all();
             if ($model_history != null) {
                 $response ["success"] = true;
                 $response ['data'] = $model_history;

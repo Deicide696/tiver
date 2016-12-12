@@ -17,8 +17,6 @@ use app\models\Zone;
 use app\models\Expert;
 use app\models\Pay;
 use app\models\CreditCard;
-use app\models\VwActualServiceExpert;
-use app\models\VwActualService;
 use app\models\Modifier;
 use app\models\ServiceHistory;
 use app\models\User;
@@ -469,10 +467,15 @@ class AssignedServiceController extends Controller {
         $id = $_POST ['id'];
 
         // $model=Expert::find()->select(['expert.id','name','last_name','email','lat','lng'])->where("enable='1' and (schedule.weekday_id='$day' and '$hour' between schedule.start_time and schedule.finish_time) and (expert_has_service.service_id='$service')")->joinwith('schedule')->joinwith('expertHasService')->asArray()->all();
-        $model_history = VwActualServiceExpert::find()->where([
-                    'expert_id' => $id,
-                    'status' => '1'
-                ])->asArray()->all();
+     
+        $connection = Yii::$app->getDb();
+        $command = $connection->createCommand(Yii::$app->params ['vw_actual_service_expert'],[':expert_id' => $id, ':status' => 1]);
+        $model_history = $command->queryAll();
+        
+//        $model_history = VwActualServiceExpert::find()->where([
+//                    'expert_id' => $id,
+//                    'status' => '1'
+//                ])->asArray()->all();
 
         if ($model_history != null) {
             $response ["success"] = true;
@@ -578,11 +581,15 @@ class AssignedServiceController extends Controller {
         if ($tokens != null)
             Yii::$app->PushNotifier->sendNotificationExpertOS("Servicio eliminado", "Se ha cancelado un servicio que tenías asignado", $data, $tokens);
 
-        $model_history = VwActualService::find()->where([
-                            'user_id' => $id_user
-                        ])->
-                        // 'status' => '1'
-                        asArray()->one();
+        $connection = Yii::$app->getDb();
+        $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => $id_user, ':id' => '']);
+        $model_history = $command->queryAll();
+        
+//        $model_history = VwActualService::find()->where([
+//                            'user_id' => $id_user
+//                        ])->
+//                        // 'status' => '1'
+//                        asArray()->one();
         $actual_service = false;
         if ($model_history != null) {
             $actual_service = true;
@@ -1007,8 +1014,9 @@ class AssignedServiceController extends Controller {
     }
 
     public function actionEditService() {
-        Yii::$app->response->format = 'json';
-
+        
+          Yii::$app->response->format = 'json';
+        
         $time_new = Yii::$app->request->post("time_new", "");
         $time_old = Yii::$app->request->post("time_old", "");
         $date_old = Yii::$app->request->post("date_old", "");
@@ -1147,8 +1155,10 @@ class AssignedServiceController extends Controller {
                 'time_wait' => Yii::$app->params ['seconds_wait'],
                 'type' => Yii::$app->params ['notification_type_edited_expert']
             ];
-            if ($tokens != null)
+            if ($tokens != null){
                 Yii::$app->PushNotifier->sendNotificationExpertOS("Servicio editado", "Se ha editado un servicio que tenías asignado", $data, $tokens);
+        
+            }
         } else {
             // envio de notificacion push OS
             $tokens = Expert::findOne([
@@ -1173,9 +1183,9 @@ class AssignedServiceController extends Controller {
                 'time_wait' => Yii::$app->params ['seconds_wait'],
                 'type' => Yii::$app->params ['notification_type_assgigned_expert']
             ];
-            if ($tokens != null)
+            if ($tokens != null){
                 Yii::$app->PushNotifier->sendNotificationExpertOS("Nuevo servicio", "Tienes un nuevo servicio", $data, $tokens);
-
+            }
             $tokens_old = Expert::findOne([
                         "id" => $old_expert
                     ])->getPushTokens();
@@ -1185,8 +1195,10 @@ class AssignedServiceController extends Controller {
                 "ticker" => "Servicio cancelado",
                 'type' => Yii::$app->params ['notification_type_canceled_expert']
             ];
-            if ($tokens_old != null)
+            if ($tokens_old != null){
                 Yii::$app->PushNotifier->sendNotificationExpertOS("Servicio eliminado", "Se ha cancelado un servicio que tenías asignado", $data, $tokens_old);
+        
+            }
         }
 
         //
@@ -1366,12 +1378,15 @@ class AssignedServiceController extends Controller {
                  *
                  * Yii::$app->PushNotifier->sendNotificationUser ( $data, $tokens );
                  */
-
-                $model_history = VwActualService::find()->where([
-                                    'user_id' => $id_user
-                                ])->
-                                // 'status' => '1'
-                                asArray()->one();
+                
+                $connection = Yii::$app->getDb();
+                $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => $id_user,':id' => '']);
+                $model_history = $command->queryAll();
+//                $model_history = VwActualService::find()->where([
+//                                    'user_id' => $id_user
+//                                ])->
+//                                // 'status' => '1'
+//                                asArray()->one();
                 $actual_service = false;
                 if ($model_history != null) {
                     $actual_service = true;
@@ -1509,12 +1524,15 @@ class AssignedServiceController extends Controller {
                     $pay_service->save();
                 }
                 // Enviar notificación push
-
-                $model_history = VwActualService::find()->where([
-                                    'user_id' => $id_user
-                                ])->
-                                // 'status' => '1'
-                                asArray()->one();
+                
+                $connection = Yii::$app->getDb();
+                $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => $id_user,':id' => '']);
+                $model_history = $command->queryAll();
+//                $model_history = VwActualService::find()->where([
+//                                    'user_id' => $id_user
+//                                ])->
+//                                // 'status' => '1'
+//                                asArray()->one();
                 $actual_service = false;
                 if ($model_history != null) {
                     $actual_service = true;

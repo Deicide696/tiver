@@ -18,7 +18,6 @@ use yii\filters\AccessControl;
 use app\models\LogToken;
 use app\models\GcmToken;
 use app\models\LoginForm;
-use app\models\VwActualService;
 use app\models\SignupForm;
 use app\models\CheckPreRegister;
 use app\models\ResetPasswordForm;
@@ -26,7 +25,6 @@ use app\models\TypeToken;
 use app\assets\EmailAsset;
 use app\assets\Facebook\Facebook;
 use yii\helpers\Url;
-use kartik\growl\Growl;
 use yii\data\ActiveDataProvider;
 
 /**
@@ -415,11 +413,16 @@ class UserController extends Controller {
                     }
                     // var_dump($gcm_token->getErrors());
 
-                    $model_history = VwActualService::find()->where([
-                                        'user_id' => $user->id
-                                    ])->
-                                    // 'status' => '1'
-                                    asArray()->one();
+                 
+                    $connection = Yii::$app->getDb();
+                    $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => $user->id,':id' => '']);
+                    $model_history = $command->queryAll();
+//                    
+//                    $model_history = VwActualService::find()->where([
+//                                        'user_id' => $user->id
+//                                    ])->
+//                                    // 'status' => '1'
+//                                    asArray()->one();
                     $actual_service = false;
                     if ($model_history != null) {
                         $actual_service = true;
@@ -909,12 +912,16 @@ class UserController extends Controller {
             $gcm_token->user_id = $user->id;
             $gcm_token->save();
         }
-
-        $model_history = VwActualService::find()->where([
-                            'user_id' => $user->id
-                        ])->
-                        // 'status' => '1'
-                        asArray()->one();
+       
+        $connection = Yii::$app->getDb();
+        $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => $user->id,':id' => '']);
+        $model_history = $command->queryAll();
+        
+//        $model_history = VwActualService::find()->where([
+//                            'user_id' => $user->id
+//                        ])->
+//                        // 'status' => '1'
+//                        asArray()->one();
         $actual_service = false;
         if ($model_history != null) {
             $actual_service = true;
@@ -1044,12 +1051,16 @@ class UserController extends Controller {
                                     $gcm_token->user_id = $user->id;
                                     $gcm_token->save();
                                 }
-
-                                $model_history = VwActualService::find()->where([
-                                                    'user_id' => $user->id
-                                                ])->
-                                                // 'status' => '1'
-                                                asArray()->one();
+                               
+                                $connection = Yii::$app->getDb();
+                                $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' =>$user->id,':id' => '']);
+                                $model_history = $command->queryAll();
+                                
+//                                $model_history = VwActualService::find()->where([
+//                                                    'user_id' => $user->id
+//                                                ])->
+//                                                // 'status' => '1'
+//                                                asArray()->one();
                                 $actual_service = false;
                                 if ($model_history != null) {
                                     $actual_service = true;
