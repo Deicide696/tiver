@@ -188,6 +188,9 @@ class AssignedServiceController extends Controller {
      */
     public function actionAssignService() { 
         
+    
+            
+        
         $address = $_POST ['address'];
         $address_comp = $_POST ['address_comp'];
         $date = $_POST ['date'];
@@ -200,8 +203,15 @@ class AssignedServiceController extends Controller {
         $lat = $_POST ['address_lat'];
         $lng = $_POST ['address_lng'];
         $cupon = $_POST ['cupon'];
-        // $expert=$_POST['expert'};
-        // Validamos el token
+        
+        
+//          $url=Yii::getAlias('@webroot');
+//        $log = $url . "/logs/".$service.".txt";
+//        $script = 'php ' . $url . '/./yii tasks/check-service "' . $service . '" "' . $date . '" "' . $time . '"';
+//        exec("(sleep " . Yii::$app->params ['seconds_wait'] . "; $script > $log) > /dev/null 2>&1 &");
+//        
+//            var_dump(Yii::getAlias('@webroot'), Yii::getAlias('@web'),$script,"(sleep " . Yii::$app->params ['seconds_wait'] . "; $script > $log) > /dev/null 2>&1 &");die();
+        
         $model_token = LogToken::find()->where([
                     'token' => $token
                 ])->one();
@@ -433,12 +443,12 @@ class AssignedServiceController extends Controller {
             Yii::$app->PushNotifier->sendNotificationExpertOS("Nuevo servicio", "Tienes un nuevo servicio", $data, $tokens);
         }
         $id_serv = $model->id;
-        $url = Yii::$app->params ['path_scripts'];
-        // $url="/var/www/html/tiver";
-        $log = $url . "/web/$id_serv.txt";
+        
+        $url=Yii::getAlias('@webroot');
+        $log = $url . "/logs/$id_serv.txt";
         $script = 'php ' . $url . '/./yii tasks/check-service "' . $id_serv . '" "' . $date . '" "' . $time . '"';
-        // $url="/var/www/html/tiver/web/log_date.txt";
         exec("(sleep " . Yii::$app->params ['seconds_wait'] . "; $script > $log) > /dev/null 2>&1 &");
+        
         // Insertamos el log
         // Insertar LOG
         $model_log = new LogAssignedService ();
@@ -736,10 +746,11 @@ class AssignedServiceController extends Controller {
             Yii::$app->PushNotifier->sendNotificationExpertOS("Nuevo servicio", "Tienes un nuevo servicio", $data, $tokens);
         // //////
 
-        $url = Yii::$app->params ['path_scripts'];
+//        $url = Yii::$app->params ['path_scripts'];
         // $url="/var/www/html/tiver";
+        $url=Yii::getAlias('@webroot');
         $script = 'php ' . $url . '/./yii tasks/check-service "' . $services->id . '" "' . $date . '" "' . $time . '" ';
-        $log = $url . "/web/$id.txt";
+        $log = $url . "/logs/$id.txt";
         exec("(sleep " . Yii::$app->params ['seconds_wait'] . "; $script >> $log) > /dev/null 2>&1 &");
         // Guardamos el log de asignación
         $model_log = new LogAssignedService ();
@@ -972,9 +983,11 @@ class AssignedServiceController extends Controller {
 
         //
         $id_serv = $services->id;
-        $url = Yii::$app->params ['path_scripts'];
+//        $url = Yii::$app->params ['path_scripts'];
         // $url="/var/www/html/tiver";
-        $log = $url . "/web/$id_serv.txt";
+        
+        $url=Yii::getAlias('@webroot');
+        $log = $url . "/logs/$id_serv.txt";
         $script = 'php ' . $url . '/./yii tasks/check-service "' . $id_serv . '" "' . $date_new . '" "' . $time_new . '"';
         // $url="/var/www/html/tiver/web/log_date.txt";
         exec("(sleep " . Yii::$app->params ['seconds_wait'] . "; $script > $log) > /dev/null 2>&1 &");
@@ -1203,9 +1216,11 @@ class AssignedServiceController extends Controller {
 
         //
         $id_serv = $services->id;
-        $url = Yii::$app->params ['path_scripts'];
+//        $url = Yii::$app->params ['path_scripts'];
         // $url="/var/www/html/tiver";
-        $log = $url . "/web/$id_serv.txt";
+        
+        $url=Yii::getAlias('@webroot');
+        $log = $url . "/logs/$id_serv.txt";
         $script = 'php ' . $url . '/./yii tasks/check-service "' . $id_serv . '" "' . $date_new . '" "' . $time_new . '"';
         // $url="/var/www/html/tiver/web/log_date.txt";
         exec("(sleep " . Yii::$app->params ['seconds_wait'] . "; $script > $log) > /dev/null 2>&1 &");
@@ -1231,7 +1246,7 @@ class AssignedServiceController extends Controller {
     }
 
     public function actionCheckoutExpert() {
-        // var_dump($data);
+        
         $id_user = $_POST ['id_user'];
         $id_expert = $_POST ['id_expert'];
         $date = $_POST ['date'];
@@ -1310,7 +1325,7 @@ class AssignedServiceController extends Controller {
         $tokens = User::findOne([
                     "id" => $id_user
                 ])->getPushTokens();
-
+        var_dump($deleted);die();
         if ($deleted > 0) {
             // Si hay cupon, se omite la peticion a TPaga
             /*
@@ -1356,8 +1371,7 @@ class AssignedServiceController extends Controller {
             // /
             $data_pay = Yii::$app->TPaga->CreateCharge($credit_card->hash, $value, "Servicio Tiver", $tax);
 
-            // print "$id_pay -> $message_pay - $paid_pay";
-            // exit();
+            var_dump($data_pay);die();
 
             $user = User::findOne([
                         "id" => $id_user
@@ -1382,11 +1396,11 @@ class AssignedServiceController extends Controller {
                 $connection = Yii::$app->getDb();
                 $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => $id_user,':id' => '']);
                 $model_history = $command->queryAll();
-//                $model_history = VwActualService::find()->where([
-//                                    'user_id' => $id_user
-//                                ])->
-//                                // 'status' => '1'
-//                                asArray()->one();
+                
+//              $model_history = VwActualService::find()
+//                  ->where(['user_id' => $id_user])
+//                  ->asArray()->one();                 
+                
                 $actual_service = false;
                 if ($model_history != null) {
                     $actual_service = true;
@@ -1407,27 +1421,21 @@ class AssignedServiceController extends Controller {
                 // Enviar mail de pago en mora
                 $sendGrid = new \SendGrid(Yii::$app->params ['sengrid_user'], Yii::$app->params ['sendgrid_pass']);
                 $email = new \SendGrid\Email ();
-                $email->setFrom(Yii::$app->params ['sendgrid_from'])->setFromName(Yii::$app->params ['sendgrid_from_name'])->addTo($user->email)->setSubject(' ')->setHtml(' ')->setHtml(' ')->addSubstitution('{{ username }}', [
-                    $user->first_name
-                ])->addSubstitution('{{ usercard }}', [
-                    $type
-                ])->addSubstitution('{{ usercardnum }}', [
-                    $last_four
-                ])->addSubstitution('{{ buydate }}', [
-                    $services->date
-                ])->addSubstitution('{{ useraddress }}', [
-                    $services->address
-                ])->addSubstitution('{{ item.servname }}', [
-                    $value
-                ])->addSubstitution('{{ item.servmodif }}', [
-                    $value
-                ])->addSubstitution('{{ item.prodprecio }}', [
-                    $value
-                ])->addSubstitution('{{ item.servesp }}', [
-                    $value
-                ])->addSubstitution('{{ total }}', [
-                    $value
-                ])->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_mora']);
+                $email->setFrom(Yii::$app->params ['sendgrid_from'])
+                    ->setFromName(Yii::$app->params ['sendgrid_from_name'])
+                    ->addTo($user->email)->setSubject(' ')->setHtml(' ')->setHtml(' ')
+                    ->addSubstitution('{{ username }}', [$user->first_name])
+                    ->addSubstitution('{{ usercard }}', [$type])
+                    ->addSubstitution('{{ usercardnum }}', [$last_four])
+                    ->addSubstitution('{{ buydate }}', [$services->date])
+                    ->addSubstitution('{{ useraddress }}', [$services->address])
+                    ->addSubstitution('{{ item.servname }}', [$value])
+                    ->addSubstitution('{{ item.servmodif }}', [$value])
+                    ->addSubstitution('{{ item.prodprecio }}', [$value])
+                    ->addSubstitution('{{ item.servesp }}', [$value])
+                    ->addSubstitution('{{ total }}', [$value])
+                    ->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_mora']);
+                
                 $resp = $sendGrid->send($email);
 
                 //

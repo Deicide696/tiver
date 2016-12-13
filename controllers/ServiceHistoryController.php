@@ -182,7 +182,7 @@ class ServiceHistoryController extends Controller {
         $model_token = LogToken::find ()->where ( [ 
             'token' => $token 
         ])->one ();
-//var_dump($model_token);die();
+        
         if ($model_token != null) {
             
             $connection = Yii::$app->getDb();
@@ -218,8 +218,6 @@ class ServiceHistoryController extends Controller {
         $model_token = LogToken::find()->where([
                     'token' => $token
                 ])->one();
-
-        // var_dump($searched);
 
         if ($model_token != null) {
             

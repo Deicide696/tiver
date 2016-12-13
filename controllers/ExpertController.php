@@ -64,17 +64,15 @@ class ExpertController extends Controller {
                             '@'
                         ]
                     ],
-                        [
-                        'actions' => [
-                            'create'
-                        ],
+                    [
+                        'actions' => ['create'],
                         'allow' => true,
                         'roles' => [
-                            '@'
+                            'admin'
                         ],
-                        'matchCallback' => function ($rule, $action) {
-                            return User::isSuper(Yii::$app->user->identity->email);
-                        }
+//                        'matchCallback' => function ($rule, $action) {
+//                            return User::isSuper(Yii::$app->user->identity->email);
+//                        }
                     ]
                 ]
             ]
