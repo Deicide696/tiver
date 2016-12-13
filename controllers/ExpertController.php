@@ -139,10 +139,6 @@ class ExpertController extends Controller {
         $model = new Expert ();
         $modelU = new UploadForm();
 
-  
-
-//        return $this->render('upload', ['model' => $model]);
-//        var_dump(Yii::$app->request->post(), $_GET, $modelU);die();
         if (Yii::$app->request->isPost) {
             if ($model->load(Yii::$app->request->post())) {
                 $model->password = $model->setPassword($model->password);
@@ -150,11 +146,9 @@ class ExpertController extends Controller {
                 
                 $modelU->imageFile = UploadedFile::getInstance($model, 'path');
                 $modelU->path = Url::to('@webroot/img/experts/') . $modelU->imageFile->baseName . '.' . $modelU->imageFile->extension;
-//              var_dump($modelU->path);die();
                 if ($modelU->upload()) {
-                      
                     // file is uploaded successfully
-                    $model->path = $modelU->path;
+                    $model->path = $_SERVER["HTTP_ORIGIN"].Yii::$app->urlManager->baseUrl."/img/experts/" . $modelU->imageFile->baseName . "." . $modelU->imageFile->extension;
                     if ($model->save()) {
                         return $this->redirect([
                                 'view',
@@ -165,8 +159,6 @@ class ExpertController extends Controller {
                     }
                     return;
                 }
-                
-                
             }
         } else {
             $model->enable = 1;
