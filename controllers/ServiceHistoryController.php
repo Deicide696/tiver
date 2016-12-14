@@ -186,7 +186,7 @@ class ServiceHistoryController extends Controller {
         if ($model_token != null) {
             
             $connection = Yii::$app->getDb();
-            $command = $connection->createCommand(Yii::$app->params ['vw_service_history'],[':user_id' => $model_token->FK_id_user, ':status' => 1]);
+            $command = $connection->createCommand(Yii::$app->params ['vw_service_history'],[':id' => '',':user_id' => $model_token->FK_id_user, ':status' => 1]);
             $model_history = $command->queryAll();
         
 //            $model_history = VwServiceHistory::find()
@@ -361,14 +361,14 @@ class ServiceHistoryController extends Controller {
         $model = ServiceHistory::find()
                 ->select(['id'])
                 ->where([
-                    'id' => $service_id,
+                    'service_id' => $service_id,
                     'state' => 1,
                     'expert_id' => $expert_id ,
                     'user_id' => $model_token->FK_id_user
                 ])
                 ->asArray()
                 ->one();
-        
+//        var_dump($model);die();
         if(isset($model)){
             $serviceH= ServiceHistory::findOne($model["id"]);
            
