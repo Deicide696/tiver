@@ -678,8 +678,8 @@ class ExpertController extends Controller {
         $id = Yii::$app->request->post("id", null);
         $token = Yii::$app->request->post("token", null);
          
-        $model_token = GcmTokenExpert::find()
-                ->where(['token' => $token, 'expert_id' => $id])
+        $model_token = LogToken::find()
+                ->where(['token' => $token, 'status' => 1])
                 ->one();
         
         if (!isset($model_token) || empty($model_token)) {
