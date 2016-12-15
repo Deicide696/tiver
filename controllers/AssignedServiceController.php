@@ -189,33 +189,26 @@ class AssignedServiceController extends Controller {
     public function actionAssignService() { 
         
     
-            
+//            return 1;
         
         $address = $_POST ['address'];
         $address_comp = $_POST ['address_comp'];
         $date = $_POST ['date'];
         $time = $_POST ['time'];
         $service = $_POST ['service'];
-        // $service_name = $_POST ['service_name'];
         $token = $_POST ['token'];
         $modifier = $_POST ['modifier'];
         $comment = $_POST ['comment'];
         $lat = $_POST ['address_lat'];
         $lng = $_POST ['address_lng'];
         $cupon = $_POST ['cupon'];
+    
+        $model_token = LogToken::find()
+                ->where(['token' => $token])
+                ->one();
         
-        
-//          $url=Yii::getAlias('@webroot');
-//        $log = $url . "/logs/".$service.".txt";
-//        $script = 'php ' . $url . '/./yii tasks/check-service "' . $service . '" "' . $date . '" "' . $time . '"';
-//        exec("(sleep " . Yii::$app->params ['seconds_wait'] . "; $script > $log) > /dev/null 2>&1 &");
-//        
-//            var_dump(Yii::getAlias('@webroot'), Yii::getAlias('@web'),$script,"(sleep " . Yii::$app->params ['seconds_wait'] . "; $script > $log) > /dev/null 2>&1 &");die();
-        
-        $model_token = LogToken::find()->where([
-                    'token' => $token
-                ])->one();
-        if ($model_token == null) {
+//        return var_dump($model_token);die();
+        if (!isset($model_token) || empty($model_token)) {
 
             $response ["success"] = false;
             $response ["data"] = [
@@ -238,24 +231,32 @@ class AssignedServiceController extends Controller {
 
         // Buscamos expertos disponibles para ese día y de ese servicio
         $day = date('N', strtotime($date));
-        $experts = Expert::find()->where("enable='1' and zone_id='$zone' and (schedule.weekday_id='$day' and '$time' between schedule.start_time and schedule.finish_time) and (expert_has_service.service_id='$service')")->joinwith('schedule')->joinwith('assignedService')->joinwith('expertHasService')->orderBy(new Expression('rand()'))->all();
-
+//        return var_dump($day);die();
+        $experts = Expert::find()
+                ->where("enable='1' and zone_id='$zone' and (schedule.weekday_id='$day' and '$time' between schedule.start_time and schedule.finish_time) and (expert_has_service.service_id='$service')")
+                ->joinwith('schedule')
+                ->joinwith('assignedService')
+                ->joinwith('expertHasService')
+                ->orderBy(new Expression('rand()'))
+                ->all();
+        
+        
         // obtenemos la duración del servicio, (duracion serv+ duracion mod)
         $dur_serv = 0;
-        $dur_serv += Service::find()->select([
-                    'duration'
-                ])->where([
-                    'id' => $service
-                ])->one()->duration;
-        if ($modifier != ''){
-            $dur_serv += Modifier::find()->select([
-                        'duration'
-                    ])->where([
-                        'id' => $modifier
-                    ])->one()->duration;
+        $dur_serv += Service::find()->select(['duration'])
+                ->where(['id' => $service])
+                ->one()
+                ->duration;
+        
+        
+        if (!empty($modifier)){
+            $dur_serv += Modifier::find()->select(['duration'])
+                    ->where(['id' => $modifier])
+                    ->one()
+                    ->duration;
         }
-        // print "---> $dur_serv";
-
+//        return var_dump($experts);die();
+        $expert_id = 0;
         foreach ($experts as $expert) {
             $disponible = $expert->validateDateTime($date, $time, $dur_serv);
             // print "-disp->".$disponible;
@@ -289,7 +290,7 @@ class AssignedServiceController extends Controller {
         // print $expert_id;
         // exit();
 
-        if (!isset($expert_id)) {
+        if ($expert_id == 0) {
 
             $response ["success"] = false;
             $response ["data"] = [
@@ -312,7 +313,7 @@ class AssignedServiceController extends Controller {
         $model->lng = $lng;
         $model->comment = $comment;
         $model->service_id = $service;
-
+            // Si viene con un copon 
         if ($cupon != "") {
             $model_coupon = Coupon::find()->where([
                         'code' => $cupon
@@ -413,13 +414,12 @@ class AssignedServiceController extends Controller {
             $address .= " - " . $address_comp;
         }
         
-        $model_user = User::find()->where([
-                    'id' => $model_token->FK_id_user
-                ])->one();
+        $model_user = User::find()
+                ->where(['id' => $model_token->FK_id_user])
+                ->one();
 
-        $tokens = Expert::findOne([
-                    "id" => $expert_id
-                ])->getPushTokens();
+        $tokens = Expert::findOne(["id" => $expert_id])
+                ->getPushTokens();
 
         $data = [
             "ticker" => "Tienes trabajo",
@@ -450,7 +450,6 @@ class AssignedServiceController extends Controller {
         exec("(sleep " . Yii::$app->params ['seconds_wait'] . "; $script > $log) > /dev/null 2>&1 &");
         
         // Insertamos el log
-        // Insertar LOG
         $model_log = new LogAssignedService ();
         $model_log->assigned = "1";
         $model_log->rejected = "0";
@@ -1262,8 +1261,8 @@ class AssignedServiceController extends Controller {
                     "time" => $time,
                     "state" => 1
                 ])->joinWith('service')->one();
-        
-        if ($services == null) {
+//        return var_dump($services);die();
+        if (isset($services) && !empty($services)) {
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Lo sentimos, este servicio ya fue finalizado o no existe"
@@ -1278,7 +1277,7 @@ class AssignedServiceController extends Controller {
        } 
        
         $tax = $services->getTax();
-
+        return var_dump($tax);die();
         $duracion = ($services->getDuration()) - 15;
         // $value=2;
         $cupon = "";
@@ -1288,7 +1287,7 @@ class AssignedServiceController extends Controller {
 
         $time1 = strtotime($date_now . " " . $time_now);
         $time2 = strtotime($date . " " . $time . " +$duracion minute");
-
+        var_dump($time2," . ",$time2);
         if ($time1 < $time2) {
             $response ["success"] = false;
             $response ["data"] = [
@@ -1325,7 +1324,7 @@ class AssignedServiceController extends Controller {
         $tokens = User::findOne([
                     "id" => $id_user
                 ])->getPushTokens();
-        var_dump($deleted);die();
+        var_dump("DELETE: ",$deleted);die();
         if ($deleted > 0) {
             // Si hay cupon, se omite la peticion a TPaga
             /*
@@ -1368,10 +1367,10 @@ class AssignedServiceController extends Controller {
              * }
              */
 
-            // /
+    
             $data_pay = Yii::$app->TPaga->CreateCharge($credit_card->hash, $value, "Servicio Tiver", $tax);
 
-            var_dump($data_pay);die();
+            var_dump("DATA_PAY",$data_pay);die();
 
             $user = User::findOne([
                         "id" => $id_user
@@ -1456,49 +1455,30 @@ class AssignedServiceController extends Controller {
 
                 if ($paid_pay) {
                     $pay->state = 1;
-                    $email->addSubstitution('{{ username }}', [
-                                $user->first_name
-                            ])->
+                    $email->addSubstitution('{{ username }}', [$user->first_name])
+                            -> addSubstitution('{{ buydate }}', [$services->date])
                             // ->addSubstitution('{{ usercard }}',[$type)
                             // ->addSubstitution('{{ usercardnum }}',[$last_four)
-                            addSubstitution('{{ buydate }}', [
-                                $services->date
-                            ])->addSubstitution('{{ useraddress }}', [
-                        $services->address
-                    ])->addSubstitution('{{ item.servname }}', [
-                        $value
-                    ])->addSubstitution('{{ item.servmodif }}', [
-                        $value
-                    ])->addSubstitution('{{ item.prodprecio }}', [
-                        $value
-                    ])->addSubstitution('{{ item.servesp }}', [
-                        $value
-                    ])->addSubstitution('{{ total }}', [
-                        $value
-                    ])->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_compraok']);
+                            ->addSubstitution('{{ useraddress }}', [$services->address])
+                            ->addSubstitution('{{ item.servname }}', [$value])
+                            ->addSubstitution('{{ item.servmodif }}', [$value])
+                            ->addSubstitution('{{ item.prodprecio }}', [$value])
+                            ->addSubstitution('{{ item.servesp }}', [$value])
+                            ->addSubstitution('{{ total }}', [$value])
+                            ->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_compraok']);
                 } else {
 
-                    $email->addSubstitution('{{ username }}', [
-                        $user->first_name
-                    ])->addSubstitution('{{ usercard }}', [
-                        $type
-                    ])->addSubstitution('{{ usercardnum }}', [
-                        $last_four
-                    ])->addSubstitution('{{ buydate }}', [
-                        $services->date
-                    ])->addSubstitution('{{ useraddress }}', [
-                        $services->address
-                    ])->addSubstitution('{{ item.servname }}', [
-                        $value
-                    ])->addSubstitution('{{ item.servmodif }}', [
-                        $value
-                    ])->addSubstitution('{{ item.prodprecio }}', [
-                        $value
-                    ])->addSubstitution('{{ item.servesp }}', [
-                        $value
-                    ])->addSubstitution('{{ total }}', [
-                        $value
-                    ])->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_mora']);
+                    $email->addSubstitution('{{ username }}', [$user->first_name])
+                            ->addSubstitution('{{ usercard }}', [$type])
+                            ->addSubstitution('{{ usercardnum }}', [$last_four])
+                            ->addSubstitution('{{ buydate }}', [$services->date])
+                            ->addSubstitution('{{ useraddress }}', [$services->address])
+                            ->addSubstitution('{{ item.servname }}', [$value])
+                            ->addSubstitution('{{ item.servmodif }}', [$value])
+                            ->addSubstitution('{{ item.prodprecio }}', [$value])
+                            ->addSubstitution('{{ item.servesp }}', [$value])
+                            ->addSubstitution('{{ total }}', [$value])
+                            ->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_mora']);
 
                     $pay->state = 0;
                 }
