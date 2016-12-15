@@ -177,6 +177,7 @@ class ExpertController extends Controller {
      * @return mixed
      */
     public function actionUpdate($id) {
+        
         $model = $this->findModel($id);
         $modelU = new UploadForm();
         $path = $model->path;
@@ -186,8 +187,10 @@ class ExpertController extends Controller {
                 $modelU->path = Url::to('@webroot/img/experts/') . $modelU->imageFile->baseName . '.' . $modelU->imageFile->extension;
                 if ($modelU->upload()) {
                     // file is uploaded successfully
-                    unlink($path);
-                    $model->path = $modelU->path;
+                    if(file_exists($path)){
+                        unlink($path);
+                    } 
+                    $model->path = $_SERVER["HTTP_ORIGIN"].Yii::$app->urlManager->baseUrl."/img/experts/" . $modelU->imageFile->baseName . "." . $modelU->imageFile->extension;
                     if ($model->save()) {
                         return $this->redirect([
                                 'view',
@@ -675,16 +678,15 @@ class ExpertController extends Controller {
         $id = Yii::$app->request->post("id", null);
         $token = Yii::$app->request->post("token", null);
          
-        $model_token = LogToken::find()->where([
-            'token' => $token
-        ])->one();
+        $model_token = GcmTokenExpert::find()
+                ->where(['token' => $token, 'expert_id' => $id])
+                ->one();
         
-        if ($model_token == null) {
+        if (!isset($model_token) || empty($model_token)) {
             $response ["success"] = false;
             $response ["data"] = [
-                "message" => "Token inválido"
+                "message" => "Token no existe o es inválido"
             ];
-
             return $response;
         }
         
