@@ -259,26 +259,23 @@ class CouponController extends Controller {
         $id = Yii::$app->request->post('service_id', '');
         Yii::$app->response->format = 'json';
 
-        $model = Coupon::find()->where([
-                    'code' => $cupon,
-                    'enable' => '1'
-                ])->joinwith([
-                    'couponHasCategoryService'
-                ])->joinwith([
-                    'couponHasService'
-                ])->asArray()->one();
-
-        if (isset($model)) {
+        $model = Coupon::find()
+                ->where(['code' => $cupon, 'enable' => '1'])
+                ->joinWith(['couponHasCategoryServices'])
+                ->joinWith(['couponHasServices'])
+                ->asArray()
+                ->one();
+        
+//        var_dump($model); die();
+        if (isset($model) && !empty($model)) {
             // Validacion si este servicio esta asociado a este cupon
-            $modelS = Coupon::find()->where([
-                        'type_coupon_id' => 3,
-                        'enable' => '1',
-                        'coupon_has_service.service_id' => $id
-                    ])->joinwith([
-                        'couponHasService'
-                    ])->asArray()->one();
-//            return var_dump($modelS);
-            if (isset($modelS)) {
+            $modelS = Coupon::find()
+                    ->where(['type_coupon_id' => 3, 'enable' => '1', 'coupon_has_service.service_id' => $id])
+                    ->joinwith(['couponHasServices'])
+                    ->asArray()->one();
+            
+//            return var_dump($m    odelS); die();
+            if (isset($modelS) && !empty($model)) {
                 if ($model ['used'] == '1') {
                     $response ["success"] = false;
                     $response ["data"] = [
@@ -286,19 +283,102 @@ class CouponController extends Controller {
                     ];
                     return $response;
                 } else {
+                    return var_dump($modelS); die();
                     switch ($model['type_coupon_id']) {
-                        case 1 : // Caso coupon - usuario
-                            $model_token = LogToken::find()->where([
-                                        'token' => $token
-                                    ])->one();
+                        case 1 :                           // Cupón - Monto fijo
+//                            $model_token = LogToken::find()
+//                                ->where(['token' => $token])
+//                                ->one();
+//
+//                            if (isset($model_token) && !empty($model_token)) {
+//                                // buscamos la relación cupon-ususario
+//                                $model_search = UserHasCoupon::find()
+//                                        ->where(['user_id' => $model_token->FK_id_user,'coupon_id' => $model['id']])
+//                                        ->asArray()
+//                                        ->one();
+//                                if (isset($model_search) && !empty($model_search)) {
+//                                    $response ["success"] = true;
+//                                    $response ['data'] = $model;
+//                                    return $response;
+//                                } else {
+//                                    $response ["success"] = false;
+//                                    $response ["data"] = [
+//                                        "message" => "Este cupón se encuentra asignado a otro usuario"
+//                                    ];
+//                                    return $response;
+//                                }
+//                            } else {
+//                                $response ["success"] = false;
+//                                $response ["data"] = [
+//                                    "message" => "Token inválido"
+//                                ];
+//                                return $response;
+//                            }
+//
+//                            break;
+                            $response ["success"] = false;
+                            $response ["data"] = [
+                                "message" => "Este cupón no perteneces a un Servicio."
+                            ];
+                            return $response;
+                            
+                        case 2:                           //  Cupón - Categorias
+//                            $model_token = LogToken::find()
+//                                ->where(['token' => $token])
+//                                ->one();
+//
+//                            if (isset($model_token) && !empty($model_token)) {
+//                                // buscamos la relación cupon-ususario
+//                                $model_search = UserHasCoupon::find()
+//                                        ->where(['user_id' => $model_token->FK_id_user,'coupon_id' => $model['id']])
+//                                        ->asArray()
+//                                        ->one();
+//                                if (isset($model_search) && !empty($model_search)) {
+//                                    $model_search = app\models\CouponHasCategoryService::find()
+//                                        ->where(['user_id' => $model_token->FK_id_user])
+//                                        ->asArray()
+//                                        ->one();
+//                                        if (isset($model_search) && !empty($model_search)) {
+//                                    
+//                                        }
+//                                    $response ["success"] = true;
+//                                    $response ['data'] = $model;
+//                                    return $response;
+//                                } else {
+//                                    $response ["success"] = false;
+//                                    $response ["data"] = [
+//                                        "message" => "Este cupón se encuentra asignado a otro usuario"
+//                                    ];
+//                                    return $response;
+//                                }
+//                            } else {
+//                                $response ["success"] = false;
+//                                $response ["data"] = [
+//                                    "message" => "Token inválido"
+//                                ];
+//                                return $response;
+//                            }
+//
+//                            break;
+                            
+                            $response ["success"] = false;
+                            $response ["data"] = [
+                                "message" => "Este cupón no perteneces a un Servicio."
+                            ];
+                            return $response;
+                        
+                        case 3 :                             // Cupón - Servicio
+                            $model_token = LogToken::find()
+                                ->where(['token' => $token])
+                                ->one();
 
-                            if ($model_token != null) {
+                            if (isset($model_token) && !empty($model_token)) {
                                 // buscamos la relación cupon-ususario
-                                $model_search = UserHasCoupon::find()->where([
-                                            'user_id' => $model_token->FK_id_user,
-                                            'coupon_id' => $model['id']
-                                        ])->asArray()->one();
-                                if ($model_search != null) {
+                                $model_search = UserHasCoupon::find()
+                                        ->where(['user_id' => $model_token->FK_id_user,'coupon_id' => $model['id']])
+                                        ->asArray()
+                                        ->one();
+                                if (isset($model_search) && !empty($model_search)) {
                                     $response ["success"] = true;
                                     $response ['data'] = $model;
                                     return $response;
@@ -317,11 +397,6 @@ class CouponController extends Controller {
                                 return $response;
                             }
 
-                            break;
-                        case 2://CAso cuponcategoria
-                            $response ["success"] = true;
-                            $response ['data'] = $model;
-                            return $response;
                             break;
                     }
                 }
