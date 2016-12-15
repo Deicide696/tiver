@@ -266,7 +266,6 @@ class CouponController extends Controller {
                 ->asArray()
                 ->one();
         
-//        var_dump($model); die();
         if (isset($model) && !empty($model)) {
             // Validacion si este servicio esta asociado a este cupon
             $modelS = Coupon::find()
@@ -274,7 +273,6 @@ class CouponController extends Controller {
                     ->joinwith(['couponHasServices'])
                     ->asArray()->one();
             
-//            return var_dump($m    odelS); die();
             if (isset($modelS) && !empty($model)) {
                 if ($model ['used'] == '1') {
                     $response ["success"] = false;
@@ -283,7 +281,6 @@ class CouponController extends Controller {
                     ];
                     return $response;
                 } else {
-                    return var_dump($modelS); die();
                     switch ($model['type_coupon_id']) {
                         case 1 :                           // Cupón - Monto fijo
 //                            $model_token = LogToken::find()
