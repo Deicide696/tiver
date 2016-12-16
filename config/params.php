@@ -111,7 +111,7 @@ return [
          and ((`a`.`user_id` = :user_id)
          or (`a`.`id` = :id)
          or (`a`.`state` = :status))
-        order by `a`.`date` desc,`a`.`time` desc,`a`.`created_date` desc",
+        order by `a`.`date` desc,`a`.`time` desc",
     'vw_service_history_expert' => "SELECT
         `a`.`id` AS `id`,
         `a`.`date` AS `date`,

@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use Yii;
 use app\models\ServiceHistory;
+use app\models\ServiceHistoryHasPay;
 use app\models\ServiceHistorySearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -305,19 +306,11 @@ class ServiceHistoryController extends Controller {
      
         Yii::$app->response->format = 'json';
         
-        $expert_id = Yii::$app->request->post("expert_id", null);
         $service_id= Yii::$app->request->post("service_id", null);
         $qualify= Yii::$app->request->post("qualify", null);
         $observations= Yii::$app->request->post("observations", null);
         $token = Yii::$app->request->post("token", null);
         
-        if(is_null($expert_id) || empty($expert_id)){
-            $response ["success"] = false;
-            $response ["data"] = [
-                "message" => "El ID del Especialista no debe ser Nulo o Vacío."
-            ];
-            return $response;
-        }
         if(is_null($service_id) || empty($service_id)){
             $response ["success"] = false;
             $response ["data"] = [
@@ -349,7 +342,7 @@ class ServiceHistoryController extends Controller {
             'token' => $token
         ])->one();
         
-        if ($model_token == null) {
+        if (!isset($model_token) || empty($model_token)) {
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Token inválido"
@@ -357,20 +350,34 @@ class ServiceHistoryController extends Controller {
 
             return $response;
         }
-        // Busca el servicio que se calificará
-        $model = ServiceHistory::find()
-                ->select(['id'])
-                ->where([
-                    'service_id' => $service_id,
-                    'state' => 1,
-                    'expert_id' => $expert_id ,
-                    'user_id' => $model_token->FK_id_user
-                ])
+        
+        //  Buscamos si este usuario fue el que recibio este servicio y por lo tanto puede calificarlo 
+        $serviceH = ServiceHistory::find()
+                ->where(['id' => $service_id,'user_id' => $model_token->FK_id_user, 'state' => 1])
                 ->asArray()
                 ->one();
-//        var_dump($model);die();
-        if(isset($model)){
-            $serviceH= ServiceHistory::findOne($model["id"]);
+        
+        if(!isset($serviceH) || empty($serviceH)){
+            $response ["success"] = false;
+            $response ["data"] = [
+                "message" => "Este servicio no encuentra asociado a este usuario o no esta activo."
+            ];
+
+            return $response;
+        }
+        
+        // Busca el servicio que se calificará que este finalizado y este pagado
+        $model = ServiceHistoryHasPay::find()
+                ->where([
+                    'service_history.id' => $service_id,
+                    'pay.state' => 1,
+                ])
+                ->joinWith(['serviceHistory','pay'])
+                ->asArray()
+                ->one();
+        
+        if(isset($model) && !empty($model)){
+            $serviceH= ServiceHistory::findOne($model['serviceHistory']['id']);
            
             $serviceH->qualification = $qualify;
             $serviceH->observations = $observations;
@@ -390,7 +397,7 @@ class ServiceHistoryController extends Controller {
         } else {
             $response ["success"] = false;
             $response ["data"] = [
-                "message" => "Este servicio no está en nuestros registros."
+                "message" => "Este servicio no se puede calificar por que no se ha reportado el pago del mismo."
             ];
             return $response;
         }
