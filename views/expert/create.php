@@ -55,7 +55,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= $form->field($model, 'email')->input('email'); ?>
         <?= $form->field($model, 'address'); ?>
         <?= $form->field($model, 'enable')->checkbox(); ?>
-        <?= $form->field($model, 'rol_id')->input("hidden")->label(false); ?>
+        <?php // $form->field($model, 'rol_id')->input("hidden")->label(false); ?>
         <?= $form->field($model, 'gender_id')->dropDownList(ArrayHelper::map(Gender::find()->all(), 'id', 'gender')); ?>
         <?= $form->field($model, 'zone_id')->dropDownList(ArrayHelper::map(Zone::find()->all(), 'id', 'name')); ?>
         <?= $form->field($model, 'password')->input('password'); ?>

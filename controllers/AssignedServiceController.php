@@ -500,6 +500,7 @@ class AssignedServiceController extends Controller {
     }
 
     public function actionCancelService() {
+        
         Yii::$app->response->format = 'json';
         $time = Yii::$app->request->post("time", "");
         $date = Yii::$app->request->post("date", "");
@@ -587,9 +588,9 @@ class AssignedServiceController extends Controller {
             "ticker" => "Servicio cancelado",
             'type' => Yii::$app->params ['notification_type_canceled_expert']
         ];
-        if ($tokens != null)
+        if ($tokens != null) {
             Yii::$app->PushNotifier->sendNotificationExpertOS("Servicio eliminado", "Se ha cancelado un servicio que tenías asignado", $data, $tokens);
-
+        }
         $connection = Yii::$app->getDb();
         $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => $id_user, ':id' => '']);
         $model_history = $command->queryAll();

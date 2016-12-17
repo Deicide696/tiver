@@ -2,40 +2,42 @@
 
 namespace app\models;
 
+use yii\db\Expression;
 use Yii;
 
 /**
  * This is the model class for table "expert".
  *
  * @property integer $id
+ * @property integer $zone_id
+ * @property integer $type_identification_id
+ * @property integer $gender_id
  * @property string $identification
  * @property string $name
  * @property string $last_name
  * @property integer $phone
  * @property string $email
  * @property string $password
- * @property string $password_repeat
  * @property string $address
- * @property integer $enable
- * @property double $lat
- * @property double $lng
+ * @property string $path
  * @property string $created_date
- * @property integer $zone_id
- * @property integer $type_identification_id
- * @property integer $rol_id
- * @property integer $gender_id
+ * @property integer $enable
  *
  * @property AssignedService[] $assignedServices
  * @property Calendar[] $calendars
+ * @property Conversation[] $conversations
  * @property Zone $zone
  * @property Gender $gender
- * @property Rol $rol
- * @property IdentificationType $identificationType
+ * @property TypeIdentification $typeIdentification
  * @property ExpertHasAssignedServices $expertHasAssignedServices
  * @property ExpertHasService[] $expertHasServices
  * @property Service[] $services
+ * @property GcmTokenExpert[] $gcmTokenExperts
+ * @property LogAssignedService[] $logAssignedServices
  * @property Schedule[] $schedules
+ * @property ServiceHistory[] $serviceHistories
  */
+
 class Expert extends \yii\db\ActiveRecord {
 
     /**
@@ -48,20 +50,24 @@ class Expert extends \yii\db\ActiveRecord {
     /**
      * @inheritdoc
      */
-    //public $rol_id=2;
     
     public $password_repeat;
 
     public function rules() {
+        
         return [
-                [['identification', 'name', 'last_name', 'phone', 'email', 'password', 'address', 'zone_id', 'type_identification_id', 'rol_id', 'gender_id'], 'required'],
-                [['phone', 'enable', 'zone_id', 'type_identification_id', 'rol_id', 'gender_id'], 'integer'],
-                [['created_date'], 'date', 'format' => 'yyyy-M-d H:m:s'],
-                ['email', 'email', 'checkDNS' => true],
-                [['email'], 'unique'],
+            [['zone_id', 'type_identification_id', 'gender_id', 'identification', 'name', 'last_name', 'phone', 'email', 'password', 'address', 'enable'], 'required'],
+            [['zone_id', 'type_identification_id', 'gender_id', 'phone', 'enable'], 'integer'],
+            [['created_date', 'update_date'], 'safe'],
             [['identification'], 'string', 'max' => 15],
-                [['name', 'last_name', 'password', 'address', 'path'], 'string', 'max' => 100],
-                ['password_repeat', 'compare', 'compareAttribute' => 'password'],
+            [['name', 'last_name', 'email', 'password', 'address', 'path'], 'string', 'max' => 100],
+            ['email', 'email', 'checkDNS' => true],
+            [['zone_id'], 'exist', 'skipOnError' => true, 'targetClass' => Zone::className(), 'targetAttribute' => ['zone_id' => 'id']],
+            [['gender_id'], 'exist', 'skipOnError' => true, 'targetClass' => Gender::className(), 'targetAttribute' => ['gender_id' => 'id']],
+            [['type_identification_id'], 'exist', 'skipOnError' => true, 'targetClass' => TypeIdentification::className(), 'targetAttribute' => ['type_identification_id' => 'id']],
+            ['password_repeat', 'compare', 'compareAttribute' => 'password'],
+            [['email'], 'unique', 'message' => 'Este Correo ya se encuentra en nuestros registros.'],
+            [['phone'], 'unique', 'message' => 'Este Nº telefónico ya se encuentra en nuestros registros.'],
         ];
     }
 
@@ -71,22 +77,44 @@ class Expert extends \yii\db\ActiveRecord {
     public function attributeLabels() {
         return [
             'id' => 'ID',
-            'identification' => 'Cédula',
+            'zone_id' => 'Zona',
+            'type_identification_id' => 'Tipo de identificación',
+            'gender_id' => 'Genero',
+            'identification' => 'Nº Identificación',
             'name' => 'Nombres',
             'last_name' => 'Apellidos',
-            'phone' => 'Celular',
-            'email' => 'Email',
+            'phone' => 'Nº Telefónico',
+            'email' => 'Correo electrónico',
             'password' => 'Contraseña',
             'password_repeat' => 'Confirmar contraseña',
             'address' => 'Dirección',
-            'enable' => 'Activo',
-            'created_date' => 'Fecha Creación',
-            'zone_id' => 'Zona',
-            'type_identification_id' => 'Tipo de identificación',
-            'rol_id' => 'Rol',
-            'gender_id' => 'Genero',
-            'path' => 'Ruta foto',
+            'path' => 'Ruta de Avatar',
+            'created_date' => 'Fecha creado',
+            'updated_date' => 'Fecha actualizado',
+            'enable' => 'activo',
         ];
+    }
+    
+    
+    public function behaviors()
+    {
+       return [           
+           'timestamp' => [
+                'class' => \yii\behaviors\TimestampBehavior::className(),
+                'attributes' => [
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT =>  ['created_date', 'updated_date'],
+                    \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => 'updated_date',
+                ],
+                'value' => function() { return  date ( 'Y-m-d H:i:s' );},
+            ],
+            'activeBehavior' => [
+               'class' => 'yii\behaviors\AttributeBehavior',
+                'attributes' => [
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => 'enable',
+                ],
+                'value' => 1,
+           ],
+       ];
     }
 
     public function validatePassword($password) {
@@ -117,7 +145,15 @@ class Expert extends \yii\db\ActiveRecord {
     public function getCalendars() {
         return $this->hasMany(Calendar::className(), ['expert_idexpert' => 'id']);
     }
-
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getConversations()
+    {
+        return $this->hasMany(Conversation::className(), ['expert_id' => 'id']);
+    }
+    
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -176,6 +212,30 @@ class Expert extends \yii\db\ActiveRecord {
      */
     public function getSchedule() {
         return $this->hasMany(Schedule::className(), ['expert_id' => 'id']);
+    }
+    
+     /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getGcmTokenExperts()
+    {
+        return $this->hasMany(GcmTokenExpert::className(), ['expert_id' => 'id']);
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLogAssignedServices()
+    {
+        return $this->hasMany(LogAssignedService::className(), ['expert_id' => 'id']);
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getServiceHistories()
+    {
+        return $this->hasMany(ServiceHistory::className(), ['expert_id' => 'id']);
     }
 
     public function getShortName() {

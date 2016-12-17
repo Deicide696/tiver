@@ -15,7 +15,7 @@ class m161208_205942_insert_data extends Migration
             'password' => '$2y$13$zFiXe8TCm3WJ57ojbsN5Ge5ltBWvB/192iD885tznqmojc8Vm0r46',
             'receive_interest_info' => 0,
             'imei' => 123456789123456,
-            'FK_id_rol' => 1,
+//            'FK_id_rol' => 1,
             'FK_id_gender' => 1,
             'FK_id_type_identification' => 1,
             'FK_id_city' => 1,

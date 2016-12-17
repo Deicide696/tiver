@@ -362,7 +362,8 @@ class UserController extends Controller {
             }
 
             // Buscamos el usuario asociado a dicho fb_id
-            $user = User::find()->where("enable='1' and(fb_id='$user_id' or email='$email') and FK_id_rol=1")->one();
+//            $user = User::find()->where("enable='1' and(fb_id='$user_id' or email='$email') and FK_id_rol=1")->one();
+            $user = User::find()->where("enable='1' and(fb_id='$user_id' or email='$email')")->one();
             if ($user) {
                 $updateTokens = LogToken::updateAll([
                             'status' => 0
@@ -789,7 +790,7 @@ class UserController extends Controller {
         $user = User::findOne([
                     'email' => $email,
                     'enable' => User::STATUS_ACTIVE,
-                    'FK_id_rol' => '1'
+//                    'FK_id_rol' => '1'
         ]);
         if ($user == null) {
             return [

@@ -50,7 +50,7 @@ $this->params['breadcrumbs'][] = 'Modificar';
             ?>
         </div>
     </div>
-    <?= $form->field($model, 'rol_id')->input("hidden")->label(false); ?>
+    <?php //$form->field($model, 'rol_id')->input("hidden")->label(false); ?>
     <?= $form->field($model, 'identification'); ?>
     <?= $form->field($model, 'name'); ?>
     <?= $form->field($model, 'last_name'); ?>

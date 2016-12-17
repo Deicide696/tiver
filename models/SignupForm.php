@@ -77,7 +77,7 @@ class SignupForm extends Model {
             $user->phone = $this->phone;
             $user->email = $this->email;
             $user->FK_id_gender = $this->gender;
-            $user->FK_id_rol = 1;
+//            $user->FK_id_rol = 1;
             $user->FK_id_city = 1;
             $user->FK_id_type_identification = 1;
             $user->enable = 1;
@@ -120,7 +120,7 @@ class SignupForm extends Model {
             $user->email = $this->email;
             $user->FK_id_gender = $this->gender;
             // $user->points = 0;
-            $user->FK_id_rol = 1;
+//            $user->FK_id_rol = 1;
             $user->FK_id_city = 1;
             $user->FK_id_type_identification = 1;
             $user->enable = 1;

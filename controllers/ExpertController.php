@@ -141,28 +141,47 @@ class ExpertController extends Controller {
 
         if (Yii::$app->request->isPost) {
             if ($model->load(Yii::$app->request->post())) {
+                
                 $model->password = $model->setPassword($model->password);
                 $model->password_repeat = ($model->password);
-                
                 $modelU->imageFile = UploadedFile::getInstance($model, 'path');
-                $modelU->path = Url::to('@webroot/img/experts/') . $modelU->imageFile->baseName . '.' . $modelU->imageFile->extension;
-                if ($modelU->upload()) {
-                    // file is uploaded successfully
-                    $model->path = $_SERVER["HTTP_ORIGIN"].Yii::$app->urlManager->baseUrl."/img/experts/" . $modelU->imageFile->baseName . "." . $modelU->imageFile->extension;
-                    if ($model->save()) {
-                        return $this->redirect([
-                                'view',
-                                'id' => $model->id
+                if(isset($modelU->imageFile)){
+
+                    $modelU->path = Url::to('@webroot/img/experts/') . $modelU->imageFile->baseName . '.' . $modelU->imageFile->extension;
+
+                    if ($modelU->upload()) {
+                        var_dump($modelU->imageFile);die();
+                        // file is uploaded successfully
+                        $model->path = $_SERVER["HTTP_ORIGIN"].Yii::$app->urlManager->baseUrl."/img/experts/" . $modelU->imageFile->baseName . "." . $modelU->imageFile->extension;
+                        if ($model->save()) {
+                            $auth = Yii::$app->authManager;
+                            $auth->assign($auth->getRole('expert'), $model->id);
+                            return $this->redirect([
+                                    'view',
+                                    'id' => $model->id
+                                ]);
+                        } else {
+                            return $this->render('create', [
+                                'model' => $model
                             ]);
-                    } else {
-                        var_dump($model->errors);
+//                            var_dump($model->errors);
+                        }
                     }
-                    return;
+                }else {
+                    if ($model->save()) {
+                            return $this->redirect([
+                                    'view',
+                                    'id' => $model->id
+                                ]);
+                        } else {
+                            return $this->render('create', [
+                                'model' => $model
+                            ]);
+                        }
                 }
             }
         } else {
             $model->enable = 1;
-            $model->rol_id = 2;
             return $this->render('create', [
                         'model' => $model
                     ]);
@@ -179,30 +198,42 @@ class ExpertController extends Controller {
     public function actionUpdate($id) {
         
         $model = $this->findModel($id);
+//        $model2 = new Expert ();
         $modelU = new UploadForm();
         $path = $model->path;
         
         if ($model->load(Yii::$app->request->post())) {
                 $modelU->imageFile = UploadedFile::getInstance($model, 'path');
-                $modelU->path = Url::to('@webroot/img/experts/') . $modelU->imageFile->baseName . '.' . $modelU->imageFile->extension;
-                if ($modelU->upload()) {
-                    // file is uploaded successfully
-                    if(file_exists($path)){
-                        unlink($path);
-                    } 
-                    $model->path = $_SERVER["HTTP_ORIGIN"].Yii::$app->urlManager->baseUrl."/img/experts/" . $modelU->imageFile->baseName . "." . $modelU->imageFile->extension;
-                    if ($model->save()) {
-                        return $this->redirect([
-                                'view',
-                                'id' => $model->id
-                            ]);
-                    } else {
-                        var_dump($model->errors);
+                if(isset($modelU->imageFile)){
+                    $modelU->path = Url::to('@webroot/img/experts/') . $modelU->imageFile->baseName . '.' . $modelU->imageFile->extension;
+                    if ($modelU->upload()) {
+                        // file is uploaded successfully
+                        if(file_exists($path)){
+                            unlink($path);
+                        } 
+                        $model->path = $_SERVER["HTTP_ORIGIN"].Yii::$app->urlManager->baseUrl."/img/experts/" . $modelU->imageFile->baseName . "." . $modelU->imageFile->extension;
+                        if ($model->save()) {
+                            return $this->redirect([
+                                    'view',
+                                    'id' => $model->id
+                                ]);
+                        } else {
+                            var_dump($model->errors);
+                        }
+                        return;
                     }
-                    return;
+                } else {
+                    if ($model->save()) {
+                            return $this->redirect([
+                                    'view',
+                                    'id' => $model->id
+                                ]);
+                        } else {
+                            var_dump($model->errors);
+                        }
+                        return;
                 }
-            
-            return $this->redirect([
+                return $this->redirect([
                         'view',
                         'id' => $model->id
                     ]);

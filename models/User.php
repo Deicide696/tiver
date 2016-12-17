@@ -9,9 +9,11 @@ use yii\db\Expression;
 /**
  * This is the model class for table "user".
  *
- * @property integer $id * @property string $fb_id
- * @property string $tpaga_id
- *
+ * @property integer $id
+ * @property integer $FK_id_gender
+ * @property integer $FK_id_type_identification
+ * @property integer $FK_id_city
+ * @property string $personal_code
  * @property string $first_name
  * @property string $last_name
  * @property string $identification
@@ -20,14 +22,27 @@ use yii\db\Expression;
  * @property string $phone
  * @property string $birth_date
  * @property integer $receive_interest_info
- * @property integer $status
  * @property string $last_login
- * @property integer $imei
+ * @property string $imei
+ * @property string $fb_id
+ * @property string $tpaga_id
  * @property string $created_date
- * @property integer $rol_id
- * @property integer $gender_id
- * @property integer $type_identification_id
- * @property integer $city_id
+ * @property string $updated_date
+ * @property integer $enable
+ *
+ * @property AssignedService[] $assignedService
+ * @property Conversation[] $conversations
+ * @property CreditCard[] $creditCards
+ * @property GcmToken[] $gcmTokens
+ * @property LogToken[] $logTokens
+ * @property ServiceHistory[] $serviceHistories
+ * @property City $fKIdCity
+ * @property TypeIdentification $fKIdTypeIdentification
+ * @property Gender $fKIdGender
+ * @property UserHasAddress[] $userHasAddresses
+ * @property Address[] $addresses
+ * @property UserHasCoupon[] $userHasCoupons
+ * @property Coupon[] $coupons
  */
 class User extends \yii\db\ActiveRecord implements IdentityInterface {
 
@@ -37,6 +52,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
     const ROLE_USER = 1;
     const ROLE_ADMIN = 3;
     const ROLE_SUPER = 4;
+
     public $full_name;
 
     /**
@@ -49,27 +65,21 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
-            [['first_name', 'email', 'receive_interest_info', 'enable', 'last_login', 'imei', 'FK_id_rol', 'FK_id_gender', 'FK_id_type_identification', 'FK_id_city'], 'required'],
-            [['phone', 'receive_interest_info', 'enable', 'FK_id_rol', 'FK_id_gender', 'FK_id_type_identification', 'FK_id_city'], 'integer'],
-            [['birth_date', 'last_login', 'created_date', 'updated_date'], 'safe'],
-//            [['birth_date'], 'date', 'format' => 'yyyy-M-d'],
-            [['created_date', 'updated_date', 'last_login'], 'date', 'format' => 'yyyy-M-d H:m:s'],
-            [['first_name', 'last_name', 'email', 'password'], 'string', 'max' => 100],
-            ['email', 'email', 'checkDNS' => true],
-            [['identification'], 'string', 'max' => 15],
-            [['imei', 'fb_id', 'tpaga_id'], 'string', 'max' => 45],
-            [['personal_code'], 'string', 'max' => 6],
-            [['FK_id_city'], 'exist', 'skipOnError' => true, 'targetClass' => City::className(), 'targetAttribute' => ['FK_id_city' => 'id']],
-            [['FK_id_type_identification'], 'exist', 'skipOnError' => true, 'targetClass' => TypeIdentification::className(), 'targetAttribute' => ['FK_id_type_identification' => 'id']],
-            [['FK_id_gender'], 'exist', 'skipOnError' => true, 'targetClass' => Gender::className(), 'targetAttribute' => ['FK_id_gender' => 'id']],
-            [['FK_id_rol'], 'exist', 'skipOnError' => true, 'targetClass' => Rol::className(), 'targetAttribute' => ['FK_id_rol' => 'id']],
-            [['email'], 'unique'],
-            ['enable', 'default', 'value' => self::STATUS_ACTIVE],
-            ['enable', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
-            ['FK_id_rol', 'in', 'range' => [self::ROLE_USER, self::ROLE_ADMIN, self::ROLE_SUPER]]
+                [['FK_id_gender', 'FK_id_type_identification', 'FK_id_city', 'first_name', 'email', 'receive_interest_info', 'last_login', 'imei', 'enable'], 'required'],
+                [['FK_id_gender', 'FK_id_type_identification', 'FK_id_city', 'phone', 'receive_interest_info', 'enable'], 'integer'],
+                [['birth_date', 'last_login', 'created_date', 'updated_date'], 'safe'],
+                [['personal_code'], 'string', 'max' => 6],
+                [['first_name', 'last_name', 'email', 'password'], 'string', 'max' => 100],
+                [['identification'], 'string', 'max' => 15],
+                [['imei', 'fb_id', 'tpaga_id'], 'string', 'max' => 45],
+                [['FK_id_city'], 'exist', 'skipOnError' => true, 'targetClass' => City::className(), 'targetAttribute' => ['FK_id_city' => 'id']],
+                [['FK_id_type_identification'], 'exist', 'skipOnError' => true, 'targetClass' => TypeIdentification::className(), 'targetAttribute' => ['FK_id_type_identification' => 'id']],
+                [['FK_id_gender'], 'exist', 'skipOnError' => true, 'targetClass' => Gender::className(), 'targetAttribute' => ['FK_id_gender' => 'id']],
+                [['personal_code'], 'unique', 'message' => 'Este codigo personal ya se encuentra en nuestros registros.'],
+                [['email'], 'unique', 'message' => 'Este Correo ya se encuentra en nuestros registros.'],
+                [['phone'], 'unique', 'message' => 'Este Nº telefónico ya se encuentra en nuestros registros.'],
         ];
     }
 
@@ -79,59 +89,52 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
     public function attributeLabels() {
         return [
             'id' => 'ID',
-            'FK_id_city' => 'Ciudad',
-            'imei' => 'IMEI	',
-            'identification' => 'Nº Identificación',
-            'birth_date' => 'Fecha de nacimiento',
-            'email' => 'Correo electrónico',
             'FK_id_gender' => 'Género',
-            'password' => 'Contraseña',
-            'phone' => 'Celular',
-            'FK_id_rol' => 'Rol',
-            'enable' => 'Activo',
-            'last_login' => 'Último ingreso',
-            'last_name' => 'Apellido',
-            'first_name' => 'Nombre',
             'FK_id_type_identification' => 'Tipo de identificación',
-            'tpaga_id' => "ID TPaga",
-            'created_date' => "Fecha de creación",
-            'updated_date' => "Fecha de modificación",
-            'receive_interest_info' => "Recibir información de interés"
+            'FK_id_city' => 'Ciudad',
+            'personal_code' => 'Código Personal',
+            'first_name' => 'Nombres',
+            'last_name' => 'Apellidos',
+            'identification' => 'Nº Identificación',
+            'email' => 'Correo electrónico',
+            'password' => 'Contraseña',
+            'phone' => 'Nº Telefónico',
+            'birth_date' => 'Fecha de nacimiento',
+            'receive_interest_info' => 'Recibir información de interés',
+            'last_login' => 'Último ingreso',
+            'imei' => 'IMEI',
+            'fb_id' => 'Fb ID',
+            'tpaga_id' => 'Tpaga ID',
+            'created_date' => 'Fecha creado',
+            'updated_date' => 'Fecha actualizado',
+            'enable' => 'activo',
         ];
     }
-    
-    public function behaviors()
-    {
-       return [           
-           'timestamp' => [
-               'class' => 'yii\behaviors\TimestampBehavior',
-               'attributes' => [
-                   \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_date'],                   
-               ],
-            'value' => new Expression('NOW()'),
-            ],
-           'timestamp' => [
-               'class' => 'yii\behaviors\TimestampBehavior',
-               'attributes' => [
-                   \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['last_login'],                   
-               ],
-            'value' => new Expression('NOW()'),
+
+    public function behaviors() {
+        return [
+            'timestamp' => [
+                'class' => 'yii\behaviors\TimestampBehavior',
+                'attributes' => [
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_date'],
+                ],
+                'value' => new Expression('NOW()'),
             ],
             'timestamp' => [
                 'class' => 'yii\behaviors\TimestampBehavior',
                 'attributes' => [
-                   \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_date'],                   
+                    \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_date'],
                 ],
-            'value' => new Expression('NOW()'),
+                'value' => new Expression('NOW()'),
             ],
             'activeBehavior' => [
-               'class' => 'yii\behaviors\AttributeBehavior',
+                'class' => 'yii\behaviors\AttributeBehavior',
                 'attributes' => [
                     \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => 'enable',
                 ],
                 'value' => 1,
-           ],
-       ];
+            ],
+        ];
     }
 
     /**
@@ -141,7 +144,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
     public function getLogTokensMmz() {
         return $this->hasMany(LogTokensMmz::className(), [
                     'FK_id_mmz_user' => 'id'
-                ]);
+        ]);
     }
 
     /**
@@ -151,7 +154,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
     public function getCity() {
         return $this->hasOne(City::className(), [
                     'id' => 'FK_id_city'
-                ]);
+        ]);
     }
 
     /**
@@ -166,7 +169,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
     public function getTypeIdentification() {
         return $this->hasOne(TypeIdentification::className(), [
                     'id' => 'FK_id_type_identification'
-                ]);
+        ]);
     }
 
     /**
@@ -223,7 +226,6 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
         // Solo roles diferentes a usuario and FK_id_rol>2
         return static::find()->where("email='$username' and enable = " . self::STATUS_ACTIVE)->one();
 //    return static::find()->where("email='$username' and enable='" . self::STATUS_ACTIVE . "' and FK_id_rol>2")->one();
-        
     }
 
     public function getAuthKey() {
@@ -242,14 +244,14 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
         return static::findOne([
                     'id' => $id,
                     'enable' => self::STATUS_ACTIVE
-                ]);
+        ]);
     }
 
     public static function findIdentityByAccessToken($token, $type = null) {
         throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
         return static::findOne([
                     'token' => $token
-                ]);
+        ]);
     }
 
     /**
@@ -267,7 +269,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
         return static::findOne([
                     'password_reset_token' => $token,
                     'status' => self::STATUS_ACTIVE
-                ]);
+        ]);
     }
 
     /**
@@ -342,28 +344,107 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
         return $name;
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getAssignedService() {
-        return $this->hasMany(AssignedService::className(), [
-                    'user_id' => 'id'
-                ]);
+        return $this->hasMany(AssignedService::className(), ['user_id' => 'id']);
     }
 
-    public function getUserHasAddress() {
-        return $this->hasMany(UserHasAddress::className(), [
-                    'user_id' => 'id'
-                ]);
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getConversations() {
+        return $this->hasMany(Conversation::className(), ['user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCreditCards() {
+        return $this->hasMany(CreditCard::className(), ['user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getGcmTokens() {
+        return $this->hasMany(GcmToken::className(), ['user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLogTokens() {
+        return $this->hasMany(LogToken::className(), ['FK_id_user' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getServiceHistories() {
+        return $this->hasMany(ServiceHistory::className(), ['user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFKIdCity() {
+        return $this->hasOne(City::className(), ['id' => 'FK_id_city']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFKIdTypeIdentification() {
+        return $this->hasOne(TypeIdentification::className(), ['id' => 'FK_id_type_identification']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFKIdGender() {
+        return $this->hasOne(Gender::className(), ['id' => 'FK_id_gender']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUserHasAddresses() {
+        return $this->hasMany(UserHasAddress::className(), ['user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAddresses() {
+        return $this->hasMany(Address::className(), ['id' => 'address_id'])->viaTable('user_has_address', ['user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUserHasCoupons() {
+        return $this->hasMany(UserHasCoupon::className(), ['user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCoupons() {
+        return $this->hasMany(Coupon::className(), ['id' => 'coupon_id'])->viaTable('user_has_coupon', ['user_id' => 'id']);
     }
 
     public function getRol() {
         return $this->hasOne(Rol::className(), [
                     'id' => 'FK_id_rol'
-                ]);
+        ]);
     }
 
     public function getGender() {
         return $this->hasOne(Gender::className(), [
                     'id' => 'FK_id_gender'
-                ]);
+        ]);
     }
 
     public function getShortName() {

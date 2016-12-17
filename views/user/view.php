@@ -44,7 +44,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'tpaga_id',
             'created_date',
             'updated_date',
-            'FK_id_rol',
+//            'FK_id_rol',
             'FK_id_gender',
             'FK_id_type_identification',
             'FK_id_city',

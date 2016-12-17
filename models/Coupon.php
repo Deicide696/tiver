@@ -1,8 +1,8 @@
 <?php
 
 namespace app\models;
-use yii\db\Expression;
 
+use yii\db\Expression;
 use Yii;
 
 /**
@@ -50,7 +50,7 @@ class Coupon extends \yii\db\ActiveRecord
             [['type_coupon_id'], 'required'],
             [['created_date', 'updated_date', 'due_date'], 'safe'],
             [['name', 'code'], 'string', 'max' => 45],
-            [['code'], 'unique', 'message' => 'Este cupon ya se encuantra registrado.'],
+            [['code'], 'unique', 'message' => 'Este codigo de Cupón ya se encuentra en nuestros registros.'],
             [['type_coupon_id'], 'exist', 'skipOnError' => true, 'targetClass' => TypeCoupon::className(), 'targetAttribute' => ['type_coupon_id' => 'id']],
         ];
     }
