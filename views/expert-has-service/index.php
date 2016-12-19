@@ -19,20 +19,20 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Nueva relación', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
-    <?= GridView::widget([
+    <?=
+    GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
             'expert.name',
-        	'expert.last_name',
+            'expert.last_name',
             'service.name',
-        		'service.categoryService.description',
+            'service.categoryService.description',
             'qualification',
-
             ['class' => 'yii\grid\ActionColumn'],
         ],
-    ]); ?>
+    ]);
+    ?>
 
 </div>

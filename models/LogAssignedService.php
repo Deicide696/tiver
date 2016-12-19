@@ -16,10 +16,9 @@ use Yii;
  * @property string $time
  * @property integer $attempt
  * @property string $created_date
- * @property integer $assigned_service_id
- * @property integer $expert_id
+ * @property string $assigned_service_id
+ * @property string $expert_id
  *
- * @property AssignedService $assignedService
  * @property Expert $expert
  */
 class LogAssignedService extends \yii\db\ActiveRecord
@@ -40,7 +39,8 @@ class LogAssignedService extends \yii\db\ActiveRecord
         return [
             [['assigned', 'rejected', 'missed', 'accepted', 'attempt', 'assigned_service_id', 'expert_id'], 'integer'],
             [['date', 'time', 'created_date'], 'safe'],
-            [['expert_id'], 'required']
+            [['expert_id'], 'required'],
+            [['expert_id'], 'exist', 'skipOnError' => true, 'targetClass' => Expert::className(), 'targetAttribute' => ['expert_id' => 'id']],
         ];
     }
 
@@ -51,25 +51,17 @@ class LogAssignedService extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'assigned' => 'Assigned',
-            'rejected' => 'Rejected',
-            'missed' => 'Missed',
-            'accepted' => 'Accepted',
-            'date' => 'Date',
-            'time' => 'Time',
-            'attempt' => 'Attempt',
-            'created_date' => 'Created Date',
-            'assigned_service_id' => 'Assigned Service ID',
-            'expert_id' => 'Expert ID',
+            'assigned' => 'Asignado',
+            'rejected' => 'Rechazado',
+            'missed' => 'Perdido',
+            'accepted' => 'Confirmados',
+            'date' => 'Fecha',
+            'time' => 'Hora',
+            'attempt' => 'Intento',
+            'created_date' => 'Fecha de creación',
+            'assigned_service_id' => 'Servicio asignado',
+            'expert_id' => 'Nombre',
         ];
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getAssignedService()
-    {
-        return $this->hasOne(AssignedService::className(), ['id' => 'assigned_service_id']);
     }
 
     /**
@@ -79,4 +71,13 @@ class LogAssignedService extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Expert::className(), ['id' => 'expert_id']);
     }
+    
+     /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getServiceHistory()
+    {
+        return $this->hasOne(ServiceHistory::className(), ['id' => 'assigned_service_id']);
+    }
+ 
 }
