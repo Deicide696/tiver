@@ -1,10 +1,7 @@
-/nbproject/*
+/nbproject/
 /nbproject/private/
-/vendor/*
-/vendor/
-/.settings/
-/runtime/*
-/runtime/debug/index.data
-/runtime/debug/*
+/web/logs/
+/web/img/
 /web/assets/
-/web/assets/*
+/runtime/
+/vendor/

@@ -1,9 +1,0 @@
-
-2016-08-26 17:55:13
-230 -> 2016-8-29 15:00:00 -> 1
-Servicio 230 no fue aceptado por el especialista Fulanito El  Estupendo
-Servicio 230 asignado al especialista Pepito Polainas Perez
-
-2016-08-26 17:56:13
-230 -> 2016-8-29 15:00:00 -> 2
-Servicio 230 ya fue aceptado

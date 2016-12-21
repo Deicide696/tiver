@@ -1,0 +1,113 @@
+{
+    "success": true,
+    "data": [
+        {
+            "id": "15",
+            "description": "Peluquería (Mujeres)",
+            "service": [
+                {
+                    "id": "1",
+                    "name": "Corte pelo"
+                },
+                {
+                    "id": "2",
+                    "name": "Blower/Cepillado"
+                },
+                {
+                    "id": "3",
+                    "name": "Ondas"
+                },
+                {
+                    "id": "4",
+                    "name": "Maquillaje (básico)"
+                },
+                {
+                    "id": "5",
+                    "name": "Mechas/Rayos"
+                },
+                {
+                    "id": "6",
+                    "name": "Pestañas postizas"
+                },
+                {
+                    "id": "9",
+                    "name": "Depilación"
+                },
+                {
+                    "id": "20",
+                    "name": "Keratina"
+                },
+                {
+                    "id": "21",
+                    "name": "Tinte"
+                }
+            ]
+        },
+        {
+            "id": "16",
+            "description": "Barbería (Hombres)",
+            "service": [
+                {
+                    "id": "17",
+                    "name": "Corte pelo"
+                },
+                {
+                    "id": "18",
+                    "name": "Barba"
+                },
+                {
+                    "id": "19",
+                    "name": "Depilación"
+                }
+            ]
+        },
+        {
+            "id": "17",
+            "description": "Manicure & Pedicure",
+            "service": [
+                {
+                    "id": "10",
+                    "name": "Manicure"
+                },
+                {
+                    "id": "11",
+                    "name": "Pedicure"
+                },
+                {
+                    "id": "12",
+                    "name": "Manicure + Pedicure"
+                },
+                {
+                    "id": "22",
+                    "name": "Individual"
+                },
+                {
+                    "id": "23",
+                    "name": "Combos"
+                }
+            ]
+        },
+        {
+            "id": "18",
+            "description": "Estética",
+            "service": [
+                {
+                    "id": "13",
+                    "name": "Masaje Relajante"
+                },
+                {
+                    "id": "24",
+                    "name": "Masaje Deportivo"
+                },
+                {
+                    "id": "25",
+                    "name": "Masaje Reductivo"
+                },
+                {
+                    "id": "26",
+                    "name": "Masaje Post-operatorio"
+                }
+            ]
+        }
+    ]
+}
