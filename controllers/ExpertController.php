@@ -443,9 +443,10 @@ class ExpertController extends Controller {
 
 
         // Validamos el token
-        $model_token = LogToken::find()->where([
-                    'token' => $token
-                ])->one();
+        $model_token = LogToken::find ()
+            ->where (['token' => $token, 'enable' => 1])
+            ->one ();
+        
         if ($model_token == null) {
 
             $response ["success"] = false;
@@ -510,6 +511,7 @@ class ExpertController extends Controller {
     public function actionInmediatoCancel() {
         
         Yii::$app->response->format = 'json';
+        
         $lat = Yii::$app->request->post("address_lat", null);
         $lng = Yii::$app->request->post("address_lng", null);
         $expert_id = Yii::$app->request->post("id_especialista", null);
@@ -518,9 +520,10 @@ class ExpertController extends Controller {
         $event = Yii::$app->request->post("event", null);
 
         // Validamos el token
-        $model_token = LogToken::find()->where([
-                    'token' => $token
-                ])->one();
+        $model_token = LogToken::find ()
+            ->where (['token' => $token, 'enable' => 1])
+            ->one ();
+        
         if ($model_token == null) {
 
             $response ["success"] = false;
@@ -709,9 +712,9 @@ class ExpertController extends Controller {
         $id = Yii::$app->request->post("id", null);
         $token = Yii::$app->request->post("token", null);
          
-        $model_token = LogToken::find()
-                ->where(['token' => $token, 'status' => 1])
-                ->one();
+        $model_token = LogToken::find ()
+            ->where (['token' => $token, 'enable' => 1])
+            ->one ();
         
         if (!isset($model_token) || empty($model_token)) {
             $response ["success"] = false;

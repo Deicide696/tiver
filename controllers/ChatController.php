@@ -148,9 +148,9 @@ class ChatController extends Controller {
 		$message = Yii::$app->request->post ( 'message', '' );
 		$event = Yii::$app->request->post ( 'event', '' );
 		
-		$model_token = LogToken::find ()->where ( [ 
-				'token' => $token 
-		] )->one ();
+		$model_token = LogToken::find ()
+                        ->where (['token' => $token, 'enable' => 1])
+                        ->one ();
 		
 		// var_dump($searched);
 		if ($model_token == null) {
@@ -357,16 +357,15 @@ class ChatController extends Controller {
 	
 	
 	public function actionGetChat(){
+            
 		Yii::$app->response->format = 'json';
-	
-		
+                
 		$service = Yii::$app->request->post ( 'assigned_service_id', '' );
 		$token = Yii::$app->request->post ( 'token', '' );
 	
-		
-		$model_token = LogToken::find ()->where ( [
-				'token' => $token
-		] )->one ();
+		$model_token = LogToken::find ()
+                        ->where (['token' => $token, 'enable' => 1])
+                        ->one ();
 		
 		// var_dump($searched);
 		if ($model_token == null) {

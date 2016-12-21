@@ -180,9 +180,9 @@ class ServiceHistoryController extends Controller {
         Yii::$app->response->format = 'json';
         $token = Yii::$app->request->post ( "token", null );
         
-        $model_token = LogToken::find ()->where ( [ 
-            'token' => $token 
-        ])->one ();
+        $model_token = LogToken::find ()
+            ->where (['token' => $token, 'enable' => 1])
+            ->one ();
         
         if ($model_token != null) {
             
@@ -216,9 +216,9 @@ class ServiceHistoryController extends Controller {
 
         $token = Yii::$app->request->post("token", null);
 
-        $model_token = LogToken::find()->where([
-                    'token' => $token
-                ])->one();
+        $model_token = LogToken::find ()
+            ->where (['token' => $token, 'enable' => 1])
+            ->one ();
 
         if ($model_token != null) {
             
@@ -253,9 +253,9 @@ class ServiceHistoryController extends Controller {
 
         $token = Yii::$app->request->post("token", null);
 
-        $model_token = LogToken::find()->where([
-                    'token' => $token
-                ])->one();
+        $model_token = LogToken::find ()
+            ->where (['token' => $token, 'enable' => 1])
+            ->one ();
 
         if ($model_token == null) {
             $response ["success"] = false;
@@ -338,9 +338,9 @@ class ServiceHistoryController extends Controller {
             return $response;
         }
       
-        $model_token = LogToken::find()->where([
-            'token' => $token
-        ])->one();
+        $model_token = LogToken::find ()
+            ->where (['token' => $token, 'enable' => 1])
+            ->one ();
         
         if (!isset($model_token) || empty($model_token)) {
             $response ["success"] = false;

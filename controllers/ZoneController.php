@@ -161,9 +161,10 @@ class ZoneController extends Controller
     	$token = Yii::$app->request->post ( "token", "" );
     	
     	// Validamos el token
-    	$model_token = LogToken::find ()->where ( [
-    			'token' => $token
-    	] )->one ();
+    	$model_token = LogToken::find ()
+            ->where (['token' => $token, 'enable' => 1])
+            ->one ();
+        
     	if ($model_token == null) {
     			
     		$response ["success"] = false;
