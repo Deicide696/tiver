@@ -2,7 +2,6 @@
 
 namespace app\controllers;
 
-//use app\pusher\Pusher;
 require '../vendor/pusher/pusher-php-server/lib/Pusher.php';
 
 use Yii;
@@ -62,9 +61,6 @@ class UserController extends Controller {
                         'roles' => [
                             '@'
                         ],
-//                        'matchCallback' => function ($rule, $action) {
-//                            return User::isSuper(Yii::$app->user->identity->email);
-//                        }
                     ]
                 ]
             ]
@@ -779,7 +775,7 @@ class UserController extends Controller {
                     'email' => $email,
                     'enable' => User::STATUS_ACTIVE,
         ]);
-
+//        var_dump($user); die();
         if ($user == null) {
             return [
                 'success' => false,

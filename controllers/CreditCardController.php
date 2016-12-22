@@ -250,7 +250,7 @@ class CreditCardController extends Controller {
 
         $token = Yii::$app->request->post("token", null);
 
-        LogToken::find()
+        $model_token = LogToken::find()
                 ->where(['token' => $token, 'enable' => 1])
                 ->one();
 
