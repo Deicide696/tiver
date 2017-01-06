@@ -42,7 +42,7 @@ class CreditCardController extends Controller {
         return $this->render('index', [
                     'searchModel' => $searchModel,
                     'dataProvider' => $dataProvider
-                ]);
+        ]);
     }
 
     /**
@@ -54,7 +54,7 @@ class CreditCardController extends Controller {
     public function actionView($id) {
         return $this->render('view', [
                     'model' => $this->findModel($id)
-                ]);
+        ]);
     }
 
     /**
@@ -70,11 +70,11 @@ class CreditCardController extends Controller {
             return $this->redirect([
                         'view',
                         'id' => $model->id
-                    ]);
+            ]);
         } else {
             return $this->render('create', [
                         'model' => $model
-                    ]);
+            ]);
         }
     }
 
@@ -92,11 +92,11 @@ class CreditCardController extends Controller {
             return $this->redirect([
                         'view',
                         'id' => $model->id
-                    ]);
+            ]);
         } else {
             return $this->render('update', [
                         'model' => $model
-                    ]);
+            ]);
         }
     }
 
@@ -112,7 +112,7 @@ class CreditCardController extends Controller {
 
         return $this->redirect([
                     'index'
-                ]);
+        ]);
     }
 
     public function actionDeactive() {
@@ -254,17 +254,11 @@ class CreditCardController extends Controller {
                 ->where(['token' => $token, 'enable' => 1])
                 ->one();
 
-        if ($model_token != null) {
+        if (isset($model_token) && !empty($model_token)) {
 
-            $model_creditcard = CreditCard::find()->select([
-                        'id',
-                        'hash',
-                        'enable'
-                    ])->where([
-                        'user_id' => $model_token->FK_id_user
-                    ])->asArray()->all();
-
-            //	var_dump($model_creditcard);
+            $model_creditcard = CreditCard::find()
+                    ->where(['user_id' => $model_token->FK_id_user])
+                    ->asArray()->all();
 
             if ($model_creditcard != null) {
                 $model_user = User::find()->where([
