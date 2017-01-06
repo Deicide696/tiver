@@ -19,9 +19,6 @@ return [
         'TPaga' => [
             'class' => 'app\components\TPaga'
         ],
-        'PushNotifier' => [
-            'class' => 'app\components\PushNotifier'
-        ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],

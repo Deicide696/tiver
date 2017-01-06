@@ -22,10 +22,12 @@ return [
       'gcm_url'=>"https://gcm-http.googleapis.com/gcm/send", */
 
     //FCM notificaitons
-    'gcm_api_key_user' => "AIzaSyAB8v_a_XZ-2odgqna8RkY4QQJSzTCcivA",
-    'gcm_api_key_especialista' => "AIzaSyBptNyXz82401LJReQjLqpTVWCa7FjeJes",
-    'gcm_url' => "https://fcm.googleapis.com/fcm/send",
-    'send_firebase' => false,
+//    'gcm_api_key_user' => "AIzaSyAB8v_a_XZ-2odgqna8RkY4QQJSzTCcivA",
+//    'gcm_api_key_especialista' => "AIzaSyBptNyXz82401LJReQjLqpTVWCa7FjeJes",
+//    'fcm_api_key_user' => "AAAAmKn_jqY:APA91bF4zb2eGErXnP-LCFEh79TwRPQA_VtSG9xCvUjA9NwmECGU1ZPEph2-mTZ0-hpXsIHCeMavOxORPEZS2hQ9SUTdPkMPRzW8uPjqSII_a81ybGZ_gElZv-NYeUAsB0Wq1CKz71A88PyufHXzDKMemqUR-fC0bQ",
+    'fcm_url' => "https://fcm.googleapis.com/fcm/send",
+    'fcm_api_key_especialista' => "AAAAxz4q-fM:APA91bGslBO6y0tf1cR9c5bhUqgBCHDLpcbM0wCzNNOfQmGdllBp07rsghKtAbWQS-nR7YRVcl5qHsIwcQfDuqpRFOnBGf7m8XWZcAoupE9diMpircDO1n8EzJ4SCQ652FBYNZseAtIznxH-LeWMptxJgtACNbRRhg",
+    'send_firebase' => TRUE,
     //One Signal notifications
     'os_id_user' => '02fc2d67-0e8a-4cce-b8c5-b8665011a490',
     'os_api_key_user' => 'NjEzNDRmNjktZmY1Yy00NzZjLTgzYTQtOTdhOTEzNDMyNGRm',

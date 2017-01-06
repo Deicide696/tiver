@@ -420,7 +420,7 @@ class AssignedServiceController extends Controller {
 
         $tokens = Expert::findOne(["id" => $expert_id])
                 ->getPushTokens();
-
+        
         $data = [
             "ticker" => "Tienes trabajo",
             'time' => $time,
@@ -436,11 +436,10 @@ class AssignedServiceController extends Controller {
             'comments' => $comment,
             'timestamp' => date("U"),
             'time_wait' => Yii::$app->params ['seconds_wait'],
-            // 'id_not' => $model->id,
             'type' => Yii::$app->params ['notification_type_assgigned_expert']
         ];
         if ($tokens != null){
-            Yii::$app->PushNotifier->sendNotificationExpertOS("Nuevo servicio", "Tienes un nuevo servicio", $data, $tokens);
+            Yii::$app->PushNotifiersFCM->sendNotificationFCM_Expert("Nuevo servicio", "Tienes un nuevo servicio", $data, $tokens);
         }
         $id_serv = $model->id;
         
@@ -471,6 +470,7 @@ class AssignedServiceController extends Controller {
     }
 
     public function actionGetAssignedService() {
+        
         Yii::$app->response->format = 'json';
         // var_dump($data);
         $id = $_POST ['id'];

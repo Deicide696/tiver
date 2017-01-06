@@ -54,12 +54,9 @@ $config = [
         'PushNotifier' => [
             'class' => 'app\components\PushNotifier'
         ],
-        /* 'sendGrid' => [
-          'class' => 'bryglen\sendgrid\Mailer',
-
-          'username' => 'Tiver',
-          'password' => 'Pichinde1',
-          ], */
+         'PushNotifiersFCM' => [
+            'class' => 'app\components\PushNotifiersFCM'
+        ],
         'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',
             // 'useFileTransport' => false,
