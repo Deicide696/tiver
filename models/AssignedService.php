@@ -177,12 +177,11 @@ class AssignedService extends \yii\db\ActiveRecord {
             $price += ($service->price * Yii::$app->params ['tax_percent']);
         }
         $connection = Yii::$app->getDb();
-        $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => '',':id' => $this->id]);
+        $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => $this->user_id,':id' => $this->id]);
         $modifier_vw = $command->queryAll();
-//      $modifier_vw = VwActualService::findOne(['id' => $this->id]);
         
-        if ($modifier_vw->modifier_id != "") {
-            $modifier = Modifier::findOne(['id' => $modifier_vw->modifier_id]);
+        if ($modifier_vw[0]['modifier_id'] != "") {
+            $modifier = Modifier::findOne(['id' => $modifier_vw[0]['modifier_id']]);
             if ($modifier->tax == 0){
                 $price += $modifier->price;
             } else {

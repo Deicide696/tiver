@@ -521,14 +521,13 @@ class AssignedServiceController extends Controller {
         $id_user = $model_token->FK_id_user;
 
         // Buscamos el servicio activo
-        $services = assignedService::find()->where([
-                            "user_id" => $id_user,
-                            // "expert_id" => $id_expert,
-                            "date" => $date,
-                            "time" => $time
-                        ])->
-                        // "state" => 1
-                        joinWith('service')->one();
+        $services = assignedService::find()
+                ->where(["user_id" => $id_user,
+                        // "expert_id" => $id_expert,
+                        "date" => $date,
+                        "time" => $time])
+                ->joinWith('service')
+                ->one();
 
         if ($services == null) {
             $response ["success"] = false;
@@ -561,23 +560,34 @@ class AssignedServiceController extends Controller {
         // Enviar mail de pago en mora
         $sendGrid = new \SendGrid(Yii::$app->params ['sengrid_user'], Yii::$app->params ['sendgrid_pass']);
         $email = new \SendGrid\Email ();
-        $email->setFrom(Yii::$app->params ['sendgrid_from'])->setFromName(Yii::$app->params ['sendgrid_from_name'])->addTo($user->email)->setSubject(' ')->setHtml(' ')->setHtml(' ')->addSubstitution('{{ username }}', [
-            $user->first_name
-        ])->addSubstitution('{{ buydate }}', [
-            $services->date
-        ])->addSubstitution('{{ useraddress }}', [
-            $services->address
-        ])->addSubstitution('{{ item.servname }}', [
-            $value
-        ])->addSubstitution('{{ item.servmodif }}', [
-            $value
-        ])->addSubstitution('{{ item.prodprecio }}', [
-            $value
-        ])->addSubstitution('{{ item.servesp }}', [
-            $value
-        ])->addSubstitution('{{ total }}', [
-            $value
-        ])->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_cancelado']);
+        $email->setFrom(Yii::$app->params ['sendgrid_from'])
+                ->setFromName(Yii::$app->params ['sendgrid_from_name'])
+                ->addTo($user->email)
+                ->setSubject(' ')
+                ->setHtml(' ')
+                ->setHtml(' ')
+                ->addSubstitution('{{ username }}', [$user->first_name])
+                ->addSubstitution('{{ buydate }}', [$services->date])
+                ->addSubstitution('{{ useraddress }}', [$services->address])
+                ->addSubstitution('{{ item.servname }}', [$value])
+                ->addSubstitution('{{ item.servmodif }}', [$value])
+                ->addSubstitution('{{ item.prodprecio }}', [$value])
+                ->addSubstitution('{{ item.servesp }}', [$value])
+                ->addSubstitution('{{ total }}', [$value])
+//                ->addSubstitution('{{ dateTime }}', [$user->first_name])
+//                ->addSubstitution('{{ codePlace }}', [$services->date])
+//                ->addSubstitution('{{ namePlace }}', [$services->address])
+//                ->addSubstitution('{{ cardType }}', [$value])
+//                ->addSubstitution('{{ accountType }}', [$value])
+//                ->addSubstitution('{{ cardNumber }}', [$value])
+//                ->addSubstitution('{{ feeNumber }}', [$value])
+//                ->addSubstitution('{{ paymentReference }}', [$value])
+//                ->addSubstitution('{{ receiptNumber }}', [$value])
+//                ->addSubstitution('{{ authorizationNumber }}', [$value])
+//                ->addSubstitution('{{ replyCode }}', [$value])
+//                ->addSubstitution('{{ description }}', [$value])
+//                ->addSubstitution('{{ total }}', [$value])
+                ->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_cancelado']);
         $resp = $sendGrid->send($email);
 
         $services->delete();
@@ -1244,6 +1254,11 @@ class AssignedServiceController extends Controller {
         ];
         return $response;
     }
+    /**
+     * Service Checkout
+     * 
+     * @return Json response
+     */
 
     public function actionCheckoutExpert() {
         
@@ -1255,15 +1270,18 @@ class AssignedServiceController extends Controller {
         // $value=1;
         // $model=Expert::find()->select(['expert.id','name','last_name','email','lat','lng'])->where("enable='1' and (schedule.weekday_id='$day' and '$hour' between schedule.start_time and schedule.finish_time) and (expert_has_service.service_id='$service')")->joinwith('schedule')->joinwith('expertHasService')->asArray()->all();
 
-        $services = assignedService::find()->where([
-                    "user_id" => $id_user,
-                    "expert_id" => $id_expert,
-                    "date" => $date,
-                    "time" => $time,
-                    "state" => 1
-                ])->joinWith('service')->one();
-//        return var_dump($services);die();
-        if (isset($services) && !empty($services)) {
+        $services = AssignedService::find()
+            ->where([
+                "user_id" => $id_user,
+                "expert_id" => $id_expert,
+                "date" => $date,
+                "time" => $time,
+                "state" => 1])
+            ->joinWith('service')
+            ->one();
+
+        
+        if (!isset($services) || empty($services)) {
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Lo sentimos, este servicio ya fue finalizado o no existe"
@@ -1271,40 +1289,43 @@ class AssignedServiceController extends Controller {
             $response = json_encode($response);
             return $response;
         }
-
+        
         // Obtener precio del servicio
        if($value == ""){
            $value = $services->getPrice();
        } 
-       
+//       return var_dump($value);die();
         $tax = $services->getTax();
-        return var_dump($tax);die();
+//        return var_dump($tax);die();
         $duracion = ($services->getDuration()) - 15;
         // $value=2;
         $cupon = "";
         // Check time of checkout
         $date_now = date("Y-m-d");
         $time_now = date("H:i:s");
-
+//        var_dump($date_now . " " . $time_now," Duracion: ", $date . " " . $time . " +$duracion minute");die();
         $time1 = strtotime($date_now . " " . $time_now);
+        $time3 = strtotime($date . " " . $time );
         $time2 = strtotime($date . " " . $time . " +$duracion minute");
-        var_dump($time2," . ",$time2);
-        if ($time1 < $time2) {
-            $response ["success"] = false;
-            $response ["data"] = [
-                "message" => "Aún no puedes finalizar este servicio"
-            ];
-            $response = json_encode($response);
-            return $response;
-        }
+//        var_dump(date("Y-m-d H:i:s",$time1)," TIME2 ",date("Y-m-d H:i:s",$time3),$duracion,date("Y-m-d H:i:s", $time2)); die();
+    //        if ($time1 < $time2) {
+    //            $response ["success"] = false;
+    //            $response ["data"] = [
+    //                "message" => "Aún no puedes finalizar este servicio"
+    //            ];
+    //            $response = json_encode($response);
+    //            return $response;
+    //        }
 
-        //
+        //Find to Credit cart the user
 
-        $credit_card = CreditCard::find()->where([
-                    "user_id" => $id_user,
-                    "enable" => 1
-                ])->one();
-        if ($credit_card == null) {
+        $credit_card = CreditCard::find()
+            ->where([
+                "user_id" => $id_user,
+                "enable" => 1])
+            ->one();
+
+        if (!isset($credit_card) || empty($credit_card)) {
 
             $response ["success"] = false;
             $response ["data"] = [
@@ -1313,20 +1334,19 @@ class AssignedServiceController extends Controller {
             $response = json_encode($response);
             return $response;
         }
-
-        $deleted = AssignedService::deleteAll([
-                    "user_id" => $id_user,
-                    "expert_id" => $id_expert,
-                    "date" => $date,
-                    "time" => $time
-                ]);
-        // "state" => 1
+//        var_dump($credit_card, $services->id);die();
+        // Service is Canceled
+        $cancel = AssignedService::updateAll([
+                "state" => 0],
+                ["id" => $services->id]);
 
         $tokens = User::findOne([
-                    "id" => $id_user
-                ])->getPushTokens();
-        var_dump("DELETE: ",$deleted);die();
-        if ($deleted > 0) {
+                    "id" => $id_user])
+                ->getPushTokens();
+        
+        var_dump("DELETE: ",$cancel);die();
+        if ($cancel > 0) {
+            
             // Si hay cupon, se omite la peticion a TPaga
             /*
              * if ($cupon != "") {
@@ -1562,8 +1582,6 @@ class AssignedServiceController extends Controller {
             $response = json_encode($response);
             return $response;
         }
-        // /
-        // $id_credit_card_created="n6ps53q0i58nhg1glbeamlf5nhj1qikt";
     }
 
     /*

@@ -102,8 +102,7 @@ class TasksController extends Controller {
                                 //Enviar mail de pago en mora
                                 $sendGrid = new \SendGrid(Yii::$app->params ['sengrid_user'], Yii::$app->params ['sendgrid_pass']);
                                 $email = new \SendGrid\Email ();
-                                $email
-                                        ->setFrom(Yii::$app->params ['sendgrid_from'])
+                                $email->setFrom(Yii::$app->params ['sendgrid_from'])
                                         ->setFromName(Yii::$app->params ['sendgrid_from_name'])
                                         ->addTo($user->email)
                                         ->setSubject(' ')
@@ -117,6 +116,20 @@ class TasksController extends Controller {
                                         ->addSubstitution('{{ item.prodprecio }}', [$value])
                                         ->addSubstitution('{{ item.servesp }}', [$value])
                                         ->addSubstitution('{{ total }}', [$value])
+//                                        ->addSubstitution('{{ dateTime }}', [$user->first_name])
+//                                        ->addSubstitution('{{ codePlace }}', [$services->date])
+//                                        ->addSubstitution('{{ namePlace }}', [$services->address])
+//                                        ->addSubstitution('{{ cardType }}', [$value])
+//                                        ->addSubstitution('{{ accountType }}', [$value])
+//                                        ->addSubstitution('{{ cardNumber }}', [$value])
+//                                        ->addSubstitution('{{ feeNumber }}', [$value])
+//                                        ->addSubstitution('{{ paymentReference }}', [$value])
+//                                        ->addSubstitution('{{ receiptNumber }}', [$value])
+//                                        ->addSubstitution('{{ authorizationNumber }}', [$value])
+//                                        ->addSubstitution('{{ replyCode }}', [$value])
+//                                        ->addSubstitution('{{ description }}', [$value])
+//                                        ->addSubstitution('{{ total }}', [$value])
+                                        
                                         ->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_cancelado']);
                                 $resp = $sendGrid->send($email);
                             } catch (\Exception $e) {

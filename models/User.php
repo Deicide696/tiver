@@ -455,11 +455,13 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
 
     public function getPushTokens() {
         $tokens = null;
-        $gcm_tokens = GcmToken::find()->select([
-                    'one_signal_token', 'token'
-                ])->where([
-                    "user_id" => $this->id
-                ])->all();
+        $gcm_tokens = GcmToken::find()
+            ->select([
+                'one_signal_token', 
+                'token'])
+            ->where(["user_id" => $this->id])
+            ->all();
+        
         foreach ($gcm_tokens as $gcm_token) {
             $tokens [] = $gcm_token->one_signal_token;
         }
