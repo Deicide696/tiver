@@ -59,27 +59,21 @@ class Coupon extends \yii\db\ActiveRecord
     {
        return [           
            'timestamp' => [
-               'class' => 'yii\behaviors\TimestampBehavior',
-               'attributes' => [
-                   \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_date'],                   
-               ],
-               'value' => new Expression('NOW()'),
-           ],
-           'timestamp' => [
-               'class' => 'yii\behaviors\TimestampBehavior',
-               'attributes' => [
-                   \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_date'],                   
-               ],
-               'value' => new Expression('NOW()'),
-           ],
-           'activeBehavior' => [
+                'class' => \yii\behaviors\TimestampBehavior::className(),
+                'attributes' => [
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT =>  ['created_date', 'updated_date'],
+                    \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => 'updated_date',
+                ],
+                'value' => function() { return  date ( 'Y-m-d H:i:s' );},
+            ],
+            'activeBehavior' => [
                'class' => 'yii\behaviors\AttributeBehavior',
                 'attributes' => [
                     \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => 'enable',
                 ],
                 'value' => 1,
-           ],
-           'activeBehavior' => [
+            ],
+            'activeBehavior' => [
                'class' => 'yii\behaviors\AttributeBehavior',
                 'attributes' => [
                     \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => 'used',

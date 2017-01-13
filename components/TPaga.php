@@ -116,7 +116,7 @@ class TPaga extends Component {
 		
 	}
 	
-	public function CreateCharge($id_card,$amount,$order_id,$tax) {
+	public function CreateCharge($id_card, $amount, $order_id, $tax) {
 		$api_client = new ApiClient ();
 		//$api_client->api_key = self::api_key;
 	

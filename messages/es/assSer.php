@@ -17,23 +17,6 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
-    'Connection Ip' => 'IP de conexión',
-    'Created Date' => 'Fecha de Creación',
-    'Updated Date' => 'Fecha de Actualización',
-    'State' => 'Estado',
-    'Enable' => 'Activo',
-    'Fk Id Token Type' => 'ID Tipo de token',
-    'Fk Id User' => 'ID de Usuario',
-    'Service ID' => 'ID de Servicio',
-    'User ID' => 'ID de Usuario',
-    'Expert ID' => 'ID de Experto',
-    'Coupon ID' => 'ID de Cupón',
-    'ID' => 'ID',
-    'Token' => 'Token',
-    'Comment' => 'Comentario',
-    'Date' => 'Fecha',
-    'Address' => 'Dirección',
-    'Time' => 'Hora',
-    'Lat' => 'Latitud',
-    'Lng' => 'Longitud',
+    'Immediate' => 'Immediato',
+    'City ID' => 'ID de Ciudad',
 ];

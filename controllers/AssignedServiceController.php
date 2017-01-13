@@ -1344,7 +1344,7 @@ class AssignedServiceController extends Controller {
                     "id" => $id_user])
                 ->getPushTokens();
         
-        var_dump("DELETE: ",$cancel);die();
+//        var_dump("DELETE: ",$cancel);die();
         if ($cancel > 0) {
             
             // Si hay cupon, se omite la peticion a TPaga
@@ -1388,7 +1388,7 @@ class AssignedServiceController extends Controller {
              * }
              */
 
-    
+    var_dump("Credit_card: ",$credit_card, "Value: ",$value ,"Tax",$tax);die();
             $data_pay = Yii::$app->TPaga->CreateCharge($credit_card->hash, $value, "Servicio Tiver", $tax);
 
             var_dump("DATA_PAY",$data_pay);die();

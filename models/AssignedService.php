@@ -9,18 +9,21 @@ use Yii;
  *
  * @property integer $id
  * @property string $address
- * @property integer $state
  * @property string $date
  * @property string $time
  * @property double $lat
  * @property double $lng
  * @property string $comment
- * @property string $created_date
+ * @property integer $immediate
  * @property integer $service_id
  * @property integer $user_id
  * @property integer $city_id
  * @property integer $expert_id
  * @property integer $coupon_id
+ * @property integer $state
+ * @property string $created_date
+ * @property string $updated_date
+ * @property integer $enable
  *
  * @property City $city
  * @property Coupon $coupon
@@ -29,7 +32,9 @@ use Yii;
  * @property User $user
  * @property AssignedServiceHasModifier[] $assignedServiceHasModifiers
  * @property CompletedService[] $completedServices
+ * @property Conversation[] $conversations
  */
+
 class AssignedService extends \yii\db\ActiveRecord {
 
     /**
@@ -44,56 +49,135 @@ class AssignedService extends \yii\db\ActiveRecord {
      */
     public function rules() {
         return [
-                [['address', 'date', 'time', 'lat', 'lng', 'service_id', 'user_id', 'city_id', 'expert_id'], 'required'],
-                [['state', 'service_id', 'user_id', 'city_id', 'expert_id', 'coupon_id'], 'integer'],
-                [['date', 'time', 'created_date'], 'safe'],
-                [['lat', 'lng'], 'number'],
-                [['address'], 'string', 'max' => 100],
-                [['comment'], 'string', 'max' => 255]
+            [['address', 'date', 'time', 'lat', 'lng', 'service_id', 'user_id', 'city_id', 'expert_id'], 'required'],
+            [['date', 'time', 'created_date', 'updated_date'], 'safe'],
+            [['lat', 'lng'], 'number'],
+            [['immediate', 'service_id', 'user_id', 'city_id', 'expert_id', 'coupon_id', 'state', 'enable'], 'integer'],
+            [['address'], 'string', 'max' => 100],
+            [['comment'], 'string', 'max' => 255],
+            [['city_id'], 'exist', 'skipOnError' => true, 'targetClass' => City::className(), 'targetAttribute' => ['city_id' => 'id']],
+            [['coupon_id'], 'exist', 'skipOnError' => true, 'targetClass' => Coupon::className(), 'targetAttribute' => ['coupon_id' => 'id']],
+            [['expert_id'], 'exist', 'skipOnError' => true, 'targetClass' => Expert::className(), 'targetAttribute' => ['expert_id' => 'id']],
+            [['service_id'], 'exist', 'skipOnError' => true, 'targetClass' => Service::className(), 'targetAttribute' => ['service_id' => 'id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
         ];
+    }
+    
+    public function behaviors()
+    {
+       return [           
+           'timestamp' => [
+                'class' => \yii\behaviors\TimestampBehavior::className(),
+                'attributes' => [
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT =>  ['created_date', 'updated_date'],
+                    \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => 'updated_date',
+                ],
+                'value' => function() { return  date ( 'Y-m-d H:i:s' );},
+            ],
+            'activeBehavior' => [
+               'class' => 'yii\behaviors\AttributeBehavior',
+                'attributes' => [
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => 'enable',
+                ],
+                'value' => 1,
+            ],
+            'activeBehavior' => [
+               'class' => 'yii\behaviors\AttributeBehavior',
+                'attributes' => [
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => 'state',
+                ],
+                'value' => 0,
+           ],
+       ];
     }
 
     /**
      * @inheritdoc
      */
     public function attributeLabels() {
+      
         return [
-            'id' => 'ID',
-            'address' => 'Dirección',
-            'state' => 'Activo',
-            'date' => 'Fecha',
-            'time' => 'Hora',
-            'comment' => 'Comentario',
-            'lat' => 'Lat',
-            'lng' => 'Lng',
-            'created_date' => 'Fecha de asignación',
-            'service_id' => 'Service ID',
-            'user_id' => 'User ID',
-            'city_id' => 'City ID',
-            'expert_id' => 'Expert ID',
-            'coupon_id' => 'Coupon ID',
+            'id' => Yii::t('app', 'ID'),
+            'address' => Yii::t('app', 'Address'),
+            'date' => Yii::t('app', 'Date'),
+            'time' => Yii::t('app', 'Time'),
+            'lat' => Yii::t('app', 'Lat'),
+            'lng' => Yii::t('app', 'Lng'),
+            'comment' => Yii::t('app', 'Comment'),
+            'immediate' => Yii::t('app', 'Immediate'),
+            'service_id' => Yii::t('app', 'Service ID'),
+            'user_id' => Yii::t('app', 'User ID'),
+            'city_id' => Yii::t('app', 'City ID'),
+            'expert_id' => Yii::t('app', 'Expert ID'),
+            'coupon_id' => Yii::t('app', 'Coupon ID'),
+            'state' => Yii::t('app', 'State'),
+            'created_date' => Yii::t('app', 'Created Date'),
+            'updated_date' => Yii::t('app', 'Updated Date'),
+            'enable' => Yii::t('app', 'Enable'),
         ];
     }
-
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCity() {
+    public function getCity()
+    {
         return $this->hasOne(City::className(), ['id' => 'city_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCoupon() {
+    public function getCoupon()
+    {
         return $this->hasOne(Coupon::className(), ['id' => 'coupon_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getExpert() {
+    public function getExpert()
+    {
         return $this->hasOne(Expert::className(), ['id' => 'expert_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getService()
+    {
+        return $this->hasOne(Service::className(), ['id' => 'service_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(User::className(), ['id' => 'user_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAssignedServiceHasModifiers()
+    {
+        return $this->hasMany(AssignedServiceHasModifier::className(), ['assigned_service_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCompletedServices()
+    {
+        return $this->hasMany(CompletedService::className(), ['assigned_service_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getConversations()
+    {
+        return $this->hasMany(Conversation::className(), ['assigned_service_id' => 'id']);
     }
 
     public function getExpertName() {
@@ -104,34 +188,6 @@ class AssignedService extends \yii\db\ActiveRecord {
     public function getUserName() {
         $user = User::findOne(['id' => $this->user_id]);
         return $user->first_name . " " . $user->last_name;
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getService() {
-        return $this->hasOne(Service::className(), ['id' => 'service_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUser() {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getAssignedServiceHasModifier() {
-        return $this->hasOne(AssignedServiceHasModifier::className(), ['assigned_service_id' => 'id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCompletedServices() {
-        return $this->hasMany(CompletedService::className(), ['assigned_service_id' => 'id']);
     }
     /**
      * 
@@ -152,7 +208,6 @@ class AssignedService extends \yii\db\ActiveRecord {
         $connection = Yii::$app->getDb();
         $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => '',':id' => $this->id]);
         $modifier_vw = $command->queryAll();
-//      $modifier_vw = VwActualService::findOne(['id' => $this->id]);
         
         if (isset($modifier_vw['modifier_id']) && !empty($modifier_vw['modifier_id'])) {
             $modifier = Modifier::findOne(['id' => $modifier_vw['modifier_id']]);

@@ -161,21 +161,11 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
      *
      * @return \yii\db\ActiveQuery
      */
-
-    /**
-     *
-     * @return \yii\db\ActiveQuery
-     */
     public function getTypeIdentification() {
         return $this->hasOne(TypeIdentification::className(), [
                     'id' => 'FK_id_type_identification'
         ]);
     }
-
-    /**
-     *
-     * @return \yii\db\ActiveQuery
-     */
 
     /**
      * Validates password
