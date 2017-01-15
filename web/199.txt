@@ -1,9 +1,0 @@
-
-2016-06-13 18:38:37
-199 -> 2016-6-14 08:30:00 -> 1
-Servicio 199 no fue aceptado por el especialista Fulanito El  Estupendo
-Servicio 199 asignado al especialista Pepito Perez
-
-2016-06-13 18:39:47
-199 -> 2016-6-14 08:30:00 -> 2
-Servicio 199 ya fue aceptado

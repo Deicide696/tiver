@@ -44,14 +44,15 @@ class PasswordResetRequestForm extends Model {
      * @return boolean whether the email was send
      */
     public function sendEmail() {
-        /* @var $user User */
+        
         $user = User::findOne([
                     'enable' => User::STATUS_ACTIVE,
                     'email' => $this->email,
         ]);
         if ($user) {
             $tokenType = TypeToken::findOne(['name' => 'remember-password']);
-            $token = LogToken::findOne(['FK_id_token_type' => $tokenType->id, 'FK_id_user' => $user->id, 'status' => 1]);
+            $token = LogToken::findOne(['FK_id_token_type' => $tokenType->id, 'FK_id_user' => $user->id, 'enable' => 1]);
+            
             if (!$token || !LogToken::isTokenValid($token->token)) {
                 if ($token) {
                     $token->status = 0;

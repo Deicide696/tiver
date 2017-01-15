@@ -2,7 +2,6 @@
 
 namespace app\controllers;
 
-//use app\pusher\Pusher;
 require '../vendor/pusher/pusher-php-server/lib/Pusher.php';
 
 use Yii;
@@ -62,9 +61,6 @@ class UserController extends Controller {
                         'roles' => [
                             '@'
                         ],
-//                        'matchCallback' => function ($rule, $action) {
-//                            return User::isSuper(Yii::$app->user->identity->email);
-//                        }
                     ]
                 ]
             ]
@@ -77,7 +73,7 @@ class UserController extends Controller {
      * @return mixed
      */
     public function actionIndex() {
-        
+
         if (Yii::$app->user->can('admin')) {
 
             if (isset($_GET["UserSearch"]) && isset($_GET["success"])) {
@@ -366,7 +362,7 @@ class UserController extends Controller {
             $user = User::find()->where("enable='1' and(fb_id='$user_id' or email='$email')")->one();
             if ($user) {
                 $updateTokens = LogToken::updateAll([
-                            'status' => 0
+                            'enable' => 0
                                 ], [
                             'FK_id_user' => $user->id,
                             'FK_id_token_type' => $typeToken->id,
@@ -414,9 +410,9 @@ class UserController extends Controller {
                     }
                     // var_dump($gcm_token->getErrors());
 
-                 
+
                     $connection = Yii::$app->getDb();
-                    $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => $user->id,':id' => '']);
+                    $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'], [':user_id' => $user->id, ':id' => '']);
                     $model_history = $command->queryAll();
 //                    
 //                    $model_history = VwActualService::find()->where([
@@ -629,9 +625,10 @@ class UserController extends Controller {
             $phone = Yii::$app->request->post("phone", null);
             $token = Yii::$app->request->post("token", null);
             try {
-                $modelToken = LogToken::findOne([
-                            'token' => $token
-                ]);
+                $modelToken = LogToken::find()
+                        ->where(['token' => $token, 'enable' => 1])
+                        ->one();
+
                 if (!empty($modelToken)) {
                     if ($modelToken->status) {
                         $arrayUpdate = [
@@ -750,9 +747,7 @@ class UserController extends Controller {
 
     // Android
     public function actionLogin() {
-        // if (Yii::$app->request->isPost) {
-        $model = new LoginForm ();
-        Yii::trace(json_encode(Yii::$app->request->post()));
+       
         // se define el layout
         $this->layout = "json";
         Yii::$app->response->format = 'json';
@@ -763,17 +758,6 @@ class UserController extends Controller {
         $gcm_id = Yii::$app->request->post("gcm_id", null);
         $os_id = Yii::$app->request->post("os_id", null);
         $device = Yii::$app->request->post("device", null);
-
-        /*
-         * $arrayPost = [
-         * 'LoginForm' => [
-         * 'username' => $email,
-         * 'password' => $password,
-         * 'remember' => true
-         * ]
-         * ];
-         * if ($model->load ( $arrayPost )) {
-         */
 
         $typeToken = TypeToken::findOne($device);
         if (empty($typeToken)) {
@@ -790,8 +774,8 @@ class UserController extends Controller {
         $user = User::findOne([
                     'email' => $email,
                     'enable' => User::STATUS_ACTIVE,
-//                    'FK_id_rol' => '1'
         ]);
+//        var_dump($user); die();
         if ($user == null) {
             return [
                 'success' => false,
@@ -811,71 +795,24 @@ class UserController extends Controller {
                 ]
             ];
         }
-        // Actualizamos Log Token
-        /*
-         * $log_token = LogToken::find ()->where ( [
-         * 'status' => 1,
-         * 'FK_id_token_type' => $typeToken->id,
-         * 'FK_id_user' => $user->id
-         * ] )->one ();
-         *
-         * if ($log_token != null) {
-         * $token = MD5 ( $user->id . $user->email . time () );
-         * $log_token->token = $token;
-         * $log_token->connection_ip = Yii::$app->request->userIP;
-         * $log_token->updated_date = date ( 'Y-m-d H:i:s' );
-         * if (! $log_token->save ())
-         * return [
-         * 'success' => false,
-         * 'data' => [
-         * 'message' => 'El token no se pudo guardar',
-         * 'errors ' => ($tokenMmz->getErrors ())
-         * ]
-         * ];
-         * } else { // Si no existe, creamos uno nuevo
-         * $tokenMmz = new LogToken ();
-         * $token = MD5 ( $user->id . $user->email . time () );
-         * $arrayLog = [
-         * 'LogToken' => [
-         * 'token' => $token,
-         * 'connection_ip' => Yii::$app->request->userIP,
-         * 'status' => 1,
-         * 'FK_id_token_type' => $typeToken->id,
-         * 'FK_id_user' => $user->id,
-         * 'created_date' => date ( 'Y-m-d H:i:s' ),
-         * 'updated_date' => date ( 'Y-m-d H:i:s' )
-         * ]
-         * ];
-         * if (! ($tokenMmz->load ( $arrayLog ) && $tokenMmz->save ())) {
-         * return [
-         * 'success' => false,
-         * 'data' => [
-         * 'message' => 'El token no se pudo guardar',
-         * 'errors ' => ($tokenMmz->getErrors ())
-         * ]
-         * ];
-         * }
-         * }
-         */
+
         // se crea el token del nuevo usuario mmz
         $tokenMmz = new LogToken ();
         $token = MD5($user->id . $user->email . time());
         $updateTokens = LogToken::updateAll([
-                    'status' => 0
+                    'enable' => 0
                         ], [
                     'FK_id_user' => $user->id,
                     'FK_id_token_type' => $typeToken->id,
-                    'status' => 1
+                    'enable' => 1
         ]);
         $arrayLog = [
             'LogToken' => [
                 'token' => $token,
                 'connection_ip' => Yii::$app->request->userIP,
-                'status' => 1,
+                'enable' => 1,
                 'FK_id_token_type' => $typeToken->id,
                 'FK_id_user' => $user->id,
-                'created_date' => date('Y-m-d H:i:s'),
-                'updated_date' => date('Y-m-d H:i:s')
             ]
         ];
         if (!($tokenMmz->load($arrayLog) && $tokenMmz->save())) {
@@ -890,8 +827,6 @@ class UserController extends Controller {
 
         // Actualizamos ultimlo login
         $user->last_login = date('Y-m-d H:i:s');
-        // $user->gcm_id = $gcm_id;
-        // print $user->last_login; exit();
         $user->save();
 
         // Buscamos y actualizamos el token GCM
@@ -913,16 +848,11 @@ class UserController extends Controller {
             $gcm_token->user_id = $user->id;
             $gcm_token->save();
         }
-       
+
         $connection = Yii::$app->getDb();
-        $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => $user->id,':id' => '']);
+        $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'], [':user_id' => $user->id, ':id' => '']);
         $model_history = $command->queryAll();
-        
-//        $model_history = VwActualService::find()->where([
-//                            'user_id' => $user->id
-//                        ])->
-//                        // 'status' => '1'
-//                        asArray()->one();
+
         $actual_service = false;
         if ($model_history != null) {
             $actual_service = true;
@@ -948,29 +878,6 @@ class UserController extends Controller {
                 "pending_pay" => $user->hasPendingPay()
             ]
         ];
-
-        /*
-         * } else {
-         * return [
-         * 'success' => false,
-         * 'errcode' => 10,
-         * 'data' => [
-         * 'message' => json_encode ( $model->getErrors () )
-         * ]
-         * ];
-         * }
-         * /*} else {
-         * Yii::trace ( json_encode ( [
-         * 'message' => "El parametro password es requerido"
-         * ] ) );
-         * return [
-         * 'success' => false,
-         * 'data' => [
-         * 'message' => 'El parametro password es requerido'
-         * ]
-         * ];
-         * }
-         */
     }
 
     public function actionOldLogin() {
@@ -1005,7 +912,7 @@ class UserController extends Controller {
                         ]);
                         if ($user) {
                             $updateTokens = LogToken::updateAll([
-                                        'status' => 0
+                                        'enable' => 0
                                             ], [
                                         'FK_id_user' => $user->id,
                                         'FK_id_token_type' => $typeToken->id,
@@ -1052,11 +959,11 @@ class UserController extends Controller {
                                     $gcm_token->user_id = $user->id;
                                     $gcm_token->save();
                                 }
-                               
+
                                 $connection = Yii::$app->getDb();
-                                $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' =>$user->id,':id' => '']);
+                                $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'], [':user_id' => $user->id, ':id' => '']);
                                 $model_history = $command->queryAll();
-                                
+
 //                                $model_history = VwActualService::find()->where([
 //                                                    'user_id' => $user->id
 //                                                ])->
@@ -1240,18 +1147,18 @@ class UserController extends Controller {
     }
 
     public function beforeAction($action) {
+
         $this->enableCsrfValidation = false;
         return parent::beforeAction($action);
     }
 
     public function actionViewDetails() {
+
         $data = json_decode($_POST ['request'], true);
         $token = $data ['token'];
-        $model_token = LogToken::find()->where([
-                    'token' => $token
-                ])->one();
-
-        // var_dump($searched);
+        $model_token = LogToken::find()
+                ->where(['token' => $token, 'enable' => 1])
+                ->one();
 
         if ($model_token != null) {
 

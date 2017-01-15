@@ -1,9 +1,0 @@
-
-2016-08-29 15:47:52
-232 -> 2016-8-29 16:46:00 -> 1
-Servicio 232 no fue aceptado por el especialista Pepito Polainas Perez
-Servicio 232 asignado al especialista Fulanito El  Estupendo
-
-2016-08-29 15:48:53
-232 -> 2016-8-29 16:46:00 -> 2
-Servicio 232 ya fue aceptado

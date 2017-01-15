@@ -365,9 +365,9 @@ class CouponController extends Controller {
                             return $response;
                         
                         case 3 :                             // Cupón - Servicio
-                            $model_token = LogToken::find()
-                                ->where(['token' => $token])
-                                ->one();
+                            $model_token = LogToken::find ()
+                                ->where (['token' => $token, 'enable' => 1])
+                                ->one ();
 
                             if (isset($model_token) && !empty($model_token)) {
                                 // buscamos la relación cupon-ususario

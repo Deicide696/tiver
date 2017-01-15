@@ -126,7 +126,9 @@ class AddressController extends Controller {
 
         $token = Yii::$app->request->post("token", null);
 
-        $model_token = LogToken::find()->where(['token' => $token])->one();
+        $model_token = LogToken::find()
+                ->where(['token' => $token, 'enable' => 1])
+                ->one();
 
         //var_dump($searched);
 
@@ -159,9 +161,10 @@ class AddressController extends Controller {
         $address = Yii::$app->request->post("id_address", null);
 
         // Validamos el token
-        $model_token = LogToken::find()->where([
-                    'token' => $token
-                ])->one();
+        $model_token = LogToken::find()
+                ->where(['token' => $token, 'enable' => 1])
+                ->one();
+        
         if ($model_token == null) {
 
             $response ["success"] = false;
@@ -215,7 +218,9 @@ class AddressController extends Controller {
         $address_other = Yii::$app->request->post("address_other", null);
         $type_housing = Yii::$app->request->post("housing_type", null);
 
-        $model_token = LogToken::find()->where(['token' => $token])->one();
+        $model_token = LogToken::find()
+                ->where(['token' => $token, 'enable' => 1])
+                ->one();
 
         if ($model_token == null) {
             $response["success"] = false;

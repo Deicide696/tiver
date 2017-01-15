@@ -1,5 +1,0 @@
-
-2016-06-15 11:47:37
-207 -> 2016-6-21 09:45:00 -> 1
-Servicio 207 no fue aceptado por el especialista Pepito Perez
-Servicio 207 asignado al especialista Fulanito El  Estupendo

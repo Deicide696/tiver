@@ -1,5 +1,0 @@
-
-2016-04-28 16:49:57
-80 -> 2016-05-02 03:00:00 -> 1
-Servicio 80 no fue aceptado por el especialista Fulanito El Estupendo
-Servicio 80 asignado al especialista Pepito Perez
