@@ -1,7 +1,8 @@
 /nbproject/
 /nbproject/private/
+/vendor/
+/runtime/
 /web/logs/
 /web/img/
 /web/assets/
 /runtime/
-/vendor/

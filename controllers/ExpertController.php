@@ -1,6 +1,5 @@
 <?php
 
-
 namespace app\controllers;
 require '../vendor/pusher/pusher-php-server/lib/Pusher.php';
 use Yii;
