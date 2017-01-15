@@ -1,8 +1,9 @@
 <?php
 
-
 namespace app\controllers;
+
 require '../vendor/pusher/pusher-php-server/lib/Pusher.php';
+
 use Yii;
 use app\models\Expert;
 use app\models\User;
@@ -46,7 +47,7 @@ class ExpertController extends Controller {
                     'update'
                 ],
                 'rules' => [
-                        [
+                    [
                         'actions' => [
                             'view'
                         ],
@@ -55,7 +56,7 @@ class ExpertController extends Controller {
                             '@'
                         ]
                     ],
-                        [
+                    [
                         'actions' => [
                             'update'
                         ],
@@ -86,14 +87,14 @@ class ExpertController extends Controller {
      * @return mixed
      */
     public function actionIndex() {
-        
+
         $searchModel = new ExpertSearch ();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
                     'searchModel' => $searchModel,
                     'dataProvider' => $dataProvider
-                ]);
+        ]);
     }
 
     /**
@@ -103,20 +104,20 @@ class ExpertController extends Controller {
      * @return mixed
      */
     public function actionView($id) {
-        
+
         $searchModel = new ScheduleSearch ();
         $dataProvider = $searchModel->search([
             'ScheduleSearch' => [
                 'expert_id' => $id
             ]
-                ]);
+        ]);
 
         $searchModel2 = new ExpertHasServiceSearch ();
         $dataProvider2 = $searchModel2->search([
             'ExpertHasServiceSearch' => [
                 'expert_id' => $id
             ]
-                ]);
+        ]);
         // $dataProvider = $searchModel->search(['expert_id' => $id]);
 
         return $this->render('view', [
@@ -125,7 +126,7 @@ class ExpertController extends Controller {
                     'dataProvider' => $dataProvider,
                     'searchModel2' => $searchModel2,
                     'dataProvider2' => $dataProvider2
-                ]);
+        ]);
     }
 
     /**
@@ -135,56 +136,57 @@ class ExpertController extends Controller {
      * @return mixed
      */
     public function actionCreate() {
-        
+
         $model = new Expert ();
         $modelU = new UploadForm();
 
         if (Yii::$app->request->isPost) {
             if ($model->load(Yii::$app->request->post())) {
-                
+
                 $model->password = $model->setPassword($model->password);
                 $model->password_repeat = ($model->password);
                 $modelU->imageFile = UploadedFile::getInstance($model, 'path');
-                if(isset($modelU->imageFile)){
+                if (isset($modelU->imageFile)) {
 
                     $modelU->path = Url::to('@webroot/img/experts/') . $modelU->imageFile->baseName . '.' . $modelU->imageFile->extension;
 
                     if ($modelU->upload()) {
-                        var_dump($modelU->imageFile);die();
+                        var_dump($modelU->imageFile);
+                        die();
                         // file is uploaded successfully
-                        $model->path = $_SERVER["HTTP_ORIGIN"].Yii::$app->urlManager->baseUrl."/img/experts/" . $modelU->imageFile->baseName . "." . $modelU->imageFile->extension;
+                        $model->path = $_SERVER["HTTP_ORIGIN"] . Yii::$app->urlManager->baseUrl . "/img/experts/" . $modelU->imageFile->baseName . "." . $modelU->imageFile->extension;
                         if ($model->save()) {
                             $auth = Yii::$app->authManager;
                             $auth->assign($auth->getRole('expert'), $model->id);
                             return $this->redirect([
-                                    'view',
-                                    'id' => $model->id
-                                ]);
+                                        'view',
+                                        'id' => $model->id
+                            ]);
                         } else {
                             return $this->render('create', [
-                                'model' => $model
+                                        'model' => $model
                             ]);
 //                            var_dump($model->errors);
                         }
                     }
-                }else {
+                } else {
                     if ($model->save()) {
-                            return $this->redirect([
+                        return $this->redirect([
                                     'view',
                                     'id' => $model->id
-                                ]);
-                        } else {
-                            return $this->render('create', [
-                                'model' => $model
-                            ]);
-                        }
+                        ]);
+                    } else {
+                        return $this->render('create', [
+                                    'model' => $model
+                        ]);
+                    }
                 }
             }
         } else {
             $model->enable = 1;
             return $this->render('create', [
                         'model' => $model
-                    ]);
+            ]);
         }
     }
 
@@ -196,51 +198,51 @@ class ExpertController extends Controller {
      * @return mixed
      */
     public function actionUpdate($id) {
-        
+
         $model = $this->findModel($id);
 //        $model2 = new Expert ();
         $modelU = new UploadForm();
         $path = $model->path;
-        
+
         if ($model->load(Yii::$app->request->post())) {
-                $modelU->imageFile = UploadedFile::getInstance($model, 'path');
-                if(isset($modelU->imageFile)){
-                    $modelU->path = Url::to('@webroot/img/experts/') . $modelU->imageFile->baseName . '.' . $modelU->imageFile->extension;
-                    if ($modelU->upload()) {
-                        // file is uploaded successfully
-                        if(file_exists($path)){
-                            unlink($path);
-                        } 
-                        $model->path = $_SERVER["HTTP_ORIGIN"].Yii::$app->urlManager->baseUrl."/img/experts/" . $modelU->imageFile->baseName . "." . $modelU->imageFile->extension;
-                        if ($model->save()) {
-                            return $this->redirect([
-                                    'view',
-                                    'id' => $model->id
-                                ]);
-                        } else {
-                            var_dump($model->errors);
-                        }
-                        return;
+            $modelU->imageFile = UploadedFile::getInstance($model, 'path');
+            if (isset($modelU->imageFile)) {
+                $modelU->path = Url::to('@webroot/img/experts/') . $modelU->imageFile->baseName . '.' . $modelU->imageFile->extension;
+                if ($modelU->upload()) {
+                    // file is uploaded successfully
+                    if (file_exists($path)) {
+                        unlink($path);
                     }
-                } else {
+                    $model->path = $_SERVER["HTTP_ORIGIN"] . Yii::$app->urlManager->baseUrl . "/img/experts/" . $modelU->imageFile->baseName . "." . $modelU->imageFile->extension;
                     if ($model->save()) {
-                            return $this->redirect([
+                        return $this->redirect([
                                     'view',
                                     'id' => $model->id
-                                ]);
-                        } else {
-                            var_dump($model->errors);
-                        }
-                        return;
+                        ]);
+                    } else {
+                        var_dump($model->errors);
+                    }
+                    return;
                 }
-                return $this->redirect([
+            } else {
+                if ($model->save()) {
+                    return $this->redirect([
+                                'view',
+                                'id' => $model->id
+                    ]);
+                } else {
+                    var_dump($model->errors);
+                }
+                return;
+            }
+            return $this->redirect([
                         'view',
                         'id' => $model->id
-                    ]);
+            ]);
         } else {
             return $this->render('update', [
                         'model' => $model
-                    ]);
+            ]);
         }
     }
 
@@ -256,7 +258,7 @@ class ExpertController extends Controller {
 
         return $this->redirect([
                     'index'
-                ]);
+        ]);
     }
 
     /**
@@ -379,6 +381,7 @@ class ExpertController extends Controller {
     }
 
     public function actionInmediato() {
+        
         Yii::$app->response->format = 'json';
         $lat = Yii::$app->request->post("lat", null);
         $lng = Yii::$app->request->post("lng", null);
@@ -422,13 +425,13 @@ class ExpertController extends Controller {
             return $response;
         }
     }
+
     /**
      * 
      * @return string
      */
-
     public function actionInmediatoAssign() {
-        
+
         Yii::$app->response->format = 'json';
         $lat = Yii::$app->request->post("address_lat", null);
         $lng = Yii::$app->request->post("address_lng", null);
@@ -508,7 +511,7 @@ class ExpertController extends Controller {
     }
 
     public function actionInmediatoCancel() {
-        
+
         Yii::$app->response->format = 'json';
         $lat = Yii::$app->request->post("address_lat", null);
         $lng = Yii::$app->request->post("address_lng", null);
@@ -571,7 +574,7 @@ class ExpertController extends Controller {
     }
 
     public function actionInmediatoConfirm() {
-        
+
         Yii::$app->response->format = 'json';
         $lat = Yii::$app->request->post("address_lat", null);
         $lng = Yii::$app->request->post("address_lng", null);
@@ -698,21 +701,22 @@ class ExpertController extends Controller {
         $this->enableCsrfValidation = false;
         return parent::beforeAction($action);
     }
+
     /**
      * Get the Photo of the expert
      * 
      * @return json
      */
-    public function actionGetPhoto(){
-        
+    public function actionGetPhoto() {
+
         Yii::$app->response->format = 'json';
         $id = Yii::$app->request->post("id", null);
         $token = Yii::$app->request->post("token", null);
-         
+
         $model_token = LogToken::find()
                 ->where(['token' => $token, 'status' => 1])
                 ->one();
-        
+
         if (!isset($model_token) || empty($model_token)) {
             $response ["success"] = false;
             $response ["data"] = [
@@ -720,11 +724,11 @@ class ExpertController extends Controller {
             ];
             return $response;
         }
-        
+
         $expert = Expert::find()
-                ->where(['id' => $id])->one();
-        if (!empty($expert)){
-            
+                        ->where(['id' => $id])->one();
+        if (!empty($expert)) {
+
             $response ["success"] = True;
             $response ["data"] = [
                 "path" => $expert->path
@@ -737,4 +741,5 @@ class ExpertController extends Controller {
         }
         return $response;
     }
+
 }

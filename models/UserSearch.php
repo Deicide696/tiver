@@ -18,8 +18,8 @@ class UserSearch extends User
     public function rules()
     {
         return [
-            [['id', 'phone', 'receive_interest_info', 'FK_id_rol', 'FK_id_gender', 'FK_id_type_identification', 'FK_id_city'], 'integer'],
-            [['first_name', 'last_name', 'identification', 'email', 'password', 'birth_date', 'last_login', 'imei', 'fb_id', 'tpaga_id', 'created_date', 'updated_date', 'personal_code'], 'safe'],
+            [['id', 'FK_id_gender', 'FK_id_type_identification', 'FK_id_city', 'phone', 'receive_interest_info', 'enable'], 'integer'],
+            [['personal_code', 'first_name', 'last_name', 'identification', 'email', 'password', 'birth_date', 'last_login', 'imei', 'fb_id', 'tpaga_id', 'created_date', 'updated_date'], 'safe'],
         ];
     }
 
@@ -60,28 +60,27 @@ class UserSearch extends User
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'phone' => $this->phone,
-            'birth_date' => $this->birth_date,
-            'receive_interest_info' => $this->receive_interest_info,
-            'enable' => $this->enable,
-            'last_login' => $this->last_login,
-            'created_date' => $this->created_date,
-            'updated_date' => $this->updated_date,
-            'FK_id_rol' => $this->FK_id_rol,
             'FK_id_gender' => $this->FK_id_gender,
             'FK_id_type_identification' => $this->FK_id_type_identification,
             'FK_id_city' => $this->FK_id_city,
+            'phone' => $this->phone,
+            'birth_date' => $this->birth_date,
+            'receive_interest_info' => $this->receive_interest_info,
+            'last_login' => $this->last_login,
+            'created_date' => $this->created_date,
+            'updated_date' => $this->updated_date,
+            'enable' => $this->enable,
         ]);
 
-        $query->andFilterWhere(['like', 'first_name', $this->first_name])
+        $query->andFilterWhere(['like', 'personal_code', $this->personal_code])
+            ->andFilterWhere(['like', 'first_name', $this->first_name])
             ->andFilterWhere(['like', 'last_name', $this->last_name])
             ->andFilterWhere(['like', 'identification', $this->identification])
             ->andFilterWhere(['like', 'email', $this->email])
             ->andFilterWhere(['like', 'password', $this->password])
             ->andFilterWhere(['like', 'imei', $this->imei])
             ->andFilterWhere(['like', 'fb_id', $this->fb_id])
-            ->andFilterWhere(['like', 'tpaga_id', $this->tpaga_id])
-            ->andFilterWhere(['like', 'personal_code', $this->personal_code]);
+            ->andFilterWhere(['like', 'tpaga_id', $this->tpaga_id]);
 
         return $dataProvider;
     }
