@@ -233,14 +233,12 @@ class AssignedServiceController extends Controller {
         $day = date('N', strtotime($date));
 //        return var_dump($day);die();
         $experts = Expert::find()
-                ->where("enable='1' and zone_id='$zone' and (schedule.weekday_id='$day' and '$time' between schedule.start_time and schedule.finish_time) and (expert_has_service.service_id='$service')")
+                ->where("zone_id='$zone' AND (schedule.weekday_id='$day' AND '$time' between schedule.start_time AND schedule.finish_time) AND (expert_has_service.service_id='$service') AND expert.enable = 1")
                 ->joinwith('schedule')
                 ->joinwith('assignedService')
                 ->joinwith('expertHasService')
                 ->orderBy(new Expression('rand()'))
                 ->all();
-        
-        
         // obtenemos la duración del servicio, (duracion serv+ duracion mod)
         $dur_serv = 0;
         $dur_serv += Service::find()->select(['duration'])
@@ -604,11 +602,11 @@ class AssignedServiceController extends Controller {
         $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => $id_user, ':id' => '']);
         $model_history = $command->queryAll();
         
-//        $model_history = VwActualService::find()->where([
-//                            'user_id' => $id_user
-//                        ])->
-//                        // 'status' => '1'
-//                        asArray()->one();
+        $model_history = VwActualService::find()->where([
+                            'user_id' => $id_user
+                        ])->
+                        // 'status' => '1'
+                        asArray()->one();
         $actual_service = false;
         if ($model_history != null) {
             $actual_service = true;
@@ -621,7 +619,12 @@ class AssignedServiceController extends Controller {
         ];
         return $response;
     }
-
+    
+    /**
+     * Decline Service
+     * 
+     * @return json
+     */
     public function actionDeclineService() {
         Yii::$app->response->format = 'json';
         $date = Yii::$app->request->post("date", "");
