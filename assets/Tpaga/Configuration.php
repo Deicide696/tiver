@@ -76,8 +76,8 @@ class Configuration
      * @var string
      */
     // protected $username = 'h5fc3s6hp3slpef9t7vr6dajcuqbdumk';  //sandbox
-    // protected $username = 'k87ddruralv6l7b5gjfbq4dsgnn7tb5d';  //sandbox 2
-    protected $username = '4bk73tpors4das7k9a3a33ffjml7enhk'; //Production
+    protected $username = 'k87ddruralv6l7b5gjfbq4dsgnn7tb5d';  // ID private sandbox
+//    protected $username = '4bk73tpors4das7k9a3a33ffjml7enhk'; //Production
     /**
      * Password for HTTP basic authentication
      *
@@ -97,8 +97,8 @@ class Configuration
      *
      * @var string
      */
-    protected $host = 'https://api.tpaga.co/api';
-//    protected $host = 'https://sandbox.tpaga.co/api';
+//    protected $host = 'https://api.tpaga.co/api';
+    protected $host = 'https://sandbox.tpaga.co/api';
 
     /**
      * Timeout (second) of the HTTP request, by default set to 0, no timeout

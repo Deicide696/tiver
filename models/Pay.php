@@ -15,7 +15,7 @@ use Yii;
  * @property string $created_date
  *
  * @property ServiceHistoryHasPay[] $serviceHistoryHasPays
- * @property ServiceHistory[] $serviceHistories
+ * @property ServiceHistoryHasPay[] $serviceHistoryHasPays0
  */
 class Pay extends \yii\db\ActiveRecord
 {
@@ -36,22 +36,34 @@ class Pay extends \yii\db\ActiveRecord
             [['state', 'value'], 'integer'],
             [['hash'], 'required'],
             [['created_date'], 'safe'],
-            [['message', 'hash'], 'string', 'max' => 45]
+            [['message', 'hash'], 'string', 'max' => 45],
         ];
     }
 
+    public function behaviors()
+    {
+       return [           
+           'timestamp' => [
+                'class' => \yii\behaviors\TimestampBehavior::className(),
+                'attributes' => [
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT =>  ['created_date'],
+                ],
+                'value' => function() { return  date ( 'Y-m-d H:i:s' );},
+            ],
+       ];
+    }
     /**
      * @inheritdoc
      */
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'state' => 'Pagado',
-            'value' => 'Valor',
-            'message' => 'Mensaje TPaga',
-            'hash' => 'Hash',
-            'created_date' => 'Created Date',
+            'id' => Yii::t('app', 'ID'),
+            'state' => Yii::t('app', 'State'),
+            'value' => Yii::t('app', 'Value'),
+            'message' => Yii::t('app', 'Message'),
+            'hash' => Yii::t('app', 'Hash'),
+            'created_date' => Yii::t('app', 'Created Date'),
         ];
     }
 
@@ -63,7 +75,7 @@ class Pay extends \yii\db\ActiveRecord
         return $this->hasMany(ServiceHistoryHasPay::className(), ['pay_id' => 'id']);
     }
 
-    /**
+     /**
      * @return \yii\db\ActiveQuery
      */
     public function getServiceHistories()

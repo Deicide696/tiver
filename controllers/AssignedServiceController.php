@@ -53,7 +53,7 @@ class AssignedServiceController extends Controller {
         return $this->render('index', [
                     'searchModel' => $searchModel,
                     'dataProvider' => $dataProvider
-                ]);
+        ]);
     }
 
     /**
@@ -65,7 +65,7 @@ class AssignedServiceController extends Controller {
     public function actionView($id) {
         return $this->render('view', [
                     'model' => $this->findModel($id)
-                ]);
+        ]);
     }
 
     /**
@@ -81,11 +81,11 @@ class AssignedServiceController extends Controller {
             return $this->redirect([
                         'view',
                         'id' => $model->id
-                    ]);
+            ]);
         } else {
             return $this->render('create', [
                         'model' => $model
-                    ]);
+            ]);
         }
     }
 
@@ -103,11 +103,11 @@ class AssignedServiceController extends Controller {
             return $this->redirect([
                         'view',
                         'id' => $model->id
-                    ]);
+            ]);
         } else {
             return $this->render('update', [
                         'model' => $model
-                    ]);
+            ]);
         }
     }
 
@@ -123,7 +123,7 @@ class AssignedServiceController extends Controller {
 
         return $this->redirect([
                     'index'
-                ]);
+        ]);
     }
 
     /**
@@ -180,17 +180,15 @@ class AssignedServiceController extends Controller {
 
         Yii::$app->PushNotifier->sendNotificationExpertOS($title, $message, $data, $token);
     }
-    
+
     /**
      * Assign a service
      * 
      * @return type Service asingned
      */
-    public function actionAssignService() { 
-        
-    
-//            return 1;
-        
+    public function actionAssignService() {
+
+        Yii::$app->response->format = 'json';
         $address = $_POST ['address'];
         $address_comp = $_POST ['address_comp'];
         $date = $_POST ['date'];
@@ -202,11 +200,11 @@ class AssignedServiceController extends Controller {
         $lat = $_POST ['address_lat'];
         $lng = $_POST ['address_lng'];
         $cupon = $_POST ['cupon'];
-    
+
         $model_token = LogToken::find()
                 ->where(['token' => $token, 'enable' => 1])
                 ->one();
-        
+
 //        return var_dump($model_token);die();
         if (!isset($model_token) || empty($model_token)) {
 
@@ -214,7 +212,6 @@ class AssignedServiceController extends Controller {
             $response ["data"] = [
                 "message" => "Token inválido"
             ];
-            $response = json_encode($response);
             return $response;
         }
 
@@ -225,13 +222,12 @@ class AssignedServiceController extends Controller {
             $response ["data"] = [
                 "message" => "Esta dirección se encuentra fuera de la zona de cobertura"
             ];
-            $response = json_encode($response);
             return $response;
         }
 
         // Buscamos expertos disponibles para ese día y de ese servicio
         $day = date('N', strtotime($date));
-//        return var_dump($day);die();
+        
         $experts = Expert::find()
                 ->where("zone_id='$zone' AND (schedule.weekday_id='$day' AND '$time' between schedule.start_time AND schedule.finish_time) AND (expert_has_service.service_id='$service') AND expert.enable = 1")
                 ->joinwith('schedule')
@@ -242,18 +238,17 @@ class AssignedServiceController extends Controller {
         // obtenemos la duración del servicio, (duracion serv+ duracion mod)
         $dur_serv = 0;
         $dur_serv += Service::find()->select(['duration'])
-                ->where(['id' => $service])
-                ->one()
+                        ->where(['id' => $service])
+                        ->one()
                 ->duration;
-        
-        
-        if (!empty($modifier)){
+
+
+        if (!empty($modifier)) {
             $dur_serv += Modifier::find()->select(['duration'])
-                    ->where(['id' => $modifier])
-                    ->one()
+                            ->where(['id' => $modifier])
+                            ->one()
                     ->duration;
         }
-//        return var_dump($experts);die();
         $expert_id = 0;
         foreach ($experts as $expert) {
             $disponible = $expert->validateDateTime($date, $time, $dur_serv);
@@ -294,13 +289,12 @@ class AssignedServiceController extends Controller {
             $response ["data"] = [
                 "message" => "El servicio no se pudo asignar porque no tenemos especialistas disponibles en este horario ($time $date)"
             ];
-            $response = json_encode($response);
             return $response;
         }
 
         // Todo OK, se guarda el servicio
         $model = new AssignedService ();
-        if ($address_comp != ''){
+        if ($address_comp != '') {
             $model->address = $address . " - " . $address_comp;
         } else {
             $model->address = $address;
@@ -311,7 +305,7 @@ class AssignedServiceController extends Controller {
         $model->lng = $lng;
         $model->comment = $comment;
         $model->service_id = $service;
-            // Si viene con un copon 
+        // Si viene con un copon 
         if ($cupon != "") {
             $model_coupon = Coupon::find()->where([
                         'code' => $cupon
@@ -343,9 +337,7 @@ class AssignedServiceController extends Controller {
             $response ["data"] = [
                 "message" => json_encode($model->getErrors())
             ];
-            $response = json_encode($response);
-            header('Content-Type: application/json');
-            print $response;
+            return $response;
         }
         // Guardamos el Nuevo servicio
         if (!$model->save()) {
@@ -353,7 +345,6 @@ class AssignedServiceController extends Controller {
             $response ["data"] = [
                 "message" => json_encode($model->getErrors())
             ];
-            $response = json_encode($response);
             return $response;
         }
 
@@ -368,7 +359,6 @@ class AssignedServiceController extends Controller {
                 $response ["data"] = [
                     "message" => json_encode($model2->getErrors())
                 ];
-                $response = json_encode($response);
                 return $response;
             }
         }
@@ -408,17 +398,17 @@ class AssignedServiceController extends Controller {
 
         // Enviar notificación push OS
 
-        if ($address_comp != ""){
+        if ($address_comp != "") {
             $address .= " - " . $address_comp;
         }
-        
+
         $model_user = User::find()
                 ->where(['id' => $model_token->FK_id_user])
                 ->one();
 
         $tokens = Expert::findOne(["id" => $expert_id])
                 ->getPushTokens();
-        
+
         $data = [
             "ticker" => "Tienes trabajo",
             'time' => $time,
@@ -436,16 +426,16 @@ class AssignedServiceController extends Controller {
             'time_wait' => Yii::$app->params ['seconds_wait'],
             'type' => Yii::$app->params ['notification_type_assgigned_expert']
         ];
-        if ($tokens != null){
+        if ($tokens != null) {
             Yii::$app->PushNotifiersFCM->sendNotificationFCM_Expert("Nuevo servicio", "Tienes un nuevo servicio", $data, $tokens);
         }
         $id_serv = $model->id;
-        
-        $url=Yii::getAlias('@webroot');
+
+        $url = Yii::getAlias('@webroot');
         $log = $url . "/logs/$id_serv.txt";
         $script = 'php ' . $url . '/./yii tasks/check-service "' . $id_serv . '" "' . $date . '" "' . $time . '"';
         exec("(sleep " . Yii::$app->params ['seconds_wait'] . "; $script > $log) > /dev/null 2>&1 &");
-        
+
         // Insertamos el log
         $model_log = new LogAssignedService ();
         $model_log->assigned = "1";
@@ -458,31 +448,27 @@ class AssignedServiceController extends Controller {
         $model_log->assigned_service_id = $model->id;
         $model_log->expert_id = $model->expert_id;
         $model_log->save();
-        
+
         $response ["success"] = true;
         $response ["data"] = [
             "message" => "Nuevo servicio correctamente"
         ];
-        $response = json_encode($response);
         return $response;
     }
 
+    /**
+     * 
+     * @return type
+     */
     public function actionGetAssignedService() {
-        
+
         Yii::$app->response->format = 'json';
         // var_dump($data);
         $id = $_POST ['id'];
 
-        // $model=Expert::find()->select(['expert.id','name','last_name','email','lat','lng'])->where("enable='1' and (schedule.weekday_id='$day' and '$hour' between schedule.start_time and schedule.finish_time) and (expert_has_service.service_id='$service')")->joinwith('schedule')->joinwith('expertHasService')->asArray()->all();
-     
         $connection = Yii::$app->getDb();
-        $command = $connection->createCommand(Yii::$app->params ['vw_actual_service_expert'],[':expert_id' => $id, ':status' => 1]);
+        $command = $connection->createCommand(Yii::$app->params ['vw_actual_service_expert'], [':expert_id' => $id, ':status' => 1]);
         $model_history = $command->queryAll();
-        
-//        $model_history = VwActualServiceExpert::find()->where([
-//                    'expert_id' => $id,
-//                    'status' => '1'
-//                ])->asArray()->all();
 
         if ($model_history != null) {
             $response ["success"] = true;
@@ -498,64 +484,71 @@ class AssignedServiceController extends Controller {
     }
 
     public function actionCancelService() {
-        
+
         Yii::$app->response->format = 'json';
         $time = Yii::$app->request->post("time", "");
         $date = Yii::$app->request->post("date", "");
         $token = Yii::$app->request->post("token", "");
 
-        // Validamos el token
+        //      Validamos el token
         $model_token = LogToken::find()
-                ->where(['token' => $token, 'enable' => 1])->one();
-        if ($model_token == null) {
+                ->where(['token' => $token, 'enable' => 1])
+                ->one();
 
+        if (!isset($model_token) || empty($model_token)) {
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Token inválido"
             ];
-            // $response = json_encode ( $response );
             return $response;
         }
         $id_user = $model_token->FK_id_user;
 
         // Buscamos el servicio activo
-        $services = assignedService::find()
-                ->where(["user_id" => $id_user,
-                        // "expert_id" => $id_expert,
-                        "date" => $date,
-                        "time" => $time])
+
+        $services = AssignedService::find()
+                ->where([
+                    "assigned_service.user_id" => $id_user,
+                    "assigned_service.date" => $date,
+                    "assigned_service.time" => $time,
+                    "assigned_service.state" => 1,
+                    "assigned_service.enable" => 1])
                 ->joinWith('service')
+                ->joinWith('assignedServiceHasModifiers.modifier')
                 ->one();
 
-        if ($services == null) {
+//        var_dump($services);
+//        die();
+
+        if (!isset($services) || empty($services)) {
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Lo sentimos, este servicio ya fue finalizado o no existe"
             ];
-            // $response = json_encode ( $response );
             return $response;
         }
-        // Guardamos la cancelación;
-        $services->state = 0;
-
-        // Guardamos los cambios
-        if (!$services->save()) {
+                        //    Service is Canceled
+        $canceled = AssignedService::findOne($services->id);
+        $canceled->state = 0;
+        
+        if (!$canceled->update()) {
             $response ["success"] = false;
             $response ["data"] = [
-                "message" => json_encode($services->getErrors())
+                "message" => "Lo sentimos, no se pudo Cancelar este servicio asignado."
             ];
             return $response;
         }
-        $tokens = Expert::findOne([
-                    "id" => $services->expert_id
-                ])->getPushTokens();
-
+                        //      Find User
         $user = User::findOne([
                     "id" => $id_user
-                ]);
-        $value = $services->getPrice();
+        ]);
 
-        // Enviar mail de pago en mora
+                        //      Data send to email the user
+        $username = $user->first_name;
+        $buydate = date_format(date_create($services->date), 'd-m-Y');
+        $servmodif = $services->assignedServiceHasModifiers[0]->modifier->name;
+        $servname = $services->service->name;
+                        //      Enviar mail de pago en mora
         $sendGrid = new \SendGrid(Yii::$app->params ['sengrid_user'], Yii::$app->params ['sendgrid_pass']);
         $email = new \SendGrid\Email ();
         $email->setFrom(Yii::$app->params ['sendgrid_from'])
@@ -564,51 +557,39 @@ class AssignedServiceController extends Controller {
                 ->setSubject(' ')
                 ->setHtml(' ')
                 ->setHtml(' ')
-                ->addSubstitution('{{ username }}', [$user->first_name])
-                ->addSubstitution('{{ buydate }}', [$services->date])
-                ->addSubstitution('{{ useraddress }}', [$services->address])
-                ->addSubstitution('{{ item.servname }}', [$value])
-                ->addSubstitution('{{ item.servmodif }}', [$value])
-                ->addSubstitution('{{ item.prodprecio }}', [$value])
-                ->addSubstitution('{{ item.servesp }}', [$value])
-                ->addSubstitution('{{ total }}', [$value])
-//                ->addSubstitution('{{ dateTime }}', [$user->first_name])
-//                ->addSubstitution('{{ codePlace }}', [$services->date])
-//                ->addSubstitution('{{ namePlace }}', [$services->address])
-//                ->addSubstitution('{{ cardType }}', [$value])
-//                ->addSubstitution('{{ accountType }}', [$value])
-//                ->addSubstitution('{{ cardNumber }}', [$value])
-//                ->addSubstitution('{{ feeNumber }}', [$value])
-//                ->addSubstitution('{{ paymentReference }}', [$value])
-//                ->addSubstitution('{{ receiptNumber }}', [$value])
-//                ->addSubstitution('{{ authorizationNumber }}', [$value])
-//                ->addSubstitution('{{ replyCode }}', [$value])
-//                ->addSubstitution('{{ description }}', [$value])
-//                ->addSubstitution('{{ total }}', [$value])
+                ->addSubstitution('{{ username }}', [$username])
+                ->addSubstitution('{{ buydate }}', [$buydate])
+                ->addSubstitution('{{ item.servname }}', [$servname])
+                ->addSubstitution('{{ item.servmodif }}', [$servmodif])
                 ->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_cancelado']);
         $resp = $sendGrid->send($email);
-
-        $services->delete();
-
-        // print_r($tokens);
-        $data = [
-            "ticker" => "Servicio cancelado",
-            'type' => Yii::$app->params ['notification_type_canceled_expert']
-        ];
-        if ($tokens != null) {
-            Yii::$app->PushNotifier->sendNotificationExpertOS("Servicio eliminado", "Se ha cancelado un servicio que tenías asignado", $data, $tokens);
-        }
-        $connection = Yii::$app->getDb();
-        $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => $id_user, ':id' => '']);
-        $model_history = $command->queryAll();
         
-        $model_history = VwActualService::find()->where([
-                            'user_id' => $id_user
-                        ])->
-                        // 'status' => '1'
-                        asArray()->one();
+                        //      Send notification Push FCM Expert
+//        $tokens = Expert::findOne([
+//                    "id" => $services->expert_id])
+//                ->getPushTokens();
+//        
+//        $data = [
+//            "ticker" => "Servicio cancelado",
+//            'type' => Yii::$app->params ['notification_type_canceled_expert']
+//        ];
+//        
+//        if (!isset($tokens) || empty($tokens)) {
+//            $response ["success"] = false;
+//            $response ["data"] = [
+//                "message" => "Lo sentimos, este dispositivo no esta en nuestros registros."
+//            ];
+//            return $response;
+//        } else {
+//            Yii::$app->PushNotifier->sendNotificationExpertOS("Servicio eliminado", "Se ha cancelado un servicio que tenías asignado", $data, $tokens);
+//        }
+        $connection = Yii::$app->getDb();
+        $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'], [':user_id' => $id_user, ':id' => '']);
+        $model_history = $command->queryAll();
+
+//        var_dump($model_history);die();
         $actual_service = false;
-        if ($model_history != null) {
+        if (isset($model_history[0]) && !empty($model_history[0])) {
             $actual_service = true;
         }
 
@@ -619,13 +600,14 @@ class AssignedServiceController extends Controller {
         ];
         return $response;
     }
-    
+
     /**
      * Decline Service
      * 
      * @return json
      */
     public function actionDeclineService() {
+        
         Yii::$app->response->format = 'json';
         $date = Yii::$app->request->post("date", "");
         $time = Yii::$app->request->post("time", "");
@@ -757,10 +739,9 @@ class AssignedServiceController extends Controller {
         if ($tokens != null)
             Yii::$app->PushNotifier->sendNotificationExpertOS("Nuevo servicio", "Tienes un nuevo servicio", $data, $tokens);
         // //////
-
 //        $url = Yii::$app->params ['path_scripts'];
         // $url="/var/www/html/tiver";
-        $url=Yii::getAlias('@webroot');
+        $url = Yii::getAlias('@webroot');
         $script = 'php ' . $url . '/./yii tasks/check-service "' . $services->id . '" "' . $date . '" "' . $time . '" ';
         $log = $url . "/logs/$id.txt";
         exec("(sleep " . Yii::$app->params ['seconds_wait'] . "; $script >> $log) > /dev/null 2>&1 &");
@@ -802,7 +783,7 @@ class AssignedServiceController extends Controller {
         $duration = $model->getDuration();
         $expert = Expert::findOne([
                     'id' => $id_especialista
-                ]); // Ya no está disponible para esta hora y fecha
+        ]); // Ya no está disponible para esta hora y fecha
         if (!$expert->validateDateTime($date, $time, $duration)) {
             $response ["success"] = false;
             $response ["data"] = [
@@ -901,7 +882,7 @@ class AssignedServiceController extends Controller {
             //No hay más especialistas disponibles, se cancela el servicio
             $user = User::findOne([
                         "id" => $id_user
-                    ]);
+            ]);
             $value = $services->getPrice();
 
 
@@ -997,8 +978,8 @@ class AssignedServiceController extends Controller {
         $id_serv = $services->id;
 //        $url = Yii::$app->params ['path_scripts'];
         // $url="/var/www/html/tiver";
-        
-        $url=Yii::getAlias('@webroot');
+
+        $url = Yii::getAlias('@webroot');
         $log = $url . "/logs/$id_serv.txt";
         $script = 'php ' . $url . '/./yii tasks/check-service "' . $id_serv . '" "' . $date_new . '" "' . $time_new . '"';
         // $url="/var/www/html/tiver/web/log_date.txt";
@@ -1039,9 +1020,9 @@ class AssignedServiceController extends Controller {
     }
 
     public function actionEditService() {
-        
-          Yii::$app->response->format = 'json';
-        
+
+        Yii::$app->response->format = 'json';
+
         $time_new = Yii::$app->request->post("time_new", "");
         $time_old = Yii::$app->request->post("time_old", "");
         $date_old = Yii::$app->request->post("date_old", "");
@@ -1053,7 +1034,7 @@ class AssignedServiceController extends Controller {
         $model_token = LogToken::find()
                 ->where(['token' => $token, 'enable' => 1])
                 ->one();
-        
+
         if ($model_token == null) {
 
             $response ["success"] = false;
@@ -1181,9 +1162,8 @@ class AssignedServiceController extends Controller {
                 'time_wait' => Yii::$app->params ['seconds_wait'],
                 'type' => Yii::$app->params ['notification_type_edited_expert']
             ];
-            if ($tokens != null){
+            if ($tokens != null) {
                 Yii::$app->PushNotifier->sendNotificationExpertOS("Servicio editado", "Se ha editado un servicio que tenías asignado", $data, $tokens);
-        
             }
         } else {
             // envio de notificacion push OS
@@ -1209,7 +1189,7 @@ class AssignedServiceController extends Controller {
                 'time_wait' => Yii::$app->params ['seconds_wait'],
                 'type' => Yii::$app->params ['notification_type_assgigned_expert']
             ];
-            if ($tokens != null){
+            if ($tokens != null) {
                 Yii::$app->PushNotifier->sendNotificationExpertOS("Nuevo servicio", "Tienes un nuevo servicio", $data, $tokens);
             }
             $tokens_old = Expert::findOne([
@@ -1221,9 +1201,8 @@ class AssignedServiceController extends Controller {
                 "ticker" => "Servicio cancelado",
                 'type' => Yii::$app->params ['notification_type_canceled_expert']
             ];
-            if ($tokens_old != null){
+            if ($tokens_old != null) {
                 Yii::$app->PushNotifier->sendNotificationExpertOS("Servicio eliminado", "Se ha cancelado un servicio que tenías asignado", $data, $tokens_old);
-        
             }
         }
 
@@ -1231,8 +1210,8 @@ class AssignedServiceController extends Controller {
         $id_serv = $services->id;
 //        $url = Yii::$app->params ['path_scripts'];
         // $url="/var/www/html/tiver";
-        
-        $url=Yii::getAlias('@webroot');
+
+        $url = Yii::getAlias('@webroot');
         $log = $url . "/logs/$id_serv.txt";
         $script = 'php ' . $url . '/./yii tasks/check-service "' . $id_serv . '" "' . $date_new . '" "' . $time_new . '"';
         // $url="/var/www/html/tiver/web/log_date.txt";
@@ -1257,178 +1236,122 @@ class AssignedServiceController extends Controller {
         ];
         return $response;
     }
+
     /**
      * Service Checkout
      * 
      * @return Json response
      */
-
     public function actionCheckoutExpert() {
-        
+
+        Yii::$app->response->format = 'json';
+
         $id_user = $_POST ['id_user'];
         $id_expert = $_POST ['id_expert'];
         $date = $_POST ['date'];
         $time = $_POST ['time'];
         $value = $_POST ['value'];
-        // $value=1;
-        // $model=Expert::find()->select(['expert.id','name','last_name','email','lat','lng'])->where("enable='1' and (schedule.weekday_id='$day' and '$hour' between schedule.start_time and schedule.finish_time) and (expert_has_service.service_id='$service')")->joinwith('schedule')->joinwith('expertHasService')->asArray()->all();
 
         $services = AssignedService::find()
-            ->where([
-                "user_id" => $id_user,
-                "expert_id" => $id_expert,
-                "date" => $date,
-                "time" => $time,
-                "state" => 1])
-            ->joinWith('service')
-            ->one();
+                ->where([
+                    "assigned_service.user_id" => $id_user,
+                    "assigned_service.expert_id" => $id_expert,
+                    "assigned_service.date" => $date,
+                    "assigned_service.time" => $time,
+                    "assigned_service.state" => 1,
+                    "assigned_service.enable" => 1])
+                ->joinWith('service')
+                ->joinWith('assignedServiceHasModifiers.modifier')
+                ->one();
 
-        
         if (!isset($services) || empty($services)) {
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Lo sentimos, este servicio ya fue finalizado o no existe"
             ];
-            $response = json_encode($response);
             return $response;
         }
-        
         // Obtener precio del servicio
-       if($value == ""){
-           $value = $services->getPrice();
-       } 
-//       return var_dump($value);die();
+        if (empty($value)) {
+            $value = $services->getPrice();
+        }
+
         $tax = $services->getTax();
-//        return var_dump($tax);die();
         $duracion = ($services->getDuration()) - 15;
-        // $value=2;
         $cupon = "";
+
         // Check time of checkout
         $date_now = date("Y-m-d");
         $time_now = date("H:i:s");
-//        var_dump($date_now . " " . $time_now," Duracion: ", $date . " " . $time . " +$duracion minute");die();
+
         $time1 = strtotime($date_now . " " . $time_now);
-        $time3 = strtotime($date . " " . $time );
+        $time3 = strtotime($date . " " . $time);
         $time2 = strtotime($date . " " . $time . " +$duracion minute");
-//        var_dump(date("Y-m-d H:i:s",$time1)," TIME2 ",date("Y-m-d H:i:s",$time3),$duracion,date("Y-m-d H:i:s", $time2)); die();
-    //        if ($time1 < $time2) {
-    //            $response ["success"] = false;
-    //            $response ["data"] = [
-    //                "message" => "Aún no puedes finalizar este servicio"
-    //            ];
-    //            $response = json_encode($response);
-    //            return $response;
-    //        }
+        //      Validate if the time is within range
+        if ($time1 < $time2) {
+            $response ["success"] = false;
+            $response ["data"] = [
+                "message" => "Aún no puedes finalizar este servicio"
+            ];
+            return $response;
+        }
 
-        //Find to Credit cart the user
-
+        //      Find to Credit cart the user
         $credit_card = CreditCard::find()
-            ->where([
-                "user_id" => $id_user,
-                "enable" => 1])
-            ->one();
+                ->where([
+                    "user_id" => $id_user,
+                    "enable" => 1])
+                ->one();
 
         if (!isset($credit_card) || empty($credit_card)) {
-
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "El usuario no tiene tarjetas asociadas"
             ];
-            $response = json_encode($response);
             return $response;
         }
-//        var_dump($credit_card, $services->id);die();
-        // Service is Canceled
-        $cancel = AssignedService::updateAll([
-                "state" => 0],
-                ["id" => $services->id]);
+        //      Se busca la tarjeta de credito asociada a un cliente en TPAGA
+        $user = User::findOne(["id" => $id_user]);
+        $info = Yii::$app->TPaga->GetCreditCard($user->tpaga_id, $credit_card->hash);
+        
+        if (!isset($info)) {
+            $response ["success"] = false;
+            $response ["data"] = [
+                "message" => "Lo sentimos, esta tarjeta de credito no existe o no esta asociada a este cliente"
+            ];
+            return $response;
+        }
+                        //    Service is Canceled
+        $canceled = AssignedService::findOne($services->id);
+        $canceled->state = 0;
+        
+        if (!$canceled->update()) {
+            $response ["success"] = false;
+            $response ["data"] = [
+                "message" => "Lo sentimos, no se pudo Cancelar este servicio asignado."
+            ];
+            return $response;
+        }
 
         $tokens = User::findOne([
                     "id" => $id_user])
                 ->getPushTokens();
-        
-//        var_dump("DELETE: ",$cancel);die();
-        if ($cancel > 0) {
-            
-            // Si hay cupon, se omite la peticion a TPaga
-            /*
-             * if ($cupon != "") {
-             * // Enviar notificación push
-             *
-             * $model_history = VwServiceHistory::find ()->where ( [
-             * 'user_id' => $id_user,
-             * 'status' => '1'
-             * ] )->asArray ()->one ();
-             * $actual_service = false;
-             * if ($model_history != null) {
-             * $actual_service = true;
-             * }
-             *
-             * /*$data = array (
-             * "title" => "Servicio finalizado",
-             * "body" => "El servicio ha sido cobrado",
-             * "ticker" => "Qué tal el servicio??",
-             * "actual_service" => $actual_service,
-             * 'type' => Yii::$app->params ['notification_type_checkout_user']
-             * );
-             *
-             * $data=["ticker" => "Qué tal el servicio??",
-             * "actual_service" => $actual_service,
-             * 'type' => Yii::$app->params ['notification_type_checkout_user'] ];
-             * Yii::$app->PushNotifier->sendNotificationUserOS ( "Servicio finalizado", "El servicio ha sido cobrado",$data,$tokens );
-             *
-             * //Yii::$app->PushNotifier->sendNotificationUser ( $data, $tokens );
-             *
-             * // print_r($tokens);
-             *
-             * //
-             * $response ["success"] = true;
-             * $response ["data"] = [
-             * "message" => "Checkout OK"
-             * ];
-             * $response = json_encode ( $response );
-             * return $response;
-             * }
-             */
 
-    var_dump("Credit_card: ",$credit_card, "Value: ",$value ,"Tax",$tax);die();
+        if ($cancel > 0) {
+            //      Generate charge on Credit card
             $data_pay = Yii::$app->TPaga->CreateCharge($credit_card->hash, $value, "Servicio Tiver", $tax);
 
-            var_dump("DATA_PAY",$data_pay);die();
+            //      Si no se realizo el cargo a la tarjeta
+            if (!isset($data_pay) || empty($data_pay)) {
 
-            $user = User::findOne([
-                        "id" => $id_user
-                    ]);
-            $info = Yii::$app->TPaga->GetCreditCard($user->tpaga_id, $credit_card->hash);
-            $last_four = $info->last_four;
-            $type = $info->type;
-
-            // $id_pay = Yii::$app->TPaga->CreateCharge ( $credit_card->hash, $value, "Servicio Tiver" );
-            if (!$data_pay) {
-                /*
-                 * $data = array (
-                 * "title" => "Error al finalizar servicio",
-                 * "body" => "Estás en deuda, no se pudo realizar el cobro",
-                 * "ticker" => "Oooops, algo ha salido mal",
-                 * 'type' => Yii::$app->params ['notification_type_checkout_user']
-                 * );
-                 *
-                 * Yii::$app->PushNotifier->sendNotificationUser ( $data, $tokens );
-                 */
-                
                 $connection = Yii::$app->getDb();
-                $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => $id_user,':id' => '']);
+                $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'], [':user_id' => $id_user, ':id' => '']);
                 $model_history = $command->queryAll();
-                
-//              $model_history = VwActualService::find()
-//                  ->where(['user_id' => $id_user])
-//                  ->asArray()->one();                 
-                
+
                 $actual_service = false;
-                if ($model_history != null) {
+                if (isset($model_history)) {
                     $actual_service = true;
                 }
-
                 $data = [
                     "ticker" => "Oooops, algo ha salido mal",
                     "actual_service" => $actual_service,
@@ -1440,55 +1363,84 @@ class AssignedServiceController extends Controller {
                 $response ["data"] = [
                     "message" => "No se pudo realizar el cobro"
                 ];
+                //      Data send to email the user
+                $username = $user->first_name;
+                $buydate = date_format(date_create($services->date), 'd-m-Y');
+                $useraddress = $services->address;
+                $servmodif = $services->assignedServiceHasModifiers[0]->modifier->name;
+                $servname = $services->service->name;
+                $servesp = $services->getExpertName();
+                $cardType = $info->type;
+                $cardNumber = $info->last_four;
 
                 // Enviar mail de pago en mora
                 $sendGrid = new \SendGrid(Yii::$app->params ['sengrid_user'], Yii::$app->params ['sendgrid_pass']);
                 $email = new \SendGrid\Email ();
                 $email->setFrom(Yii::$app->params ['sendgrid_from'])
-                    ->setFromName(Yii::$app->params ['sendgrid_from_name'])
-                    ->addTo($user->email)->setSubject(' ')->setHtml(' ')->setHtml(' ')
-                    ->addSubstitution('{{ username }}', [$user->first_name])
-                    ->addSubstitution('{{ usercard }}', [$type])
-                    ->addSubstitution('{{ usercardnum }}', [$last_four])
-                    ->addSubstitution('{{ buydate }}', [$services->date])
-                    ->addSubstitution('{{ useraddress }}', [$services->address])
-                    ->addSubstitution('{{ item.servname }}', [$value])
-                    ->addSubstitution('{{ item.servmodif }}', [$value])
-                    ->addSubstitution('{{ item.prodprecio }}', [$value])
-                    ->addSubstitution('{{ item.servesp }}', [$value])
-                    ->addSubstitution('{{ total }}', [$value])
-                    ->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_mora']);
-                
+                        ->setFromName(Yii::$app->params ['sendgrid_from_name'])
+                        ->addTo($user->email)->setSubject(' ')->setHtml(' ')->setHtml(' ')
+                        ->addSubstitution('{{ username }}', [$username])
+                        ->addSubstitution('{{ buydate }}', [$buydate])
+                        ->addSubstitution('{{ useraddress }}', [$useraddress])
+                        ->addSubstitution('{{ item.servmodif }}', [$servmodif])
+                        ->addSubstitution('{{ item.servname }}', [$servname])
+                        ->addSubstitution('{{ item.servesp }}', [$servesp])
+                        ->addSubstitution('{{ usercard }}', [$cardType])
+                        ->addSubstitution('{{ usercardnum }}', [$cardNumber])
+                        ->addSubstitution('{{ item.prodprecio }}', [$value])
+                        ->addSubstitution('{{ total }}', [$value])
+                        ->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_mora']);
+
                 $resp = $sendGrid->send($email);
-
-                //
-
                 $response = json_encode($response);
                 return $response;
-            } else {
-                $id_pay = $data_pay->id;
-                $message_pay = $data_pay->error_message;
-                $paid_pay = $data_pay->paid;
-
-                $pay = new Pay ();
-
-                // Enviar mail de pago en mora
+            } else {                //      if all is OK
+                                //      Get info charge to credit card
+                $info_charge = Yii::$app->TPaga->GetChargeCreditCard($data_pay->id);
+                                //      Data send to email the user
+                $username = $user->first_name;
+                $buydate = date_format(date_create($services->date), 'd-m-Y');
+                $useraddress = $services->address;
+                $servmodif = $services->assignedServiceHasModifiers[0]->modifier->name;
+                $servname = $services->service->name;
+                $servesp = $services->getExpertName();
+                $total = $data_pay->amount;
+                $dateTime = date_format(date_create($services->created_date), 'd-m-Y H:i:s');
+                $cardType = $info->type;
+                $cardNumber = $info->last_four;
+                $feeNumber = $data_pay->installments;
+                $paymentReference = $data_pay->order_id;
+                $authorizationNumber = $info_charge->transactionInfo->authorizationCode;
+                $replyCode = $info_charge->errorCode . " " . $info_charge->errorMessage;
+                $description = $data_pay->description;
+                $iva = $data_pay->tax_amount;
+                                //      Sendgrid Header
                 $sendGrid = new \SendGrid(Yii::$app->params ['sengrid_user'], Yii::$app->params ['sendgrid_pass']);
                 $email = new \SendGrid\Email ();
                 $email->setFrom(Yii::$app->params ['sendgrid_from'])->setFromName(Yii::$app->params ['sendgrid_from_name'])->addTo($user->email)->setSubject(' ')->setHtml(' ')->setHtml(' ');
+                                //      Generate new Pay
+                $pay = new Pay ();
+                $paid_pay = $data_pay->paid;
 
                 if ($paid_pay) {
                     $pay->state = 1;
-                    $email->addSubstitution('{{ username }}', [$user->first_name])
-                            -> addSubstitution('{{ buydate }}', [$services->date])
-                            // ->addSubstitution('{{ usercard }}',[$type)
-                            // ->addSubstitution('{{ usercardnum }}',[$last_four)
-                            ->addSubstitution('{{ useraddress }}', [$services->address])
-                            ->addSubstitution('{{ item.servname }}', [$value])
-                            ->addSubstitution('{{ item.servmodif }}', [$value])
-                            ->addSubstitution('{{ item.prodprecio }}', [$value])
-                            ->addSubstitution('{{ item.servesp }}', [$value])
-                            ->addSubstitution('{{ total }}', [$value])
+                    $email->addSubstitution('{{ username }}', [$username])
+                            ->addSubstitution('{{ buydate }}', [$buydate])
+                            ->addSubstitution('{{ useraddress }}', [$useraddress])
+                            ->addSubstitution('{{ item.servname }}', [$servname])
+                            ->addSubstitution('{{ item.servmodif }}', [$servmodif])
+                            ->addSubstitution('{{ item.servesp }}', [$servesp])
+                            ->addSubstitution('{{ total }}', [$total])
+                            ->addSubstitution('{{ dateTime }}', [$dateTime])
+                            ->addSubstitution('{{ cardType }}', [$cardType])
+                            ->addSubstitution('{{ cardNumber }}', [$cardNumber])
+                            ->addSubstitution('{{ feeNumber }}', [$feeNumber])
+                            ->addSubstitution('{{ paymentReference }}', [$paymentReference])
+                            ->addSubstitution('{{ authorizationNumber }}', [$authorizationNumber])
+                            ->addSubstitution('{{ replyCode }}', [$replyCode])
+                            ->addSubstitution('{{ description }}', [$description])
+                            ->addSubstitution('{{ iva }}', [$iva])
+                            ->addSubstitution('{{ total }}', [$total])
                             ->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_compraok']);
                 } else {
 
@@ -1508,18 +1460,19 @@ class AssignedServiceController extends Controller {
                 }
                 $resp = $sendGrid->send($email);
 
-                $pay->message = $message_pay;
-                $pay->hash = $id_pay;
-                $pay->value = $value;
+                $pay->message = $data_pay->error_message;
+                $pay->hash = $data_pay->id;
+                $pay->value = intval($total);
+
                 if (!$pay->save()) {
 
                     $response ["success"] = true;
                     $response ["data"] = [
-                        "message" => "No se pudo guardar el cobro"
+                        "message" => "No se pudo guardar el cobro en nuestros registros."
                     ];
-                    $response = json_encode($response);
                     return $response;
                 }
+
                 $services_h = ServiceHistory::find()->where([
                                     "user_id" => $id_user,
                                     "expert_id" => $id_expert,
@@ -1535,46 +1488,33 @@ class AssignedServiceController extends Controller {
                     $pay_service->service_history_id = $row ['id'];
                     $pay_service->save();
                 }
-                // Enviar notificación push
-                
+                //      Enviar notificación push
                 $connection = Yii::$app->getDb();
-                $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => $id_user,':id' => '']);
+                $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'], [':user_id' => $id_user, ':id' => '']);
                 $model_history = $command->queryAll();
-//                $model_history = VwActualService::find()->where([
-//                                    'user_id' => $id_user
-//                                ])->
-//                                // 'status' => '1'
-//                                asArray()->one();
+
                 $actual_service = false;
-                if ($model_history != null) {
+                if (isset($model_history[0])) {
                     $actual_service = true;
                 }
 
-                /*
-                 * $data = array (
-                 * "title" => "Servicio finalizado",
-                 * "body" => "El servicio ha sido cobrado",
-                 * "ticker" => "Qué tal el manicure??",
-                 * "actual_service" => $actual_service,
-                 * 'type' => Yii::$app->params ['notification_type_checkout_user']
-                 * );
-                 * Yii::$app->PushNotifier->sendNotificationUser ( $data, $tokens );
-                 */
                 $data = [
                     "ticker" => "Qué tal el servicio??",
                     "actual_service" => $actual_service,
                     'type' => Yii::$app->params ['notification_type_checkout_user']
                 ];
-                if ($paid_pay)
-                    Yii::$app->PushNotifier->sendNotificationUserOS("Servicio finalizado", "El servicio ha sido cobrado", $data, $tokens);
-                else
-                    Yii::$app->PushNotifier->sendNotificationUserOS("Servicio finalizado", "Estás en deuda, no se pudo realizar el cobro", $data, $tokens);
-                //
+
+//                Queda hasta que no se soluciones definitivamente los de Firebase
+//                if ($paid_pay && isset($tokens) && !empty($tokens)){
+//                     Yii::$app->PushNotifier->sendNotificationUserOS("Servicio finalizado", "El servicio ha sido cobrado", $data, $tokens);
+//                } else {
+//                    Yii::$app->PushNotifier->sendNotificationUserOS("Servicio finalizado", "Estás en deuda, no se pudo realizar el cobro", $data, $tokens);
+//                }
+
                 $response ["success"] = true;
                 $response ["data"] = [
                     "message" => "Checkout OK"
                 ];
-                $response = json_encode($response);
                 return $response;
             }
         } else {
@@ -1582,7 +1522,6 @@ class AssignedServiceController extends Controller {
             $response ["data"] = [
                 "message" => "Lo sentimos, este servicio ya fue finalizado o no existe"
             ];
-            $response = json_encode($response);
             return $response;
         }
     }

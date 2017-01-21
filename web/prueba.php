@@ -15,4 +15,9 @@
 //echo $int_as_string . ' is a '. gettype($int_as_string) . "\n";
 
 //echo var_dump(Yii::getAlias("@app"));
-echo true;
+
+$private_key = 'k87ddruralv6l7b5gjfbq4dsgnn7tb5d:';
+$public_key = 'ibran2ettm4uvas5375dhfuljeec4jc2:';
+echo "Privada: ".base64_encode($private_key)."<br>";
+
+echo "Publica: ".base64_encode($public_key);

@@ -63,6 +63,9 @@ class AssignedService extends \yii\db\ActiveRecord {
         ];
     }
     
+    /**
+    * @inheritdoc
+    */
     public function behaviors()
     {
        return [           
@@ -70,24 +73,17 @@ class AssignedService extends \yii\db\ActiveRecord {
                 'class' => \yii\behaviors\TimestampBehavior::className(),
                 'attributes' => [
                     \yii\db\ActiveRecord::EVENT_BEFORE_INSERT =>  ['created_date', 'updated_date'],
-                    \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => 'updated_date',
+                    \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_date'],
                 ],
                 'value' => function() { return  date ( 'Y-m-d H:i:s' );},
             ],
             'activeBehavior' => [
                'class' => 'yii\behaviors\AttributeBehavior',
                 'attributes' => [
-                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => 'enable',
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['state','enable'],
                 ],
                 'value' => 1,
             ],
-            'activeBehavior' => [
-               'class' => 'yii\behaviors\AttributeBehavior',
-                'attributes' => [
-                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => 'state',
-                ],
-                'value' => 0,
-           ],
        ];
     }
 
@@ -155,6 +151,17 @@ class AssignedService extends \yii\db\ActiveRecord {
     {
         return $this->hasOne(User::className(), ['id' => 'user_id']);
     }
+    
+     /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getModifier()
+    {
+//        $modifier = AssignedServiceHasModifier::find()
+//                ->where(['assigned_service_id' => $this->service_id])
+//                ->one();
+        return $this->hasOne(modifier::className(), ['id' => 104]);
+    }
 
     /**
      * @return \yii\db\ActiveQuery
@@ -163,7 +170,7 @@ class AssignedService extends \yii\db\ActiveRecord {
     {
         return $this->hasMany(AssignedServiceHasModifier::className(), ['assigned_service_id' => 'id']);
     }
-
+    
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -202,19 +209,17 @@ class AssignedService extends \yii\db\ActiveRecord {
         if ($service->tax == 0) {
             $price += $service->price;
         } else {
-            $price += round($service->price + ($service->price * Yii::$app->params ['tax_percent']), -2, PHP_ROUND_HALF_UP);
+           $price += (int)round(($service->price + ($service->price * Yii::$app->params ['tax_percent'])), -2, PHP_ROUND_HALF_UP);
         }
-       
         $connection = Yii::$app->getDb();
         $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => '',':id' => $this->id]);
         $modifier_vw = $command->queryAll();
-        
-        if (isset($modifier_vw['modifier_id']) && !empty($modifier_vw['modifier_id'])) {
-            $modifier = Modifier::findOne(['id' => $modifier_vw['modifier_id']]);
+        if (isset($modifier_vw[0]) && !empty($modifier_vw[0]['modifier_id'])) {
+            $modifier = Modifier::findOne(['id' => $modifier_vw[0]['modifier_id']]);
             if ($modifier->tax == 0) {
                 $price += $modifier->price;
             } else {
-                $price += (int) round($modifier->price + ($modifier->price * Yii::$app->params ['tax_percent']), -2, PHP_ROUND_HALF_UP);
+                $price +=  (int)round(($modifier->price + ($modifier->price * Yii::$app->params ['tax_percent'])), -2, PHP_ROUND_HALF_UP);
             }
         }
         return $price;
@@ -235,7 +240,7 @@ class AssignedService extends \yii\db\ActiveRecord {
         $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => $this->user_id,':id' => $this->id]);
         $modifier_vw = $command->queryAll();
         
-        if ($modifier_vw[0]['modifier_id'] != "") {
+        if (isset($modifier_vw[0]) && !empty($modifier_vw[0]['modifier_id'])) {
             $modifier = Modifier::findOne(['id' => $modifier_vw[0]['modifier_id']]);
             if ($modifier->tax == 0){
                 $price += $modifier->price;
@@ -257,8 +262,8 @@ class AssignedService extends \yii\db\ActiveRecord {
         $modifier_vw = $command->queryAll();
 //      $modifier_vw = VwActualService::findOne(['id' => $this->id]);
         
-        if (isset($modifier_vw['modifier_id']) && !empty($modifier_vw['modifier_id'])) {
-            $modifier = Modifier::findOne(['id' => $modifier_vw['modifier_id']]);
+        if (isset($modifier_vw[0]) && !empty($modifier_vw[0]['modifier_id'])) {
+            $modifier = Modifier::findOne(['id' => $modifier_vw[0]['modifier_id']]);
             $duration += $modifier->duration;
         }
         return $duration;
@@ -274,8 +279,8 @@ class AssignedService extends \yii\db\ActiveRecord {
         $modifier_vw = $command->queryAll();
 //      $modifier_vw = VwActualService::findOne(['id' => $this->id]);
         
-        if (isset($modifier_vw['modifier_id']) && !empty($modifier_vw['modifier_id'])) {
-            $modifier = Modifier::findOne(['id' => $modifier_vw['modifier_id']]);
+        if (isset($modifier_vw[0]) && !empty($modifier_vw[0]['modifier_id'])) {
+            $modifier = Modifier::findOne(['id' => $modifier_vw[0]['modifier_id']]);
             $name .= " - " . $modifier->name;
         }
 
@@ -289,7 +294,10 @@ class AssignedService extends \yii\db\ActiveRecord {
 
     public function getNumAttempts() {
         $num = 0;
-        $model = LogAssignedService::find()->select('max(attempt)')->where(['assigned_service_id' => $this->id, 'date' => $this->date, 'time' => $this->time])->scalar();
+        $model = LogAssignedService::find()
+                ->select('max(attempt)')
+                ->where(['assigned_service_id' => $this->id, 'date' => $this->date, 'time' => $this->time])
+                ->scalar();
         if ($model != null)
             $num = $model;
         return $num;

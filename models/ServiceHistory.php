@@ -172,7 +172,6 @@ class ServiceHistory extends \yii\db\ActiveRecord {
         $connection = Yii::$app->getDb();
         $command = $connection->createCommand(Yii::$app->params ['vw_service_history'], [':user_id' => '', ':id' => $this->id, ':status' => '']);
         $modifier_vw = $command->queryOne();
-//    	$modifier_vw=VwServiceHistory::findOne(['id'=>$this->id]);
 
         if (isset($modifier_vw['modifier_id']) && !empty($modifier_vw['modifier_id'])) {
             $modifier = Modifier::findOne(['id' => $modifier_vw['modifier_id']]);
@@ -186,7 +185,11 @@ class ServiceHistory extends \yii\db\ActiveRecord {
     }
 
     public function getLastPay() {
-        return Pay::find()->joinWith(['serviceHistoryHasPay'])->where(['service_history_id' => $this->id])->orderBy(['pay.created_date' => SORT_ASC])->one();
+        return Pay::find()
+                ->joinWith('serviceHistoryHasPay')
+                ->where(['service_history_id' => $this->id])
+                ->orderBy(['pay.created_date' => SORT_ASC])
+                ->one();
     }
 
     public function getDuration() {

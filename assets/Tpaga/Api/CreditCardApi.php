@@ -149,13 +149,9 @@ class CreditCardApi
         }
         $headerParams['Content-Type'] = $this->apiClient->selectHeaderContentType(array('application/json'));
 
-        
-        
-        
         // default format to json
         $resourcePath = str_replace("{format}", "json", $resourcePath);
 
-        
         // body params
         $_tempBody = null;
         if (isset($body)) {
@@ -207,7 +203,6 @@ class CreditCardApi
                     $e->setResponseObject($data);
                     break;
             }
-
             throw $e;
         }
     }
@@ -564,8 +559,13 @@ class CreditCardApi
                     $data = $this->apiClient->getSerializer()->deserialize($e->getResponseBody(), '\app\assets\Tpaga\Model\CreditCard', $e->getResponseHeaders());
                     $e->setResponseObject($data);
                     break;
+                case 401:
+                    $data = $this->apiClient->getSerializer()->deserialize($e->getResponseBody(), '\app\assets\Tpaga\Model\CreditCardCharge', $e->getResponseHeaders());
+                    return $e->setResponseObject($data);
+                case 404:
+                    $data = $this->apiClient->getSerializer()->deserialize($e->getResponseBody(), '\app\assets\Tpaga\Model\ApiError', $e->getResponseHeaders());
+                    return $e->setResponseObject($data);
             }
-
             throw $e;
         }
     }
