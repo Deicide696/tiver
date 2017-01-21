@@ -147,6 +147,7 @@ class TPaga extends Component {
     }
 
     public function GetChargeCreditCard($id_charge) {
+        
         $api_client = new ApiClient ();
 
         try {

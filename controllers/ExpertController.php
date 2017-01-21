@@ -739,4 +739,59 @@ class ExpertController extends Controller {
         }
         return $response;
     }
+    
+    /**
+     * Get the Photo of the expert
+     * 
+     * @return json
+     */
+    public function actionGetService(){
+        
+        Yii::$app->response->format = 'json';
+        $id = Yii::$app->request->post("id", null);
+        $token = Yii::$app->request->post("token", null);
+         
+        $model_token = LogToken::find ()
+            ->where (['token' => $token, 'enable' => 1])
+            ->one ();
+        
+         $expert = Expert::find()
+                ->where(['id' => $id])->one();
+        if (!empty($expert)){
+            
+            $response ["success"] = True;
+            $response ["data"] = [
+                "path" => $expert->path
+            ];
+        } else {
+            $response ["success"] = False;
+            $response ["data"] = [
+                "message" => "Error"
+            ];
+        }
+        
+        if (!isset($model_token) || empty($model_token)) {
+            $response ["success"] = false;
+            $response ["data"] = [
+                "message" => "Token no existe o es inválido"
+            ];
+            return $response;
+        }
+        
+        $expert = Expert::find()
+                ->where(['id' => $id])->one();
+        if (!empty($expert)){
+            
+            $response ["success"] = True;
+            $response ["data"] = [
+                "path" => $expert->path
+            ];
+        } else {
+            $response ["success"] = False;
+            $response ["data"] = [
+                "message" => "Error"
+            ];
+        }
+        return $response;
+    }
 }

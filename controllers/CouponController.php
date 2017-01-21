@@ -80,7 +80,7 @@ class CouponController extends Controller {
         $UserHasCoupon = new UserHasCoupon();
         $CcategoryService = new CouponHasCategoryService();
         $Cservice = new CouponHasService();
-        
+//        var_dump($_POST);die();
         if (isset($_POST["Coupon"]) && isset($_POST["UserHasCoupon"])) {
 
             $model->attributes = $_POST["Coupon"];
@@ -155,6 +155,83 @@ class CouponController extends Controller {
                             'success' => 0,
                 ]);
             }
+        } else if(isset($_POST["Coupon"])) {
+        
+            
+            $model->attributes = $_POST["Coupon"];
+            if ($model->save()) {
+                //  Asignamos un cupon a un Usuario
+                if ($model->type_coupon_id == 1) {
+
+                    $UserHasCoupon->coupon_id = $model->id;
+                    $model->discount = 100;
+                    $model->save();
+                    $UserHasCoupon->user_id = $_POST["UserHasCoupon"]["user_id"];
+                    if ($UserHasCoupon->save()) {
+                        return $this->redirect([
+                                    'view',
+                                    'id' => $model->id
+                        ]);
+                    } else {
+
+                        return $this->redirect([
+                                    'index',
+                                    'success' => false
+                        ]);
+                    }
+                } // Asiganamos un cupon a una Categoria
+                else if ($model->type_coupon_id == 2 && isset($_POST["asignar2"])) {
+                    $CcategoryService->coupon_id = $model->id;
+                    $CcategoryService->category_service_id = $_POST["asignar2"];
+                    $UserHasCoupon->coupon_id = $model->id;
+                    $UserHasCoupon->user_id = $_POST["UserHasCoupon"]["user_id"];
+
+                    if ($UserHasCoupon->save() && $CcategoryService->save()) {
+                        return $this->redirect([
+                                    'view',
+                                    'id' => $model->id
+                        ]);
+                    } else {
+                        return $this->render('create', [
+                                    'model' => $model,
+                                    'CcategoryService' => $CcategoryService,
+                                    'Cservice' => $Cservice,
+                                    'UserHasCoupon' => $UserHasCoupon,
+                                    'success' => 0,
+                        ]);
+                    }
+                } // Asignamos un cupon a un Servicio 
+                else if ($model->type_coupon_id == 3 && isset($_POST["asignar2"])) {
+                    $Cservice->coupon_id = $model->id;
+                    $Cservice->service_id = $_POST["asignar2"];
+                    $UserHasCoupon->coupon_id = $model->id;
+                    $UserHasCoupon->user_id = $_POST["UserHasCoupon"]["user_id"];
+                    if ($UserHasCoupon->save() && $Cservice->save()) {
+                        return $this->redirect([
+                                    'view',
+                                    'id' => $model->id
+                        ]);
+                    } else {
+                        return $this->render('create', [
+                                    'model' => $model,
+                                    'CcategoryService' => $CcategoryService,
+                                    'Cservice' => $Cservice,
+                                    'UserHasCoupon' => $UserHasCoupon,
+                                    'success' => 0,
+                        ]);
+                    }
+                }
+            } else {
+                return $this->render('create', [
+                            'model' => $model,
+                            'CcategoryService' => $CcategoryService,
+                            'Cservice' => $Cservice,
+                            'UserHasCoupon' => $UserHasCoupon,
+                            'success' => 0,
+                ]);
+            }
+            
+        
         } else {
             return $this->render('create', [
                         'model' => $model,
