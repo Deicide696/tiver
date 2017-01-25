@@ -5,7 +5,11 @@ $params = require (__DIR__ . '/params.php');
 $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
-    'language' => 'es', //
+    // set target language to be Russian
+    'language' => 'es',
+    
+    // set source language to be English
+    'sourceLanguage' => 'es-CO',
     'timeZone' => 'America/Bogota',
     'bootstrap' => [
         'log'
@@ -48,6 +52,28 @@ $config = [
         ],
     ],
     'components' => [
+        'i18n' => [
+            'translations' => [
+                'app*' => [
+                    'class' => 'yii\i18n\PhpMessageSource',
+                    'basePath' => '@app/messages',
+                    'sourceLanguage' => 'es-CO',
+                    'fileMap' => [
+                        'app' => 'app.php',
+                        'app/error' => 'error.php',
+                    ],
+                ],
+                'rbac-admin*' => [
+                    'class' => 'yii\i18n\PhpMessageSource',
+                    'basePath' => '@app/messages',
+                    'sourceLanguage' => 'es-CO',
+                    'fileMap' => [
+                        'app' => 'rbac-admin.php',
+                        'app/error' => 'error.php',
+                    ],
+                ],
+            ],
+        ],
         'TPaga' => [
             'class' => 'app\components\TPaga'
         ],

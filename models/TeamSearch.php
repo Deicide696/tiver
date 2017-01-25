@@ -5,12 +5,12 @@ namespace app\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\AssignedService;
+use app\models\Team;
 
 /**
- * AssignedServiceSearch represents the model behind the search form about `app\models\AssignedService`.
+ * TeamSearch represents the model behind the search form about `app\models\Team`.
  */
-class AssignedServiceSearch extends AssignedService
+class TeamSearch extends Team
 {
     /**
      * @inheritdoc
@@ -18,8 +18,8 @@ class AssignedServiceSearch extends AssignedService
     public function rules()
     {
         return [
-            [['id', 'state', 'service_id', 'user_id', 'city_id', 'expert_id'], 'integer'],
-            [['address', 'date', 'time', 'created_date'], 'safe'],
+            [['id', 'enable'], 'integer'],
+            [['name', 'description', 'created_date', 'updated_date'], 'safe'],
         ];
     }
 
@@ -41,11 +41,12 @@ class AssignedServiceSearch extends AssignedService
      */
     public function search($params)
     {
-        $query = AssignedService::find();
+        $query = Team::find();
+
+        // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-        		'sort'=> ['defaultOrder' => ['date'=>SORT_ASC,'time'=>SORT_ASC]]
         ]);
 
         $this->load($params);
@@ -55,36 +56,27 @@ class AssignedServiceSearch extends AssignedService
             // $query->where('0=1');
             return $dataProvider;
         }
-        
+
+        // grid filtering conditions
         if(Yii::$app->user->can('super-admin')) {
             $query->andFilterWhere([
                 'id' => $this->id,
-                'state' => $this->state,
-                'date' => $this->date,
-                'time' => $this->time,
+                'enable' => $this->enable,
                 'created_date' => $this->created_date,
-                'service_id' => $this->service_id,
-                'user_id' => $this->user_id,
-                'city_id' => $this->city_id,
-                'expert_id' => $this->expert_id,
+                'updated_date' => $this->updated_date,
             ]);
-            
         }else{
             $query->andFilterWhere([
                 'id' => $this->id,
-                'state' => $this->state,
-                'date' => $this->date,
-                'time' => $this->time,
+                'enable' => $this->enable,
                 'created_date' => $this->created_date,
-                'service_id' => $this->service_id,
-                'user_id' => $this->user_id,
-                'city_id' => $this->city_id,
-                'expert_id' => $this->expert_id,
+                'updated_date' => $this->updated_date,
                 'enable' => 1,
             ]);
         }
-
-        $query->andFilterWhere(['like', 'address', $this->address]);
+        
+        $query->andFilterWhere(['like', 'name', $this->name])
+            ->andFilterWhere(['like', 'description', $this->description]);
 
         return $dataProvider;
     }

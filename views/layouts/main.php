@@ -75,12 +75,13 @@ AppAsset::register($this);
                         ];
                         if(Yii::$app->user->can('super-admin')) {
                             $menuItems[] = [
-                                'label' => '<span class="glyphicon glyphicon-lock"></span> Administración', 
+                                'label' => '<span class="glyphicon glyphicon-lock"></span> '.Yii::t('app', 'Administration'), 
                                     'items' => [
-                                        ['label' => 'Usuarios', 'url' => ['/user']],
-                                        ['label' => 'Asignaciones', 'url' => ['/admin']],
-                                        ['label' => 'Roles', 'url' => ['/admin/role']],
-                                        ['label' => 'Permisos', 'url' => ['/admin/permission']],
+                                        ['label' => Yii::t('app', 'Users'), 'url' => ['/user']],
+                                        ['label' => Yii::t('app', 'Teams'), 'url' => ['/team']],
+                                        ['label' => Yii::t('rbac-admin', 'Assignments'), 'url' => ['/admin']],
+                                        ['label' => Yii::t('rbac-admin', 'Roles'), 'url' => ['/admin/role']],
+                                        ['label' => Yii::t('rbac-admin', 'Permissions'), 'url' => ['/admin/permission']],
                                     ]
                             ];
                         } else {

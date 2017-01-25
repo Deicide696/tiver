@@ -2,13 +2,12 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
-use app\models\User;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\Coupon */
+/* @var $model app\models\Team */
 
 $this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Coupons'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Teams'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <?php
@@ -16,38 +15,33 @@ $this->params['breadcrumbs'][] = $this->title;
     if($model->enable == 0){$valido=false;}
     if($valido){$icon= Yii::$app->params['iconEnabled-left'];}
     else{$icon= Yii::$app->params['iconDisabled-left'];}	
-    
-    $valido2 = true;
-    if ($model->used == 0) {$valido2 = false;}
-    if ($valido2) {$icon2 = Yii::$app->params['iconEnabled-left'];} 
-    else {$icon2 = Yii::$app->params['iconDisabled-left'];}
-?>
-<div class="coupon-view">
-
-    <h1> <?= Yii::t('app', 'Coupon').": <b>".Html::encode($this->title) ?></b></h1>
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
+if (Yii::$app->user->can('super-admin')) {
+        $columns =  [
             'id',
             'name',
-            'code',
-            'amount',
-            'type_coupon_id',
+            'description',
             'created_date',
             'updated_date',
-            'due_date',
-            [
-                'attribute' => 'used',
-                'format' => 'raw',
-                'value' => $icon2
-            ],
             [
                 'attribute' => 'enable',
                 'format' => 'raw',
                 'value' => $icon
             ],
-        ],
-    ]) ?>
+        ];
+    } else {
+        $columns =  [
+            'id',
+            'name',
+            'description',
+            'created_date',
+            'updated_date',
+        ];
+    }
+?>
+<div class="team-view">
+
+    <h1><?= Html::encode($this->title) ?></h1>
+
     <p>
         <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
@@ -58,5 +52,10 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ]) ?>
     </p>
-    
+
+    <?= DetailView::widget([
+        'model' => $model,
+        'attributes' => $columns,
+    ]) ?>
+
 </div>

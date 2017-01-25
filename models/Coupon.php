@@ -2,7 +2,6 @@
 
 namespace app\models;
 
-use yii\db\Expression;
 use Yii;
 
 /**
@@ -16,6 +15,7 @@ use Yii;
  * @property integer $type_coupon_id
  * @property integer $discount
  * @property integer $amount
+ * @property integer $quantity
  * @property string $created_date
  * @property string $updated_date
  * @property string $due_date
@@ -26,6 +26,7 @@ use Yii;
  * @property CategoryService[] $categoryServices
  * @property CouponHasService[] $couponHasServices
  * @property Service[] $services
+ * @property CouponHasTeam[] $couponHasTeams
  * @property ServiceHistory[] $serviceHistories
  * @property UserHasCoupon[] $userHasCoupons
  * @property User[] $users
@@ -45,13 +46,34 @@ class Coupon extends \yii\db\ActiveRecord
      */
     public function rules()
     {
-         return [
-            [['enable', 'used', 'type_coupon_id', 'discount', 'amount'], 'integer'],
+        return [
+            [['enable', 'used', 'type_coupon_id', 'discount', 'amount', 'quantity'], 'integer'],
             [['type_coupon_id'], 'required'],
             [['created_date', 'updated_date', 'due_date'], 'safe'],
             [['name', 'code'], 'string', 'max' => 45],
-            [['code'], 'unique', 'message' => 'Este codigo de Cupón ya se encuentra en nuestros registros.'],
+            [['code'], 'unique'],
             [['type_coupon_id'], 'exist', 'skipOnError' => true, 'targetClass' => TypeCoupon::className(), 'targetAttribute' => ['type_coupon_id' => 'id']],
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => Yii::t('app', 'ID'),
+            'name' => Yii::t('app', 'Name'),
+            'code' => Yii::t('app', 'Code'),
+            'enable' => Yii::t('app', 'Enable'),
+            'used' => Yii::t('app', 'Used'),
+            'type_coupon_id' => Yii::t('app', 'Type Coupon ID'),
+            'discount' => Yii::t('app', 'Discount'),
+            'amount' => Yii::t('app', 'Amount'),
+            'quantity' => Yii::t('app', 'Quantity'),
+            'created_date' => Yii::t('app', 'Created Date'),
+            'updated_date' => Yii::t('app', 'Updated Date'),
+            'due_date' => Yii::t('app', 'Due Date'),
         ];
     }
     
@@ -82,26 +104,6 @@ class Coupon extends \yii\db\ActiveRecord
            ],
        ];
     }
-
-    /**
-     * @inheritdoc
-     */
-    public function attributeLabels()
-    {
-        return [
-            'id' => 'ID',
-            'name' => 'Nombre',
-            'code' => 'Codigo de Cupón',
-            'enable' => 'Activo',
-            'used' => 'Usado',
-            'type_coupon_id' => 'Tipo de Cupón',
-            'discount' => 'Porcentaje de Descuento',
-            'amount' => 'Monto',
-            'created_date' => 'Fecha de Creación',
-            'updated_date' => 'Fecha de Actualización',
-            'due_date' => 'Fecha de Vencimiento',
-        ];
-    }   
 
     /**
      * @return \yii\db\ActiveQuery
@@ -149,6 +151,14 @@ class Coupon extends \yii\db\ActiveRecord
     public function getServices()
     {
         return $this->hasMany(Service::className(), ['id' => 'service_id'])->viaTable('coupon_has_service', ['coupon_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCouponHasTeams()
+    {
+        return $this->hasMany(CouponHasTeam::className(), ['coupon_id' => 'id']);
     }
 
     /**

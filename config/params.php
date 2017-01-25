@@ -4,6 +4,8 @@ return [
     'adminEmail' => 'admin@example.com',
     'iconEnabled' => '<div style="text-align: center"><span class="glyphicon glyphicon-ok"></span></div>',
     'iconDisabled' => '<div style="text-align: center"><span class="glyphicon glyphicon-remove"></span></div>',
+    'iconEnabled-left' => '<div><span class="glyphicon glyphicon-ok"></span></div>',
+    'iconDisabled-left' => '<div><span class="glyphicon glyphicon-remove"></span></div>',
     //tipo de notificaciones que se envían
     'notification_type_assigned_expert_immediate' => 1,
     'notification_type_assgigned_expert' => 2,

@@ -18,8 +18,8 @@ class CouponSearch extends Coupon
     public function rules()
     {
         return [
-            [['id', 'enable', 'used', 'type_coupon_id'], 'integer'],
-            [['name', 'code', 'created_date', 'updated_date'], 'safe'],
+            [['id', 'type_coupon_id'], 'integer'],
+            [['name', 'code'], 'safe'],
         ];
     }
 
@@ -57,10 +57,6 @@ class CouponSearch extends Coupon
 
         $query->andFilterWhere([
             'id' => $this->id,
-            'enable' => $this->enable,
-            'used' => $this->used,
-            'created_date' => $this->created_date,
-            'updated_date' => $this->updated_date,
             'type_coupon_id' => $this->type_coupon_id,
         ]);
 
