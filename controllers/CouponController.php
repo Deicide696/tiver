@@ -1085,24 +1085,35 @@ class CouponController extends Controller {
                         $UserHasCoupon->coupon_id = $model['id'];
 
                         if ($UserHasCoupon->save()) {
-                            if (!empty($model["couponHasCategoryServices"])) {
-                                $category = $model["couponHasCategoryServices"][0]["categoryService"]['description'];
-                                $response ["success"] = true;
-                                $response ["data"] = [
-                                    'message' => 'Felicitaciones, este cupón a sido vinculado a su cuenta solo podrá ser usado para la categoria ' . $category
-                                ];
-                                return $response;
-                            } else if (!empty($model["couponHasServices"])) {
-                                $service = $model["couponHasServices"][0]['service']['name'];
-                                $response ["success"] = true;
-                                $response ["data"] = [
-                                    'message' => 'Felicitaciones, este cupón a sido vinculado a su cuenta solo podrá ser usado para el Servicio ' . $service
-                                ];
-                                return $response;
+                            $coupon = Coupon::findOne(['id' => $model['id']]);
+                            $coupon->quantity = $coupon->quantity -1;
+                            
+                            if($coupon->update()){
+                                if (!empty($model["couponHasCategoryServices"])) {
+                                    $category = $model["couponHasCategoryServices"][0]["categoryService"]['description'];
+                                    $response ["success"] = true;
+                                    $response ["data"] = [
+                                        'message' => 'Felicitaciones, este cupón a sido vinculado a su cuenta solo podrá ser usado para la categoria ' . $category
+                                    ];
+                                    return $response;
+                                } else if (!empty($model["couponHasServices"])) {
+                                    $service = $model["couponHasServices"][0]['service']['name'];
+                                    $response ["success"] = true;
+                                    $response ["data"] = [
+                                        'message' => 'Felicitaciones, este cupón a sido vinculado a su cuenta solo podrá ser usado para el Servicio ' . $service
+                                    ];
+                                    return $response;
+                                } else {
+                                    $response ["success"] = false;
+                                    $response ["data"] = [
+                                        'message' => 'Error este cupon no es esta asociado a ninguna Categoria ni Servicio.'
+                                    ];
+                                    return $response;
+                                }
                             } else {
                                 $response ["success"] = false;
                                 $response ["data"] = [
-                                    'message' => 'Error este cupon no es esta asociado a ninguna Categoria ni Servicio.'
+                                    'message' => 'Error al descontar este cupón.'
                                 ];
                                 return $response;
                             }
