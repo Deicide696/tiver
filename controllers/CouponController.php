@@ -47,8 +47,8 @@ class CouponController extends Controller {
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider
         ]);
     }
 
@@ -65,9 +65,9 @@ class CouponController extends Controller {
 //        print_r($model);die();
 
         return $this->render('view', [
-                    'model' => $model,
-                    'user' => $user,
-                    'userHasCoupon' => $userHasCoupon,
+            'model' => $model,
+            'user' => $user,
+            'userHasCoupon' => $userHasCoupon,
         ]);
     }
 
@@ -84,7 +84,7 @@ class CouponController extends Controller {
         $CouponHasTeam = new CouponHasTeam();
         $CcategoryService = new CouponHasCategoryService();
         $Cservice = new CouponHasService();
-        
+//        var_dump($_POST); die();
         if (isset($_POST["Coupon"]) && !empty($_POST["Coupon"])) {
             $model->attributes = $_POST["Coupon"];
 
@@ -103,16 +103,16 @@ class CouponController extends Controller {
                                 $UserHasCoupon->user_id = $_POST["asignar3"];
                                 if ($UserHasCoupon->save()) {
                                     return $this->redirect([
-                                                'view',
-                                                'id' => $model->id
+                                        'view',
+                                        'id' => $model->id
                                     ]);
                                 } else {
                                     return $this->render('create', [
-                                                'model' => $model,
-                                                'CcategoryService' => $CcategoryService,
-                                                'Cservice' => $Cservice,
-                                                'UserHasCoupon' => $UserHasCoupon,
-                                                'success' => 0,
+                                        'model' => $model,
+                                        'CcategoryService' => $CcategoryService,
+                                        'Cservice' => $Cservice,
+                                        'UserHasCoupon' => $UserHasCoupon,
+                                        'success' => 0,
                                     ]);
                                 }
                             }
@@ -145,38 +145,38 @@ class CouponController extends Controller {
                                         }
                                         if ($ok) {
                                             return $this->redirect([
-                                                        'view',
-                                                        'id' => $model->id
+                                                'view',
+                                                'id' => $model->id
                                             ]);
                                         } else {
                                             return $this->render('create', [
-                                                        'model' => $model,
-                                                        'CcategoryService' => $CcategoryService,
-                                                        'Cservice' => $Cservice,
-                                                        'UserHasCoupon' => $UserHasCoupon,
-                                                        'success' => 0,
-                                            ]);
-                                        }
-                                    } else {
-                                        return $this->render('create', [
-                                                    'model' => $model,
-                                                    'CcategoryService' => $CcategoryService,
-                                                    'Cservice' => $Cservice,
-                                                    'UserHasCoupon' => $UserHasCoupon,
-                                                    'success' => 0,
-                                        ]);
-                                    }
-                                    return $this->redirect([
-                                                'view',
-                                                'id' => $model->id
-                                    ]);
-                                } else {
-                                    return $this->render('create', [
                                                 'model' => $model,
                                                 'CcategoryService' => $CcategoryService,
                                                 'Cservice' => $Cservice,
                                                 'UserHasCoupon' => $UserHasCoupon,
                                                 'success' => 0,
+                                            ]);
+                                        }
+                                    } else {
+                                        return $this->render('create', [
+                                            'model' => $model,
+                                            'CcategoryService' => $CcategoryService,
+                                            'Cservice' => $Cservice,
+                                            'UserHasCoupon' => $UserHasCoupon,
+                                            'success' => 0,
+                                        ]);
+                                    }
+                                    return $this->redirect([
+                                        'view',
+                                        'id' => $model->id
+                                    ]);
+                                } else {
+                                    return $this->render('create', [
+                                        'model' => $model,
+                                        'CcategoryService' => $CcategoryService,
+                                        'Cservice' => $Cservice,
+                                        'UserHasCoupon' => $UserHasCoupon,
+                                        'success' => 0,
                                     ]);
                                 }
                             }
@@ -211,11 +211,11 @@ class CouponController extends Controller {
                                     ]);
                                 } else {
                                     return $this->render('create', [
-                                                'model' => $model,
-                                                'CcategoryService' => $CcategoryService,
-                                                'Cservice' => $Cservice,
-                                                'UserHasCoupon' => $UserHasCoupon,
-                                                'success' => 0,
+                                        'model' => $model,
+                                        'CcategoryService' => $CcategoryService,
+                                        'Cservice' => $Cservice,
+                                        'UserHasCoupon' => $UserHasCoupon,
+                                        'success' => 0,
                                     ]);
                                 }
                             }
@@ -244,16 +244,16 @@ class CouponController extends Controller {
                                     $UserHasCoupon->user_id = $_POST["asignar3"];
                                     if ($UserHasCoupon->save()) {
                                         return $this->redirect([
-                                                    'view',
-                                                    'id' => $model->id
+                                            'view',
+                                            'id' => $model->id
                                         ]);
                                     } else {
                                         return $this->render('create', [
-                                                    'model' => $model,
-                                                    'CcategoryService' => $CcategoryService,
-                                                    'Cservice' => $Cservice,
-                                                    'UserHasCoupon' => $UserHasCoupon,
-                                                    'success' => 0,
+                                            'model' => $model,
+                                            'CcategoryService' => $CcategoryService,
+                                            'Cservice' => $Cservice,
+                                            'UserHasCoupon' => $UserHasCoupon,
+                                            'success' => 0,
                                         ]);
                                     }
                                 }
@@ -287,38 +287,38 @@ class CouponController extends Controller {
                                             }
                                             if ($ok) {
                                                 return $this->redirect([
-                                                            'view',
-                                                            'id' => $model->id
+                                                    'view',
+                                                    'id' => $model->id
                                                 ]);
                                             } else {
                                                 return $this->render('create', [
-                                                            'model' => $model,
-                                                            'CcategoryService' => $CcategoryService,
-                                                            'Cservice' => $Cservice,
-                                                            'UserHasCoupon' => $UserHasCoupon,
-                                                            'success' => 0,
-                                                ]);
-                                            }
-                                        } else {
-                                            return $this->render('create', [
-                                                        'model' => $model,
-                                                        'CcategoryService' => $CcategoryService,
-                                                        'Cservice' => $Cservice,
-                                                        'UserHasCoupon' => $UserHasCoupon,
-                                                        'success' => 0,
-                                            ]);
-                                        }
-                                        return $this->redirect([
-                                                    'view',
-                                                    'id' => $model->id
-                                        ]);
-                                    } else {
-                                        return $this->render('create', [
                                                     'model' => $model,
                                                     'CcategoryService' => $CcategoryService,
                                                     'Cservice' => $Cservice,
                                                     'UserHasCoupon' => $UserHasCoupon,
                                                     'success' => 0,
+                                                ]);
+                                            }
+                                        } else {
+                                            return $this->render('create', [
+                                                'model' => $model,
+                                                'CcategoryService' => $CcategoryService,
+                                                'Cservice' => $Cservice,
+                                                'UserHasCoupon' => $UserHasCoupon,
+                                                'success' => 0,
+                                            ]);
+                                        }
+                                        return $this->redirect([
+                                            'view',
+                                            'id' => $model->id
+                                        ]);
+                                    } else {
+                                        return $this->render('create', [
+                                            'model' => $model,
+                                            'CcategoryService' => $CcategoryService,
+                                            'Cservice' => $Cservice,
+                                            'UserHasCoupon' => $UserHasCoupon,
+                                            'success' => 0,
                                         ]);
                                     }
                                 }
@@ -348,28 +348,33 @@ class CouponController extends Controller {
                                     }
                                     if ($ok) {
                                         return $this->redirect([
-                                                    'view',
-                                                    'id' => $model->id
+                                            'view',
+                                            'id' => $model->id
                                         ]);
                                     } else {
                                         return $this->render('create', [
-                                                    'model' => $model,
-                                                    'CcategoryService' => $CcategoryService,
-                                                    'Cservice' => $Cservice,
-                                                    'UserHasCoupon' => $UserHasCoupon,
-                                                    'success' => 0,
+                                            'model' => $model,
+                                            'CcategoryService' => $CcategoryService,
+                                            'Cservice' => $Cservice,
+                                            'UserHasCoupon' => $UserHasCoupon,
+                                            'success' => 0,
                                         ]);
                                     }
                                 }
                             }
+                        } else {
+                            return $this->redirect([
+                                'view',
+                                'id' => $model->id
+                            ]);
                         }
                     } else {                //   if not save CouponHasCategoryService
                         return $this->render('create', [
-                                    'model' => $model,
-                                    'CcategoryService' => $CcategoryService,
-                                    'Cservice' => $Cservice,
-                                    'UserHasCoupon' => $UserHasCoupon,
-                                    'success' => 0,
+                            'model' => $model,
+                            'CcategoryService' => $CcategoryService,
+                            'Cservice' => $Cservice,
+                            'UserHasCoupon' => $UserHasCoupon,
+                            'success' => 0,
                         ]);
                     }
                     //      End Create coupon to category
@@ -391,16 +396,16 @@ class CouponController extends Controller {
                                     $UserHasCoupon->user_id = $_POST["asignar3"];
                                     if ($UserHasCoupon->save()) {
                                         return $this->redirect([
-                                                    'view',
-                                                    'id' => $model->id
+                                            'view',
+                                            'id' => $model->id
                                         ]);
                                     } else {
                                         return $this->render('create', [
-                                                    'model' => $model,
-                                                    'CcategoryService' => $CcategoryService,
-                                                    'Cservice' => $Cservice,
-                                                    'UserHasCoupon' => $UserHasCoupon,
-                                                    'success' => 0,
+                                            'model' => $model,
+                                            'CcategoryService' => $CcategoryService,
+                                            'Cservice' => $Cservice,
+                                            'UserHasCoupon' => $UserHasCoupon,
+                                            'success' => 0,
                                         ]);
                                     }
                                 }
@@ -434,38 +439,38 @@ class CouponController extends Controller {
                                             }
                                             if ($ok) {
                                                 return $this->redirect([
-                                                            'view',
-                                                            'id' => $model->id
+                                                    'view',
+                                                    'id' => $model->id
                                                 ]);
                                             } else {
                                                 return $this->render('create', [
-                                                            'model' => $model,
-                                                            'CcategoryService' => $CcategoryService,
-                                                            'Cservice' => $Cservice,
-                                                            'UserHasCoupon' => $UserHasCoupon,
-                                                            'success' => 0,
-                                                ]);
-                                            }
-                                        } else {
-                                            return $this->render('create', [
-                                                        'model' => $model,
-                                                        'CcategoryService' => $CcategoryService,
-                                                        'Cservice' => $Cservice,
-                                                        'UserHasCoupon' => $UserHasCoupon,
-                                                        'success' => 0,
-                                            ]);
-                                        }
-                                        return $this->redirect([
-                                                    'view',
-                                                    'id' => $model->id
-                                        ]);
-                                    } else {
-                                        return $this->render('create', [
                                                     'model' => $model,
                                                     'CcategoryService' => $CcategoryService,
                                                     'Cservice' => $Cservice,
                                                     'UserHasCoupon' => $UserHasCoupon,
                                                     'success' => 0,
+                                                ]);
+                                            }
+                                        } else {
+                                            return $this->render('create', [
+                                                'model' => $model,
+                                                'CcategoryService' => $CcategoryService,
+                                                'Cservice' => $Cservice,
+                                                'UserHasCoupon' => $UserHasCoupon,
+                                                'success' => 0,
+                                            ]);
+                                        }
+                                        return $this->redirect([
+                                            'view',
+                                            'id' => $model->id
+                                        ]);
+                                    } else {
+                                        return $this->render('create', [
+                                            'model' => $model,
+                                            'CcategoryService' => $CcategoryService,
+                                            'Cservice' => $Cservice,
+                                            'UserHasCoupon' => $UserHasCoupon,
+                                            'success' => 0,
                                         ]);
                                     }
                                 }
@@ -495,47 +500,44 @@ class CouponController extends Controller {
                                     }
                                     if ($ok) {
                                         return $this->redirect([
-                                                    'view',
-                                                    'id' => $model->id
+                                            'view',
+                                            'id' => $model->id
                                         ]);
                                     } else {
                                         return $this->render('create', [
-                                                    'model' => $model,
-                                                    'CcategoryService' => $CcategoryService,
-                                                    'Cservice' => $Cservice,
-                                                    'UserHasCoupon' => $UserHasCoupon,
-                                                    'success' => 0,
+                                            'model' => $model,
+                                            'CcategoryService' => $CcategoryService,
+                                            'Cservice' => $Cservice,
+                                            'UserHasCoupon' => $UserHasCoupon,
+                                            'success' => 0,
                                         ]);
                                     }
                                 }
                             }
                         }
                     } else {                //   if not save CouponHasCategoryService
-                        return $this->render('create', [
-                                    'model' => $model,
-                                    'CcategoryService' => $CcategoryService,
-                                    'Cservice' => $Cservice,
-                                    'UserHasCoupon' => $UserHasCoupon,
-                                    'success' => 0,
+                        return $this->redirect([
+                            'view',
+                            'id' => $model->id
                         ]);
                     }
                 }
             } else {
                 return $this->render('create', [
-                            'model' => $model,
-                            'CcategoryService' => $CcategoryService,
-                            'Cservice' => $Cservice,
-                            'UserHasCoupon' => $UserHasCoupon,
-                            'success' => 0,
+                    'model' => $model,
+                    'CcategoryService' => $CcategoryService,
+                    'Cservice' => $Cservice,
+                    'UserHasCoupon' => $UserHasCoupon,
+                    'success' => 0,
                 ]);
             }
         } else {
             return $this->render('create', [
-                        'model' => $model,
-                        'CcategoryService' => $CcategoryService,
-                        'Cservice' => $Cservice,
-                        'UserHasCoupon' => $UserHasCoupon,
-                        'success' => 0,
+                'model' => $model,
+                'CcategoryService' => $CcategoryService,
+                'Cservice' => $Cservice,
+                'UserHasCoupon' => $UserHasCoupon,
+                'success' => 0,
             ]);
         }
     }
@@ -652,27 +654,49 @@ class CouponController extends Controller {
      * 
      * @return string
      */
+    
+    /*
     public function actionCheckCoupon() {
 
+        Yii::$app->response->format = 'json';
         $cupon = Yii::$app->request->post('cupon', '');
         $token = Yii::$app->request->post('token', '');
         $id = Yii::$app->request->post('service_id', '');
-        Yii::$app->response->format = 'json';
+        
+        $model_token = LogToken::find()
+                ->where(['token' => $token])
+                ->one();
+        if (!isset($model_token) || empty($model_token)) {
 
+            $response ["success"] = false;
+            $response ["data"] = [
+                "message" => "Token inválido"
+            ];
+            return $response;
+        }
         $model = Coupon::find()
-                ->where(['code' => $cupon, 'enable' => '1'])
-                ->joinWith(['couponHasCategoryServices'])
-                ->joinWith(['couponHasServices'])
+                ->where(['code' => $cupon, 'enable' => 1])
+//                ->joinWith(['couponHasCategoryServices.categoryService'])
+//                ->joinWith(['couponHasServices.service'])
+                ->joinWith(['categoryServices.service'])
                 ->asArray()
                 ->one();
+        
+        
+        var_dump($model);die();
 
         if (isset($model) && !empty($model)) {
             // Validacion si este servicio esta asociado a este cupon
             $modelS = Coupon::find()
-                            ->where(['type_coupon_id' => 3, 'enable' => '1', 'coupon_has_service.service_id' => $id])
-                            ->joinwith(['couponHasServices'])
-                            ->asArray()->one();
-
+                ->where([
+                    'code' => $cupon,
+                    'type_coupon_id' => 3, 
+                    'enable' => 1, 
+                    'coupon_has_service.service_id' => $id])
+                ->joinwith(['couponHasServices'])
+                ->asArray()
+                ->one();
+// var_dump($modelS);die();
             if (isset($modelS) && !empty($model)) {
                 if ($model ['used'] == '1') {
                     $response ["success"] = false;
@@ -800,7 +824,7 @@ class CouponController extends Controller {
             } else {
                 $response ["success"] = false;
                 $response ["data"] = [
-                    'message' => 'Lo sentimos, este cupón no está asignado a este servicio.'
+                    'message' => 'Lo sentimos, este cupón no se puede utilizar para este servicio.'
                 ];
                 return $response;
             }
@@ -813,6 +837,8 @@ class CouponController extends Controller {
         }
     }
 
+    */
+    
     /**
      * Check Coupon Redemption
      * 
@@ -829,7 +855,6 @@ class CouponController extends Controller {
                 ->joinWith('user')
                 ->asArray()
                 ->all();
-//        var_dump($userCoupon);
         die();
 
         if (isset($userCoupon) && !empty($userCoupon)) {
@@ -906,7 +931,119 @@ class CouponController extends Controller {
             return $response;
         }
         $model = Coupon::find()
-                ->where(['code' => $cupon, 'enable' => '1'])
+                ->where(['code' => $cupon, 'enable' => 1])
+                ->joinWith(['couponHasCategoryServices.categoryService'])
+                ->joinWith(['couponHasServices.service'])
+                ->asArray()
+                ->one();
+
+        if (isset($model) && !empty($model)) {
+            // Validacion si este servicio esta asociado a este cupon
+            if ($model['used'] == 0) {
+
+                if ($model['quantity'] > 0) {
+                    //      Validate due date
+                    $day = date_parse(date('Y-m-d H:i:s'));
+                    $day2 = date_parse($model['due_date']);
+                    if ($day > $day2) {
+                        $response ["success"] = false;
+                        $response ["data"] = [
+                            'message' => 'Lo sentimos, este cupón ya ha caducado.'
+                        ];
+                        return $response;
+                    }
+
+                    $FindCouponUser = UserHasCoupon::find()
+                            ->where([
+                                'user_id' => $model_token->FK_id_user,
+                                'coupon_id' => $model['id']
+                            ])
+                            ->asArray()
+                            ->one();
+                    if (isset($FindCouponUser) && !empty($FindCouponUser)) {
+                        $response ["success"] = false;
+                        $response ["data"] = [
+                            'message' => 'Lo sentimos, este cupón ya ha sido agregado a su cuenta.'
+                        ];
+                        return $response;
+                    } else {
+
+                        $UserHasCoupon = new UserHasCoupon();
+                        $UserHasCoupon->user_id = $model_token->FK_id_user;
+                        $UserHasCoupon->coupon_id = $model['id'];
+
+                        if ($UserHasCoupon->save()) {
+                            if (!empty($model["couponHasCategoryServices"])) {
+                                $category = $model["couponHasCategoryServices"][0]["categoryService"]['description'];
+                                $response ["success"] = true;
+                                $response ["data"] = [
+                                    'message' => 'Felicitaciones, este cupón a sido vinculado a su cuenta solo podrá ser usado para la categoria ' . $category
+                                ];
+                                return $response;
+                            } else if (!empty($model["couponHasServices"])) {
+                                $service = $model["couponHasServices"][0]['service']['name'];
+                                $response ["success"] = true;
+                                $response ["data"] = [
+                                    'message' => 'Felicitaciones, este cupón a sido vinculado a su cuenta solo podrá ser usado para el Servicio ' . $service
+                                ];
+                                return $response;
+                            } else {
+                                $response ["success"] = false;
+                                $response ["data"] = [
+                                    'message' => 'Error este cupon no es esta asociado a ninguna Categoria ni Servicio.'
+                                ];
+                                return $response;
+                            }
+                        } else {
+                            $response ["success"] = false;
+                            $response ["data"] = [
+                                'message' => 'Lo sentimos, este cupón no pudo ser vinculado a su cuenta.'
+                            ];
+                            return $response;
+                        }
+                    }
+                } else {
+                    $response ["success"] = false;
+                    $response ["data"] = [
+                        'message' => 'Lo sentimos, este cupón ya esta agotado.'
+                    ];
+                    return $response;
+                }
+            } else {
+                $response ["success"] = false;
+                $response ["data"] = [
+                    'message' => 'Lo sentimos, este cupón yaa sido utilizado.'
+                ];
+                return $response;
+            }
+        } else {
+            $response ["success"] = false;
+            $response ["data"] = [
+                'message' => 'Lo sentimos, este cupón no existe'
+            ];
+            return $response;
+        }
+    }
+    
+    public function actionCheckCoupon() {
+
+        Yii::$app->response->format = 'json';
+        $cupon = Yii::$app->request->post('cupon', '');
+        $token = Yii::$app->request->post('token', '');
+
+        $model_token = LogToken::find()
+                ->where(['token' => $token])
+                ->one();
+        if (!isset($model_token) || empty($model_token)) {
+
+            $response ["success"] = false;
+            $response ["data"] = [
+                "message" => "Token inválido"
+            ];
+            return $response;
+        }
+        $model = Coupon::find()
+                ->where(['code' => $cupon, 'enable' => 1])
                 ->joinWith(['couponHasCategoryServices.categoryService'])
                 ->joinWith(['couponHasServices.service'])
                 ->asArray()

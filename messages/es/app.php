@@ -56,5 +56,7 @@ return [
     'Due Date' => 'Fecha de vencimiento',
     'Coupons' => 'Cupones',
     'Coupon' => 'Cupón',
-    'New Coupon' => 'Nuevo Cupón'
+    'New Coupon' => 'Nuevo Cupón',
+    'Amount' => 'Monto',
+    'Type Coupon ID' => 'Cupón Asignado a'
 ];

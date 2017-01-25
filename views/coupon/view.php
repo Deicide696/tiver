@@ -32,7 +32,10 @@ $this->params['breadcrumbs'][] = $this->title;
             'name',
             'code',
             'amount',
-            'type_coupon_id',
+            [
+                'label' => Yii::t('app', 'Type Coupon ID'),
+                'attribute' => 'typeCoupon.description'
+            ],
             'created_date',
             'updated_date',
             'due_date',

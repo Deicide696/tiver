@@ -48,7 +48,7 @@ class Coupon extends \yii\db\ActiveRecord
     {
         return [
             [['enable', 'used', 'type_coupon_id', 'discount', 'amount', 'quantity'], 'integer'],
-            [['type_coupon_id'], 'required'],
+            [['code','type_coupon_id', 'due_date'], 'required'],
             [['created_date', 'updated_date', 'due_date'], 'safe'],
             [['name', 'code'], 'string', 'max' => 45],
             [['code'], 'unique'],
