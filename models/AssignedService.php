@@ -66,21 +66,21 @@ class AssignedService extends \yii\db\ActiveRecord {
     /**
     * @inheritdoc
     */
-    public function behaviors()
+     public function behaviors()
     {
        return [           
-           'timestamp' => [
+            [
                 'class' => \yii\behaviors\TimestampBehavior::className(),
                 'attributes' => [
                     \yii\db\ActiveRecord::EVENT_BEFORE_INSERT =>  ['created_date', 'updated_date'],
-                    \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_date'],
+                    \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => 'updated_date',
                 ],
                 'value' => function() { return  date ( 'Y-m-d H:i:s' );},
             ],
-            'activeBehavior' => [
+            [
                'class' => 'yii\behaviors\AttributeBehavior',
                 'attributes' => [
-                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['state','enable'],
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => 'enable',
                 ],
                 'value' => 1,
             ],
@@ -201,7 +201,7 @@ class AssignedService extends \yii\db\ActiveRecord {
      * @return type
      */
 
-    public function getPrice() {
+    public function getPrice($discountCoupon = NULL) {
 
         $price = 0;
         $service = Service::findOne(['id' => $this->service_id]);
@@ -209,7 +209,7 @@ class AssignedService extends \yii\db\ActiveRecord {
         if ($service->tax == 0) {
             $price += $service->price;
         } else {
-           $price += (int)round(($service->price + ($service->price * Yii::$app->params ['tax_percent'])), -2, PHP_ROUND_HALF_UP);
+            $price += (int)round(($service->price + ($service->price * Yii::$app->params ['tax_percent'])), -2, PHP_ROUND_HALF_UP);
         }
         $connection = Yii::$app->getDb();
         $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => '',':id' => $this->id]);
@@ -222,9 +222,94 @@ class AssignedService extends \yii\db\ActiveRecord {
                 $price +=  (int)round(($modifier->price + ($modifier->price * Yii::$app->params ['tax_percent'])), -2, PHP_ROUND_HALF_UP);
             }
         }
+        
+        $userHasCoupons = UserHasCoupon::find()
+            ->where([
+                'user_id' => $this->user_id,
+                'used' => 0,
+                'enable' => 1])
+            ->asArray()
+            ->all();
+          
+        if (isset($userHasCoupons) && !empty($userHasCoupons)) {
+            
+            foreach ($userHasCoupons as $userHasCoupon) {
+                
+                $model = Coupon::find()
+                    ->where(['coupon.id' =>$userHasCoupon['coupon_id'],'coupon.enable' => 1])
+                    ->joinWith(['couponHasCategoryServices.categoryService.service'])
+                    ->joinWith(['couponHasServices.service s'])
+                    ->asArray()
+                    ->one();
+                
+                if (isset($model) && !empty($model)) {
+                    
+                    $day = date_parse(date('Y-m-d H:i:s'));
+                    $day2 = date_parse($model['due_date']);
+                    
+                    if ($day > $day2) {
+                        break;
+                    }
+                    if (!empty($model["couponHasCategoryServices"])) {
+                        $category = $model["couponHasCategoryServices"][0]["categoryService"]['description'];
+                        if(isset($model["couponHasCategoryServices"][0]["categoryService"]['service']) && !empty($model["couponHasCategoryServices"][0]["categoryService"]['description'])){
+                            foreach ($model["couponHasCategoryServices"][0]["categoryService"]['service'] as $serviceValid) {
+                                if($serviceValid['id'] == $this->service_id){
+                                    $priceold = $price;
+                                    if($model["quantity"] > 0){
+                                        if($model["discount"] > 0){
+                                            $discount = ($price * $model["discount"]) / 100; 
+                                            $price = ($price - $discount);
+                                            if($discountCoupon){
+                                                $userHasCoupons2 = UserHasCoupon::find()
+                                                    ->where(['user_id' => $userHasCoupon['user_id'],
+                                                            'coupon_id' => $model['id']])
+                                                    ->one();
+                                                $userHasCoupons2->used = 1;
+                                                $userHasCoupons2->enable = 0;
+                                                $userHasCoupons2->update();
+                                                break;
+                                            }
+                                            goto a;
+                                        }
+                                    }
+
+                                }
+                            }
+                        }
+                        a:
+                    } else if (!empty($model["couponHasServices"])) {
+                        
+                        $service = $model["couponHasServices"][0]['service']['id'];
+                        if($service == $this->service_id){
+                            $priceold = $price;
+                            if($model["quantity"] > 0){
+                                if($model["discount"] > 0){
+                                    $discount = ($price * $model["discount"]) / 100; 
+                                    $price = ($price - $discount);
+                                    if($discountCoupon){
+                                        $userHasCoupons2 = UserHasCoupon::find()
+                                                    ->where(['user_id' => $userHasCoupon['user_id'],
+                                                            'coupon_id' => $model['id']])
+                                                    ->one();
+                                        $userHasCoupons2->used = 1;
+                                        $userHasCoupons2->enable = 0;
+                                        $userHasCoupons2->update();
+                                        break;
+                                    }
+                                    goto b;
+                                }
+                            }
+                        }
+                        b:
+                    }
+                }
+            }
+        }
+        
         return $price;
     }
-
+    
     public function getTax() {
         
         $price = 0;

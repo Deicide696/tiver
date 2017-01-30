@@ -229,14 +229,12 @@ class AssignedServiceController extends Controller {
         $day = date('N', strtotime($date));
         
         $experts = Expert::find()
-            ->where("zone_id=".$zone." AND (schedule.weekday_id=".$day." AND '".$time."' between schedule.start_time AND schedule.finish_time) AND (expert_has_service.service_id=".$service. ") AND expert.enable = 1")
-            ->joinwith('schedule')
-            ->joinwith('assignedService')
-            ->joinwith('expertHasService')
-            ->orderBy(new Expression('rand()'))
-            ->all();
-        
-        
+                ->where("zone_id='$zone' AND (schedule.weekday_id='$day' AND '$time' between schedule.start_time AND schedule.finish_time) AND (expert_has_service.service_id='$service') AND expert.enable = 1")
+                ->joinwith('schedule')
+                ->joinwith('assignedService')
+                ->joinwith('expertHasService')
+                ->orderBy(new Expression('rand()'))
+                ->all();
         // obtenemos la duración del servicio, (duracion serv+ duracion mod)
         $dur_serv = 0;
         $dur_serv += Service::find()->select(['duration'])
@@ -616,15 +614,13 @@ class AssignedServiceController extends Controller {
         $id = Yii::$app->request->post("id_assigned", "");
         $id_especialista = Yii::$app->request->post("id_especialista", "");
 
-        $services = AssignedService::find()
-            ->where([
-                'id' => $id,
-                'state' => '0',
-                'date' => $date,
-                'time' => $time,
-                'expert_id' => $id_especialista,
-                'enable' => 1])
-            ->one();
+        $services = AssignedService::find()->where([
+                    'id' => $id,
+                    'state' => '0',
+                    'date' => $date,
+                    'time' => $time,
+                    'expert_id' => $id_especialista
+                ])->one();
 
         if ($services == null) {
             $response ["success"] = true;
@@ -654,9 +650,9 @@ class AssignedServiceController extends Controller {
                         'date' => $date,
                         'time' => $time
                     ])->one();
-            if ($model_l != null){
+            if ($model_l != null)
                 $disponible = false;
-            }
+
             // print "Experto disponible $expert->id $disponible" . PHP_EOL;
             if ($disponible) { // Si está disponible
                 $expert_id = $expert->id;
@@ -770,22 +766,19 @@ class AssignedServiceController extends Controller {
     }
 
     public function actionConfirmService() {
-        
         Yii::$app->response->format = 'json';
         $date = Yii::$app->request->post("date", "");
         $time = Yii::$app->request->post("time", "");
         $id = Yii::$app->request->post("id_assigned", "");
         $id_especialista = Yii::$app->request->post("id_especialista", "");
 
-        $model = AssignedService::find()
-            ->where([
-                'id' => $id,
-                'state' => '0',
-                'date' => $date,
-                'time' => $time,
-                'expert_id' => $id_especialista,
-                'enable' => 1])
-            ->one();
+        $model = AssignedService::find()->where([
+                    'id' => $id,
+                    'state' => '0',
+                    'date' => $date,
+                    'time' => $time,
+                    'expert_id' => $id_especialista
+                ])->one();
 
         $duration = $model->getDuration();
         $expert = Expert::findOne([
@@ -838,20 +831,21 @@ class AssignedServiceController extends Controller {
     }
 
     public function actionCancelServiceExpert() {
-        
         Yii::$app->response->format = 'json';
-        $id_user = Yii::$app->request->post('id_user', '');
-        $id_expert = Yii::$app->request->post('id_expert', '');
-        $date = Yii::$app->request->post('date', '');
-        $time = Yii::$app->request->post('time', '');
 
-        $services = assignedService::find()
-            ->where([
-                "user_id" => $id_user,
-                "date" => $date,
-                "time" => $time,
-                'enable' => 1])
-            ->joinWith('service')->one();
+        $id_user = $_POST ['id_user'];
+        $id_expert = $_POST ['id_expert'];
+        $date = $_POST ['date'];
+        $time = $_POST ['time'];
+
+        $services = assignedService::find()->where([
+                            "user_id" => $id_user,
+                            // "expert_id" => $id_expert,
+                            "date" => $date,
+                            "time" => $time
+                        ])->
+                        // "state" => 1
+                        joinWith('service')->one();
 
         if ($services == null) {
             $response ["success"] = false;
@@ -1054,14 +1048,14 @@ class AssignedServiceController extends Controller {
         // var_dump($id_user);
         // exit();
         // Buscamos el servicio activo
-        $services = AssignedService::find()
-            ->where([
-                'user_id' => $id_user,
-                'date' => $date_old,
-                'time' => $time_old,
-                'enable' => 1])
-            ->joinWith('service')
-            ->one();
+        $services = assignedService::find()->where([
+                            "user_id" => $id_user,
+                            // "expert_id" => $id_expert,
+                            "date" => $date_old,
+                            "time" => $time_old
+                        ])->
+                        // "state" => 1
+                        joinWith('service')->one();
 
         if ($services == null) {
             $response ["success"] = false;
@@ -1259,18 +1253,17 @@ class AssignedServiceController extends Controller {
         $value = $_POST ['value'];
 
         $services = AssignedService::find()
-            ->where([
-                "assigned_service.user_id" => $id_user,
-                "assigned_service.expert_id" => $id_expert,
-                "assigned_service.date" => $date,
-                "assigned_service.time" => $time,
-                "assigned_service.state" => 1,
-                "assigned_service.enable" => 1])
-            ->joinWith('service')
-            ->joinWith('assignedServiceHasModifiers.modifier')
-            ->one();
-        
-//        var_dump($services);        die();
+                ->where([
+                    "assigned_service.user_id" => $id_user,
+                    "assigned_service.expert_id" => $id_expert,
+                    "assigned_service.date" => $date,
+                    "assigned_service.time" => $time,
+                    "assigned_service.state" => 1,
+                    "assigned_service.enable" => 1])
+                ->joinWith('service')
+                ->joinWith('assignedServiceHasModifiers.modifier')
+                ->one();
+
         if (!isset($services) || empty($services)) {
             $response ["success"] = false;
             $response ["data"] = [
@@ -1344,14 +1337,13 @@ class AssignedServiceController extends Controller {
                     "id" => $id_user])
                 ->getPushTokens();
 
-        if (count($canceled) > 0) {
+        if ($cancel > 0) {
             //      Generate charge on Credit card
             $data_pay = Yii::$app->TPaga->CreateCharge($credit_card->hash, $value, "Servicio Tiver", $tax);
 
             //      Si no se realizo el cargo a la tarjeta
             if (!isset($data_pay) || empty($data_pay)) {
 
-                
                 $connection = Yii::$app->getDb();
                 $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'], [':user_id' => $id_user, ':id' => '']);
                 $model_history = $command->queryAll();
@@ -1431,8 +1423,6 @@ class AssignedServiceController extends Controller {
                 $paid_pay = $data_pay->paid;
 
                 if ($paid_pay) {
-                    
-                    $value = $services->getPrice(true);
                     $pay->state = 1;
                     $email->addSubstitution('{{ username }}', [$username])
                             ->addSubstitution('{{ buydate }}', [$buydate])

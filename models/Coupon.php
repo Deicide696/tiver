@@ -77,10 +77,10 @@ class Coupon extends \yii\db\ActiveRecord
         ];
     }
     
-    public function behaviors()
+     public function behaviors()
     {
        return [           
-           'timestamp' => [
+            [
                 'class' => \yii\behaviors\TimestampBehavior::className(),
                 'attributes' => [
                     \yii\db\ActiveRecord::EVENT_BEFORE_INSERT =>  ['created_date', 'updated_date'],
@@ -88,14 +88,14 @@ class Coupon extends \yii\db\ActiveRecord
                 ],
                 'value' => function() { return  date ( 'Y-m-d H:i:s' );},
             ],
-            'activeBehavior' => [
+            [
                'class' => 'yii\behaviors\AttributeBehavior',
                 'attributes' => [
                     \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => 'enable',
                 ],
                 'value' => 1,
             ],
-            'activeBehavior' => [
+            [
                'class' => 'yii\behaviors\AttributeBehavior',
                 'attributes' => [
                     \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => 'used',

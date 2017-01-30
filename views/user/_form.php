@@ -37,7 +37,7 @@ use app\models\TypeIdentification;
     </div>
     <br>
     <div class="row col-sm-offset-3 col-sm-6 text-center">
-        <?= Html::submitButton($model->isNewRecord ? 'Crear' : 'Editar', ['class' => $model->isNewRecord ? 'btn btn-success btn-block' : 'btn btn-primary btn-block']) ?>
+        <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success btn-block' : 'btn btn-primary btn-block']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

@@ -55,7 +55,7 @@ class PasswordResetRequestForm extends Model {
             
             if (!$token || !LogToken::isTokenValid($token->token)) {
                 if ($token) {
-                    $token->status = 0;
+                    $token->enable = 0;
                     $token->save();
                 }
                 $token = new LogToken();
@@ -74,7 +74,7 @@ class PasswordResetRequestForm extends Model {
                     return false;
                 }
             }
-
+//            var_dump(\yii\helpers\Url::to(['user/reset-password']),dirname(__FILE__),\yii\helpers\Url::to('@app'));
             $assetEmail = new EmailAsset();
             if ($user->email != '') {
                 

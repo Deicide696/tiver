@@ -34,11 +34,16 @@ if (isset($_GET['success']) && $_GET['success'] == true) {
 ?>
 
 <div class="user-index">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-    <p>
-        <?= yii::$app->user->can('create-user') ? Html::a('Nuevo Usuario', ['create'], ['class' => 'btn btn-success']): '' ?>
-    </p>
+    <div class="row" style="padding-bottom: 15px;">
+        <div class="col col-sm-2 pull-left">
+            <h1 class="" style="margin: 0px;"><?= Html::encode($this->title) ?></h1>
+        </div>
+        
+        <div class="col col-sm-2 pull-right text-right">
+            <?= yii::$app->user->can('create-user') ? Html::a('Nuevo Usuario', ['create'], ['class' => 'btn btn-success']): '' ?>
+        </div>
+    </div>
+    
     <?=
     GridView::widget([
         'dataProvider' => $dataProvider,

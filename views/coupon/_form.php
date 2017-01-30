@@ -32,7 +32,7 @@ if (isset($_POST['success']) && $_POST['success'] == 0) {
 
 ?>
 <br>
-<div class="coupon-form">
+<div class="coupon-form col-sm-offset-2 col-sm-8 col-md-offset-3 col-md-6 col-lg-offset-3 col-lg-6">
 
     <?php $form = ActiveForm::begin(); ?>
     
@@ -79,8 +79,8 @@ if (isset($_POST['success']) && $_POST['success'] == 0) {
         
         <?= $form->field($model, 'due_date')->input("date") ?>
         <br>
-        <div class="form-group">
-            <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+         <div class="row col-sm-offset-3 col-sm-6 text-center">
+            <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success btn-block' : 'btn btn-primary btn-block']) ?>
         </div>
     
     <?php ActiveForm::end(); ?>
