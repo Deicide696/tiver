@@ -73,7 +73,7 @@ return [
         `a`.`lat` AS `lat`,
         `a`.`lng` AS `lng`,
         `a`.`comment` AS `comment`,(select `assigned_service_has_modifier`.`modifier_id`
-         FROM `assigned_service_has_modifier` where (`assigned_service_has_modifier`.`assigned_service_id` = `a`.`id`)) AS `modifier_id`,(select `cat`.`id` from (`category_service` `cat` join `service` `ser`) where ((`ser`.`category_service_id` = `cat`.`id`) and (`ser`.`id` = `a`.`service_id`))) AS `category_id` from (`assigned_service` `a` join `expert` `b`) where (`a`.`expert_id` = `b`.`id`) 
+         FROM `assigned_service_has_modifier` where (`assigned_service_has_modifier`.`assigned_service_id` = `a`.`id`)) AS `modifier_id`,(select `cat`.`id` from (`category_service` `cat` join `service` `ser`) where ((`ser`.`category_service_id` = `cat`.`id`) and (`ser`.`id` = `a`.`service_id`))) AS `category_id` from (`assigned_service` `a` join `expert` `b`) where (`a`.`expert_id` = `b`.`id` and `a`.`enable` = 1) 
          and ((`a`.`user_id` = :user_id )
          or (`a`.`id` = :id ))
         order by `a`.`date` desc,`a`.`time` desc,`a`.`created_date` desc",
@@ -92,7 +92,7 @@ return [
         `a`.`lat` AS `lat`,
         `a`.`lng` AS `lng`,
         `b`.`phone` AS `phone`,(select `assigned_service_has_modifier`.`modifier_id`
-        FROM `assigned_service_has_modifier` where (`assigned_service_has_modifier`.`assigned_service_id` = `a`.`id`)) AS `modifier_id`,(select `cat`.`id` from (`category_service` `cat` join `service` `ser`) where ((`ser`.`category_service_id` = `cat`.`id`) and (`ser`.`id` = `a`.`service_id`))) AS `category_id` from (`assigned_service` `a` join `user` `b`) where (`a`.`user_id` = `b`.`id`) 
+        FROM `assigned_service_has_modifier` where (`assigned_service_has_modifier`.`assigned_service_id` = `a`.`id`)) AS `modifier_id`,(select `cat`.`id` from (`category_service` `cat` join `service` `ser`) where ((`ser`.`category_service_id` = `cat`.`id`) and (`ser`.`id` = `a`.`service_id`))) AS `category_id` from (`assigned_service` `a` join `user` `b`) where (`a`.`user_id` = `b`.`id` and `a`.`enable` = 1) 
         and ((`a`.`user_id` = :user_id)
          or (`a`.`state` = :status));
         order by `a`.`date` desc,`a`.`time` desc,`a`.`created_date` desc",
@@ -131,7 +131,7 @@ return [
         `a`.`lat` AS `lat`,
         `a`.`lng` AS `lng`,
         `b`.`phone` AS `phone`,(select `assigned_service_has_modifier`.`modifier_id`
-        FROM `assigned_service_has_modifier` where (`assigned_service_has_modifier`.`assigned_service_id` = `a`.`id`)) AS `modifier_id`,(select `cat`.`id` from (`category_service` `cat` join `service` `ser`) where ((`ser`.`category_service_id` = `cat`.`id`) and (`ser`.`id` = `a`.`service_id`))) AS `category_id` from (`assigned_service` `a` join `user` `b`) where (`a`.`user_id` = `b`.`id`) 
+        FROM `assigned_service_has_modifier` where (`assigned_service_has_modifier`.`assigned_service_id` = `a`.`id`)) AS `modifier_id`,(select `cat`.`id` from (`category_service` `cat` join `service` `ser`) where ((`ser`.`category_service_id` = `cat`.`id`) and (`ser`.`id` = `a`.`service_id`))) AS `category_id` from (`assigned_service` `a` join `user` `b`) where (`a`.`user_id` = `b`.`id` and `a`.`enable` = 1) 
         and ((`a`.`expert_id` = :expert_id)
         or (`a`.`state` = :status))
         order by `a`.`date` desc,`a`.`time` desc,`a`.`created_date` desc",

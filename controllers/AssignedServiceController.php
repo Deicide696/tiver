@@ -516,7 +516,7 @@ class AssignedServiceController extends Controller {
                     "assigned_service.state" => 1,
                     "assigned_service.enable" => 1])
                 ->joinWith('service')
-                ->joinWith('assignedServiceHasModifiers.modifier')
+                ->joinWith('assignedServiceHasModifier.modifier')
                 ->one();
 
 //        var_dump($services);
@@ -548,7 +548,7 @@ class AssignedServiceController extends Controller {
                         //      Data send to email the user
         $username = $user->first_name;
         $buydate = date_format(date_create($services->date), 'd-m-Y');
-        $servmodif = $services->assignedServiceHasModifiers[0]->modifier->name;
+        $servmodif = $services->assignedServiceHasModifier[0]->modifier->name;
         $servname = $services->service->name;
                         //      Enviar mail de pago en mora
         $sendGrid = new \SendGrid(Yii::$app->params ['sengrid_user'], Yii::$app->params ['sendgrid_pass']);
@@ -1251,12 +1251,12 @@ class AssignedServiceController extends Controller {
     public function actionCheckoutExpert() {
 
         Yii::$app->response->format = 'json';
-
-        $id_user = $_POST ['id_user'];
-        $id_expert = $_POST ['id_expert'];
-        $date = $_POST ['date'];
-        $time = $_POST ['time'];
-        $value = $_POST ['value'];
+        
+        $id_user = Yii::$app->request->post("id_user", "");
+        $id_expert= Yii::$app->request->post("id_expert", "");
+        $date = Yii::$app->request->post("date", "");
+        $time = Yii::$app->request->post("time", "");
+        $value = Yii::$app->request->post("value", "");
 
         $services = AssignedService::find()
             ->where([
@@ -1267,7 +1267,7 @@ class AssignedServiceController extends Controller {
                 "assigned_service.state" => 1,
                 "assigned_service.enable" => 1])
             ->joinWith('service')
-            ->joinWith('assignedServiceHasModifiers.modifier')
+            ->joinWith('assignedServiceHasModifier.modifier')
             ->one();
         
 //        var_dump($services);        die();
@@ -1292,7 +1292,7 @@ class AssignedServiceController extends Controller {
         $time_now = date("H:i:s");
 
         $time1 = strtotime($date_now . " " . $time_now);
-        $time3 = strtotime($date . " " . $time);
+//        $time3 = strtotime($date . " " . $time);
         $time2 = strtotime($date . " " . $time . " +$duracion minute");
         //      Validate if the time is within range
         if ($time1 < $time2) {
@@ -1330,9 +1330,8 @@ class AssignedServiceController extends Controller {
         }
                         //    Service is Canceled
         $canceled = AssignedService::findOne($services->id);
-        $canceled->state = 0;
-        
-        if (!$canceled->update()) {
+       
+        if (isset($canceled)  && !empty($canceled) &&  !$canceled->delete()) {
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Lo sentimos, no se pudo Cancelar este servicio asignado."
@@ -1348,6 +1347,18 @@ class AssignedServiceController extends Controller {
             //      Generate charge on Credit card
             $data_pay = Yii::$app->TPaga->CreateCharge($credit_card->hash, $value, "Servicio Tiver", $tax);
 
+            //      Data send to email the user
+            $username = $user->first_name;
+            $buydate = date_format(date_create($services->date), 'd-m-Y');
+            $useraddress = $services->address;
+            $servmodif = (isset($services->assignedServiceHasModifier) && !empty($services->assignedServiceHasModifier))? $services->assignedServiceHasModifier[0]->modifier->name: "";
+            $servname = (isset($services->service) && !empty($services->service))? $services->service->name: "";
+            $servesp = $services->getExpertName();
+            $cardType = $info->type;
+            $cardNumber = $info->last_four;
+           
+            
+            
             //      Si no se realizo el cargo a la tarjeta
             if (!isset($data_pay) || empty($data_pay)) {
 
@@ -1355,6 +1366,12 @@ class AssignedServiceController extends Controller {
                 $connection = Yii::$app->getDb();
                 $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'], [':user_id' => $id_user, ':id' => '']);
                 $model_history = $command->queryAll();
+                
+//                $model_history = VwActualService::find ()->where ( [ 
+//						'user_id' => $id_user 
+//				] )->
+//				// 'status' => '1'
+//				asArray ()->one ();
 
                 $actual_service = false;
                 if (isset($model_history)) {
@@ -1371,15 +1388,8 @@ class AssignedServiceController extends Controller {
                 $response ["data"] = [
                     "message" => "No se pudo realizar el cobro"
                 ];
-                //      Data send to email the user
-                $username = $user->first_name;
-                $buydate = date_format(date_create($services->date), 'd-m-Y');
-                $useraddress = $services->address;
-                $servmodif = $services->assignedServiceHasModifiers[0]->modifier->name;
-                $servname = $services->service->name;
-                $servesp = $services->getExpertName();
-                $cardType = $info->type;
-                $cardNumber = $info->last_four;
+                
+                
 
                 // Enviar mail de pago en mora
                 $sendGrid = new \SendGrid(Yii::$app->params ['sengrid_user'], Yii::$app->params ['sendgrid_pass']);
@@ -1406,16 +1416,9 @@ class AssignedServiceController extends Controller {
                                 //      Get info charge to credit card
                 $info_charge = Yii::$app->TPaga->GetChargeCreditCard($data_pay->id);
                                 //      Data send to email the user
-                $username = $user->first_name;
-                $buydate = date_format(date_create($services->date), 'd-m-Y');
-                $useraddress = $services->address;
-                $servmodif = $services->assignedServiceHasModifiers[0]->modifier->name;
-                $servname = $services->service->name;
-                $servesp = $services->getExpertName();
+              
                 $total = $data_pay->amount;
                 $dateTime = date_format(date_create($services->created_date), 'd-m-Y H:i:s');
-                $cardType = $info->type;
-                $cardNumber = $info->last_four;
                 $feeNumber = $data_pay->installments;
                 $paymentReference = $data_pay->order_id;
                 $authorizationNumber = $info_charge->transactionInfo->authorizationCode;
@@ -1432,7 +1435,7 @@ class AssignedServiceController extends Controller {
 
                 if ($paid_pay) {
                     
-                    $value = $services->getPrice(true);
+                    $value = $services->setDiscountCoupon($total);
                     $pay->state = 1;
                     $email->addSubstitution('{{ username }}', [$username])
                             ->addSubstitution('{{ buydate }}', [$buydate])
@@ -1454,16 +1457,16 @@ class AssignedServiceController extends Controller {
                             ->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_compraok']);
                 } else {
 
-                    $email->addSubstitution('{{ username }}', [$user->first_name])
-                            ->addSubstitution('{{ usercard }}', [$type])
-                            ->addSubstitution('{{ usercardnum }}', [$last_four])
-                            ->addSubstitution('{{ buydate }}', [$services->date])
-                            ->addSubstitution('{{ useraddress }}', [$services->address])
-                            ->addSubstitution('{{ item.servname }}', [$value])
-                            ->addSubstitution('{{ item.servmodif }}', [$value])
+                    $email->addSubstitution('{{ username }}', [$username])
+                            ->addSubstitution('{{ usercard }}', [$username])
+                            ->addSubstitution('{{ usercardnum }}', [$cardNumber])
+                            ->addSubstitution('{{ buydate }}', [$buydate])
+                            ->addSubstitution('{{ useraddress }}', [$useraddress])
+                            ->addSubstitution('{{ item.servname }}', [$servname])
+                            ->addSubstitution('{{ item.servmodif }}', [$servmodif])
                             ->addSubstitution('{{ item.prodprecio }}', [$value])
-                            ->addSubstitution('{{ item.servesp }}', [$value])
-                            ->addSubstitution('{{ total }}', [$value])
+                            ->addSubstitution('{{ item.servesp }}', [$servesp])
+                            ->addSubstitution('{{ total }}', [$total])
                             ->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_mora']);
 
                     $pay->state = 0;
@@ -1503,6 +1506,13 @@ class AssignedServiceController extends Controller {
                 $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'], [':user_id' => $id_user, ':id' => '']);
                 $model_history = $command->queryAll();
 
+//                          Cosulta en produccion
+//                $model_history = VwActualService::find ()->where ( [ 
+//						'user_id' => $id_user 
+//				] )->
+//				// 'status' => '1'
+//				asArray ()->one ();
+                
                 $actual_service = false;
                 if (isset($model_history[0])) {
                     $actual_service = true;

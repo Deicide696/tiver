@@ -30,7 +30,7 @@ use Yii;
  * @property Expert $expert
  * @property Service $service
  * @property User $user
- * @property AssignedServiceHasModifier[] $assignedServiceHasModifiers
+ * @property AssignedServiceHasModifier[] $assignedServiceHasModifier
  * @property CompletedService[] $completedServices
  * @property Conversation[] $conversations
  */
@@ -166,7 +166,7 @@ class AssignedService extends \yii\db\ActiveRecord {
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getAssignedServiceHasModifiers()
+    public function getAssignedServiceHasModifier()
     {
         return $this->hasMany(AssignedServiceHasModifier::className(), ['assigned_service_id' => 'id']);
     }
@@ -270,6 +270,95 @@ class AssignedService extends \yii\db\ActiveRecord {
                                                 $userHasCoupons2->update();
                                                 break;
                                             }
+                                            goto a;
+                                        }
+                                    }
+
+                                }
+                            }
+                        }
+                        a:
+                    } else if (!empty($model["couponHasServices"])) {
+                        
+                        $service = $model["couponHasServices"][0]['service']['id'];
+                        if($service == $this->service_id){
+                            $priceold = $price;
+                            if($model["quantity"] > 0){
+                                if($model["discount"] > 0){
+                                    $discount = ($price * $model["discount"]) / 100; 
+                                    $price = ($price - $discount);
+                                    if($discountCoupon){
+                                        $userHasCoupons2 = UserHasCoupon::find()
+                                                    ->where(['user_id' => $userHasCoupon['user_id'],
+                                                            'coupon_id' => $model['id']])
+                                                    ->one();
+                                        $userHasCoupons2->used = 1;
+                                        $userHasCoupons2->enable = 0;
+                                        $userHasCoupons2->update();
+                                        break;
+                                    }
+                                    goto b;
+                                }
+                            }
+                        }
+                        b:
+                    }
+                }
+            }
+        }
+        
+        return $price;
+    }
+    
+    public function setDiscountCoupon($price) {
+
+        $userHasCoupons = UserHasCoupon::find()
+            ->where([
+                'user_id' => $this->user_id,
+                'used' => 0,
+                'enable' => 1])
+            ->asArray()
+            ->all();
+          
+        if (isset($userHasCoupons) && !empty($userHasCoupons)) {
+            
+            foreach ($userHasCoupons as $userHasCoupon) {
+                
+                $model = Coupon::find()
+                    ->where(['coupon.id' =>$userHasCoupon['coupon_id'],'coupon.enable' => 1])
+                    ->joinWith(['couponHasCategoryServices.categoryService.service'])
+                    ->joinWith(['couponHasServices.service s'])
+                    ->asArray()
+                    ->one();
+                
+                if (isset($model) && !empty($model)) {
+                    
+                    $day = date_parse(date('Y-m-d H:i:s'));
+                    $day2 = date_parse($model['due_date']);
+                    
+                    if ($day > $day2) {
+                        break;
+                    }
+                    if (!empty($model["couponHasCategoryServices"])) {
+                        $category = $model["couponHasCategoryServices"][0]["categoryService"]['description'];
+                        if(isset($model["couponHasCategoryServices"][0]["categoryService"]['service']) && !empty($model["couponHasCategoryServices"][0]["categoryService"]['description'])){
+                            foreach ($model["couponHasCategoryServices"][0]["categoryService"]['service'] as $serviceValid) {
+                                if($serviceValid['id'] == $this->service_id){
+                                    $priceold = $price;
+                                    if($model["quantity"] > 0){
+                                        if($model["discount"] > 0){
+                                            $discount = ($price * $model["discount"]) / 100; 
+                                            $price = ($price - $discount);
+//                                            if($discountCoupon){
+                                                $userHasCoupons2 = UserHasCoupon::find()
+                                                    ->where(['user_id' => $userHasCoupon['user_id'],
+                                                            'coupon_id' => $model['id']])
+                                                    ->one();
+                                                $userHasCoupons2->used = 1;
+                                                $userHasCoupons2->enable = 0;
+                                                $userHasCoupons2->update();
+                                                break;
+//                                            }
                                             goto a;
                                         }
                                     }

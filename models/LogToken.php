@@ -14,7 +14,7 @@ use Yii;
  * @property string $connection_ip
  * @property string $created_date
  * @property string $updated_date
- * @property integer $enable
+ * @property integer $status
  *
  * @property TypeToken $fKIdTokenType
  * @property User $fKIdUser
@@ -36,7 +36,7 @@ class LogToken extends \yii\db\ActiveRecord
     {
         return [
             [['FK_id_user', 'FK_id_token_type'], 'required'],
-            [['FK_id_user', 'FK_id_token_type', 'enable'], 'integer'],
+            [['FK_id_user', 'FK_id_token_type', 'status'], 'integer'],
             [['created_date', 'updated_date'], 'safe'],
             [['token'], 'string', 'max' => 255],
             [['connection_ip'], 'string', 'max' => 45],
@@ -58,14 +58,14 @@ class LogToken extends \yii\db\ActiveRecord
             'connection_ip' => Yii::t('app', 'Connection Ip'),
             'created_date' => Yii::t('app', 'Created Date'),
             'updated_date' => Yii::t('app', 'Updated Date'),
-            'enable' => Yii::t('app', 'Enable'),
+            'status' => Yii::t('app', 'Status'),
         ];
     }
     
     public function behaviors()
     {
        return [           
-           'timestamp' => [
+            [
                 'class' => \yii\behaviors\TimestampBehavior::className(),
                 'attributes' => [
                     \yii\db\ActiveRecord::EVENT_BEFORE_INSERT =>  ['created_date', 'updated_date'],
@@ -73,13 +73,13 @@ class LogToken extends \yii\db\ActiveRecord
                 ],
                 'value' => function() { return  date ( 'Y-m-d H:i:s' );},
             ],
-            'activeBehavior' => [
+            [
                'class' => 'yii\behaviors\AttributeBehavior',
                 'attributes' => [
-                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => 'enable',
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => 'status',
                 ],
                 'value' => 1,
-           ],
+            ],
        ];
     }
 

@@ -195,6 +195,7 @@ class ServiceHistoryController extends Controller {
 //                    ->orderBy(['date' => SORT_DESC])
 //                    ->asArray()
 //                    ->all();
+            
             if ($model_history != null) {
                 $response ["success"] = true;
                 $response ['data'] = $model_history;
@@ -212,12 +213,13 @@ class ServiceHistoryController extends Controller {
     }
 
     public function actionActualService() {
+        
         Yii::$app->response->format = 'json';
 
         $token = Yii::$app->request->post("token", null);
 
         $model_token = LogToken::find ()
-            ->where (['token' => $token, 'enable' => 1])
+            ->where (['token' => $token, 'status' => 1])
             ->one ();
 
         if ($model_token != null) {

@@ -177,14 +177,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'raw',
                 'value' => function($searchModel) {
                     $valido = true;
-                    if ($searchModel->state == 0) {
-                        $valido = false;
-                    }
-                    if ($valido) {
-                        return Yii::$app->params['iconEnabled'];
-                    } else {
-                        return Yii::$app->params['iconDisabled'];
-                    }
+                    if ($searchModel->state == 0) {$valido = false;}
+                    if ($valido) {return Yii::$app->params['iconDisabled'];} 
+                    else {return Yii::$app->params['iconEnabled'];}
                 }
             ],
             ['class' => 'yii\grid\ActionColumn', 'template' => '{view}'],
@@ -197,7 +192,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'rowOptions' => function ($searchModel) {
-            if (($searchModel->state == 0) && ($searchModel->enable == 0)) {
+            if (($searchModel->enable == 0)) {
                 $class = ['class' => 'danger'];
             } elseif ($searchModel->state == 0) {
                 $class = ['class' => 'info'];
