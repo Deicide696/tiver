@@ -25,6 +25,7 @@ use app\assets\EmailAsset;
 use app\assets\Facebook\Facebook;
 use yii\helpers\Url;
 use yii\data\ActiveDataProvider;
+use app\models\VwActualService;
 
 /**
  * UserController implements the CRUD actions for User model.
@@ -51,7 +52,7 @@ class UserController extends Controller {
                     'index'
                 ],
                 'rules' => [
-                        [
+                    [
                         'actions' => [
                             'view',
                             'index'
@@ -745,14 +746,15 @@ class UserController extends Controller {
         }
     }
 
-    // Android
+    /**
+     * Login Action
+     * 
+     * @return type
+     */
     public function actionLogin() {
-       
-        // se define el layout
+
         $this->layout = "json";
         Yii::$app->response->format = 'json';
-        // se obtiene el parametro request de la peticion
-        // se intacian las variables que se van a usar en la creacion del usuario
         $email = Yii::$app->request->post("email", null);
         $password = Yii::$app->request->post("password", null);
         $gcm_id = Yii::$app->request->post("gcm_id", null);
@@ -775,8 +777,7 @@ class UserController extends Controller {
                     'email' => $email,
                     'enable' => User::STATUS_ACTIVE,
         ]);
-//        var_dump($user); die();
-        if ($user == null) {
+        if (!isset($user) || empty($user)) {
             return [
                 'success' => false,
                 'errcode' => 10,
@@ -799,12 +800,12 @@ class UserController extends Controller {
         // se crea el token del nuevo usuario mmz
         $tokenMmz = new LogToken ();
         $token = MD5($user->id . $user->email . time());
-        $updateTokens = LogToken::updateAll([
-                    'enable' => 0
+        LogToken::updateAll([
+                    'status' => 0
                         ], [
                     'FK_id_user' => $user->id,
                     'FK_id_token_type' => $typeToken->id,
-                    'enable' => 1
+                    'status' => 1
         ]);
         $arrayLog = [
             'LogToken' => [
@@ -834,7 +835,7 @@ class UserController extends Controller {
                     "user_id" => $user->id,
                     "type_token_id" => $device
                 ])->one();
-        if ($gcm_token != null) {
+        if (isset($gcm_token) && !empty($gcm_token)) {
             $gcm_token->token = $gcm_id;
             $gcm_token->one_signal_token = $os_id;
             $gcm_token->updated_date = date('Y-m-d H:i:s');
@@ -849,18 +850,21 @@ class UserController extends Controller {
             $gcm_token->save();
         }
 
-        $connection = Yii::$app->getDb();
-        $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'], [':user_id' => $user->id, ':id' => '']);
-        $model_history = $command->queryAll();
+        $model_history = VwActualService::find()
+                ->where([
+                    'user_id' => $user->id])
+                ->asArray()
+                ->one();
 
         $actual_service = false;
-        if ($model_history != null) {
+        
+        if (isset($model_history) && !empty($model_history)) {
             $actual_service = true;
         }
 
         $model_cc = CreditCard::find()->where([
                     'user_id' => $user->id,
-                    'enable' => '1'
+                    'enable' => 1
                 ])->count();
         $credit_card = $model_cc;
 
