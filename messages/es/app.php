@@ -24,6 +24,7 @@ return [
     'Enable' => 'Activo',
     'Fk Id Token Type' => 'ID Tipo de token',
     'Fk Id User' => 'ID de Usuario',
+    'Service' => 'Servicio',
     'Service ID' => 'ID de Servicio',
     'User ID' => 'ID de Usuario',
     'Expert ID' => 'ID de Experto',
@@ -32,8 +33,10 @@ return [
     'Token' => 'Token',
     'Comment' => 'Comentario',
     'Date' => 'Fecha',
+    'Date service' => 'Fecha Servicio',
     'Address' => 'Dirección',
     'Time' => 'Hora',
+    'Time service' => 'Hora Servicio',
     'Lat' => 'Latitud',
     'Lng' => 'Longitud',
     'Name' => 'Nombre',
@@ -50,6 +53,7 @@ return [
     'User' => 'Usuario',
     'Administration' => 'Administración',
     'Code' => 'Código',
+    'Code coupon' => 'Cód. Cupón',
     'Used' => 'Usado',
     'Quantity' => 'Límite de cupones',
     'Discount' => 'Descuento',
@@ -59,5 +63,7 @@ return [
     'New Coupon' => 'Nuevo Cupón',
     'New User' => 'Nuevo Usuario',
     'Amount' => 'Monto',
-    'Type Coupon ID' => 'Cupón Asignado a'
+    'Type Coupon ID' => 'Cupón Asignado a',
+    'Assigned' => 'Asignado',
+    'Assigned Services' => 'Servicios asignados'
 ];

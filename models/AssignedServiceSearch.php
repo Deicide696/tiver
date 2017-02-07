@@ -18,7 +18,7 @@ class AssignedServiceSearch extends AssignedService
     public function rules()
     {
         return [
-            [['id', 'state', 'service_id', 'user_id', 'city_id', 'expert_id'], 'integer'],
+            [['id', 'service_id', 'user_id', 'city_id', 'expert_id'], 'integer'],
             [['address', 'date', 'time', 'created_date'], 'safe'],
         ];
     }

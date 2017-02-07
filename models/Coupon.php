@@ -64,7 +64,7 @@ class Coupon extends \yii\db\ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'name' => Yii::t('app', 'Name'),
-            'code' => Yii::t('app', 'Code'),
+            'code' => Yii::t('app', 'Code coupon'),
             'enable' => Yii::t('app', 'Enable'),
             'used' => Yii::t('app', 'Used'),
             'type_coupon_id' => Yii::t('app', 'Type Coupon ID'),
