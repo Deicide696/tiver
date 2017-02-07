@@ -78,11 +78,16 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="coupon-index">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-    <p>
-        <?= Html::a(Yii::t('app', 'New Coupon'), ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
+    
+    <div class="row" style="padding-bottom: 15px;">
+        <div class="col col-sm-2 pull-left">
+            <h1 class="" style="margin: 0px;"><?= Html::encode($this->title) ?></h1>
+        </div>
+        
+        <div class="col col-sm-2 pull-right text-right">
+            <?= yii::$app->user->can('create-coupon') ? Html::a(Yii::t('app', 'New Coupon'), ['create'], ['class' => 'btn btn-success']): '' ?>
+        </div>
+    </div>
     <?php Pjax::begin(); ?>
     <?=
     GridView::widget([

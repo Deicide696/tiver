@@ -57,6 +57,7 @@ return [
     'Coupons' => 'Cupones',
     'Coupon' => 'Cupón',
     'New Coupon' => 'Nuevo Cupón',
+    'New User' => 'Nuevo Usuario',
     'Amount' => 'Monto',
     'Type Coupon ID' => 'Cupón Asignado a'
 ];

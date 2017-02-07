@@ -315,9 +315,9 @@ class Expert extends \yii\db\ActiveRecord {
         $services = assignedService::find()->where([
                     'expert_id' => $this->id,
                     'date' => $date,
-                    'state' => '1',
-                    'enable' => 1
+                    'state' => 1
                 ])->joinWith('service')->asArray()->all();
+//        $services = assignedService::find ()->where ("expert_id=' $this->id' and date ='$date' and assigned_service.id<>'$id_actual'" )->joinWith ( 'service' )->asArray ()->all ();
 
         if ($services == null) {
             //Si no tiene servicios para ese día retorna true, está disponible

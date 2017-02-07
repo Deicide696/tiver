@@ -80,7 +80,6 @@ class AssignedServiceSearch extends AssignedService
                 'user_id' => $this->user_id,
                 'city_id' => $this->city_id,
                 'expert_id' => $this->expert_id,
-                'enable' => 1,
             ]);
         }
 

@@ -7,7 +7,7 @@ use Yii;
 /**
  * This is the model class for table "assigned_service".
  *
- * @property string $id
+ * @property integer $id
  * @property string $address
  * @property string $date
  * @property string $time
@@ -15,44 +15,44 @@ use Yii;
  * @property double $lng
  * @property string $comment
  * @property integer $immediate
- * @property string $service_id
- * @property string $user_id
+ * @property integer $service_id
+ * @property integer $user_id
  * @property integer $city_id
- * @property string $expert_id
+ * @property integer $expert_id
  * @property integer $coupon_id
+ * @property integer $state
  * @property string $created_date
  * @property string $updated_date
- * @property integer $state
+ * @property integer $enable
  *
  * @property City $city
  * @property Coupon $coupon
  * @property Expert $expert
  * @property Service $service
  * @property User $user
- * @property AssignedServiceHasModifier[] $assignedServiceHasModifiers
+ * @property AssignedServiceHasModifier[] $assignedServiceHasModifier
  * @property CompletedService[] $completedServices
  * @property Conversation[] $conversations
  */
-class AssignedService extends \yii\db\ActiveRecord
-{
+
+class AssignedService extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'assigned_service';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['address', 'date', 'time', 'lat', 'lng', 'service_id', 'user_id', 'city_id', 'expert_id'], 'required'],
             [['date', 'time', 'created_date', 'updated_date'], 'safe'],
             [['lat', 'lng'], 'number'],
-            [['immediate', 'service_id', 'user_id', 'city_id', 'expert_id', 'coupon_id', 'state'], 'integer'],
+            [['immediate', 'service_id', 'user_id', 'city_id', 'expert_id', 'coupon_id', 'state', 'enable'], 'integer'],
             [['address'], 'string', 'max' => 100],
             [['comment'], 'string', 'max' => 255],
             [['city_id'], 'exist', 'skipOnError' => true, 'targetClass' => City::className(), 'targetAttribute' => ['city_id' => 'id']],
@@ -62,12 +62,36 @@ class AssignedService extends \yii\db\ActiveRecord
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
+    
+    /**
+    * @inheritdoc
+    */
+     public function behaviors()
+    {
+       return [           
+            [
+                'class' => \yii\behaviors\TimestampBehavior::className(),
+                'attributes' => [
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT =>  ['created_date', 'updated_date'],
+                    \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => 'updated_date',
+                ],
+                'value' => function() { return  date ( 'Y-m-d H:i:s' );},
+            ],
+            [
+               'class' => 'yii\behaviors\AttributeBehavior',
+                'attributes' => [
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => 'enable',
+                ],
+                'value' => 1,
+            ],
+       ];
+    }
 
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
+      
         return [
             'id' => Yii::t('app', 'ID'),
             'address' => Yii::t('app', 'Address'),
@@ -82,29 +106,12 @@ class AssignedService extends \yii\db\ActiveRecord
             'city_id' => Yii::t('app', 'City ID'),
             'expert_id' => Yii::t('app', 'Expert ID'),
             'coupon_id' => Yii::t('app', 'Coupon ID'),
+            'state' => Yii::t('app', 'State'),
             'created_date' => Yii::t('app', 'Created Date'),
             'updated_date' => Yii::t('app', 'Updated Date'),
-            'state' => Yii::t('app', 'State'),
+            'enable' => Yii::t('app', 'Enable'),
         ];
     }
-    
-        /**
-    * @inheritdoc
-    */
-     public function behaviors()
-    {
-       return [           
-            [
-                'class' => \yii\behaviors\TimestampBehavior::className(),
-                'attributes' => [
-                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT =>  ['created_date', 'updated_date'],
-                    \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => 'updated_date',
-                ],
-                'value' => function() { return  date ( 'Y-m-d H:i:s' );},
-            ],
-       ];
-    }
-
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -144,6 +151,17 @@ class AssignedService extends \yii\db\ActiveRecord
     {
         return $this->hasOne(User::className(), ['id' => 'user_id']);
     }
+    
+     /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getModifier()
+    {
+//        $modifier = AssignedServiceHasModifier::find()
+//                ->where(['assigned_service_id' => $this->service_id])
+//                ->one();
+        return $this->hasOne(modifier::className(), ['id' => 104]);
+    }
 
     /**
      * @return \yii\db\ActiveQuery
@@ -152,7 +170,7 @@ class AssignedService extends \yii\db\ActiveRecord
     {
         return $this->hasMany(AssignedServiceHasModifier::className(), ['assigned_service_id' => 'id']);
     }
-
+    
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -168,6 +186,7 @@ class AssignedService extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Conversation::className(), ['assigned_service_id' => 'id']);
     }
+
     public function getExpertName() {
         $expert = Expert::findOne(['id' => $this->expert_id]);
         return $expert->name . " " . $expert->last_name;
@@ -182,8 +201,8 @@ class AssignedService extends \yii\db\ActiveRecord
      * @return type
      */
 
-    public function getPrice() {
-        
+    public function getPrice($discountCoupon = NULL) {
+
         $price = 0;
         $service = Service::findOne(['id' => $this->service_id]);
 
@@ -192,13 +211,15 @@ class AssignedService extends \yii\db\ActiveRecord
         } else {
             $price += (int)round(($service->price + ($service->price * Yii::$app->params ['tax_percent'])), -2, PHP_ROUND_HALF_UP);
         }
-        $modifier_vw = VwActualService::findOne(['id' => $this->id]);
-        if ($modifier_vw->modifier_id != "") {
-            $modifier = Modifier::findOne(['id' => $modifier_vw->modifier_id]);
+        $connection = Yii::$app->getDb();
+        $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => '',':id' => $this->id]);
+        $modifier_vw = $command->queryAll();
+        if (isset($modifier_vw[0]) && !empty($modifier_vw[0]['modifier_id'])) {
+            $modifier = Modifier::findOne(['id' => $modifier_vw[0]['modifier_id']]);
             if ($modifier->tax == 0) {
                 $price += $modifier->price;
             } else {
-                $price += (int) round($modifier->price + ($modifier->price * Yii::$app->params ['tax_percent']), -2, PHP_ROUND_HALF_UP);
+                $price +=  (int)round(($modifier->price + ($modifier->price * Yii::$app->params ['tax_percent'])), -2, PHP_ROUND_HALF_UP);
             }
         }
         
@@ -239,6 +260,16 @@ class AssignedService extends \yii\db\ActiveRecord
                                         if($model["discount"] > 0){
                                             $discount = ($price * $model["discount"]) / 100; 
                                             $price = ($price - $discount);
+                                            if($discountCoupon){
+                                                $userHasCoupons2 = UserHasCoupon::find()
+                                                    ->where(['user_id' => $userHasCoupon['user_id'],
+                                                            'coupon_id' => $model['id']])
+                                                    ->one();
+                                                $userHasCoupons2->used = 1;
+                                                $userHasCoupons2->enable = 0;
+                                                $userHasCoupons2->update();
+                                                break;
+                                            }
                                             goto a;
                                         }
                                     }
@@ -256,7 +287,7 @@ class AssignedService extends \yii\db\ActiveRecord
                                 if($model["discount"] > 0){
                                     $discount = ($price * $model["discount"]) / 100; 
                                     $price = ($price - $discount);
-                                    /*if($discountCoupon){
+                                    if($discountCoupon){
                                         $userHasCoupons2 = UserHasCoupon::find()
                                                     ->where(['user_id' => $userHasCoupon['user_id'],
                                                             'coupon_id' => $model['id']])
@@ -265,7 +296,7 @@ class AssignedService extends \yii\db\ActiveRecord
                                         $userHasCoupons2->enable = 0;
                                         $userHasCoupons2->update();
                                         break;
-                                    }*/
+                                    }
                                     goto b;
                                 }
                             }
@@ -318,6 +349,7 @@ class AssignedService extends \yii\db\ActiveRecord
                                         if($model["discount"] > 0){
                                             $discount = ($price * $model["discount"]) / 100; 
                                             $price = ($price - $discount);
+//                                            if($discountCoupon){
                                                 $userHasCoupons2 = UserHasCoupon::find()
                                                     ->where(['user_id' => $userHasCoupon['user_id'],
                                                             'coupon_id' => $model['id']])
@@ -326,6 +358,7 @@ class AssignedService extends \yii\db\ActiveRecord
                                                 $userHasCoupons2->enable = 0;
                                                 $userHasCoupons2->update();
                                                 break;
+//                                            }
                                             goto a;
                                         }
                                     }
@@ -392,39 +425,40 @@ class AssignedService extends \yii\db\ActiveRecord
         return $price;
     }
 
-    public function getDuration(){
-        $duration=0;
-        $service=Service::findOne(['id'=>$this->service_id]);
-        $duration+=$service->duration;
-    
-        $modifier_vw=VwActualService::findOne(['id'=>$this->id]);
-        if($modifier_vw->modifier_id!=""){
-            $modifier=Modifier::findOne(['id'=>$modifier_vw->modifier_id]);
-            $duration+=$modifier->duration;
+    public function getDuration() {
+        
+        $duration = 0;
+        $service = Service::findOne(['id' => $this->service_id]);
+        $duration += $service->duration;
+
+        $connection = Yii::$app->getDb();
+        $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => '',':id' => $this->id]);
+        $modifier_vw = $command->queryAll();
+//      $modifier_vw = VwActualService::findOne(['id' => $this->id]);
+        
+        if (isset($modifier_vw[0]) && !empty($modifier_vw[0]['modifier_id'])) {
+            $modifier = Modifier::findOne(['id' => $modifier_vw[0]['modifier_id']]);
+            $duration += $modifier->duration;
         }
-    
-        //var_dump($modifier);
-    
         return $duration;
-         
     }
 
-
-     public function getServiceName(){
-        $name="";
-        $service=Service::findOne(['id'=>$this->service_id]);
-        $name.=$service->name;
-    
-        $modifier_vw=VwActualService::findOne(['id'=>$this->id]);
-        if($modifier_vw->modifier_id!=""){
-            $modifier=Modifier::findOne(['id'=>$modifier_vw->modifier_id]);
-            $name.=" - ".$modifier->name;
+    public function getServiceName() {
+        
+        $name = "";
+        $service = Service::findOne(['id' => $this->service_id]);
+        $name .= $service->name;
+        $connection = Yii::$app->getDb();
+        $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => '',':id' => $this->id]);
+        $modifier_vw = $command->queryAll();
+//      $modifier_vw = VwActualService::findOne(['id' => $this->id]);
+        
+        if (isset($modifier_vw[0]) && !empty($modifier_vw[0]['modifier_id'])) {
+            $modifier = Modifier::findOne(['id' => $modifier_vw[0]['modifier_id']]);
+            $name .= " - " . $modifier->name;
         }
-    
-        //var_dump($modifier);
-    
+
         return $name;
-    
     }
 
     public function getProcessId() {
@@ -471,4 +505,5 @@ class AssignedService extends \yii\db\ActiveRecord
             return false;
         }
     }
+
 }
