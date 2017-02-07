@@ -161,27 +161,29 @@ class ServiceHistory extends \yii\db\ActiveRecord {
         return $this->hasMany(Pay::className(), ['id' => 'pay_id'])->viaTable('service_history_has_pay', ['service_history_id' => 'id']);
     }
 
-    public function getPrice() {
-        $value = 0;
-        $service = Service::findOne(['id' => $this->service_id]);
-        if ($service->tax == 0) {
-            $value += $service->price;
-        } else {
-            $value += $service->price + ($service->price * Yii::$app->params ['tax_percent']);
-        }
-        $connection = Yii::$app->getDb();
-        $command = $connection->createCommand(Yii::$app->params ['vw_service_history'], [':user_id' => '', ':id' => $this->id, ':status' => '']);
-        $modifier_vw = $command->queryOne();
-
-        if (isset($modifier_vw['modifier_id']) && !empty($modifier_vw['modifier_id'])) {
-            $modifier = Modifier::findOne(['id' => $modifier_vw['modifier_id']]);
-            if ($modifier->tax == 0) {
-                $value += $modifier->price;
-            } else {
-                $value += $modifier->price + ($modifier->price * Yii::$app->params ['tax_percent']);
-            }
-        }
-        return round($value, -2, PHP_ROUND_HALF_UP);
+   public function getPrice(){
+    	$value=0;
+    	$service=Service::findOne(['id'=>$this->service_id]);
+    	if($service->tax==0)
+    	$value+=$service->price;
+    	else 
+    		$value+=$service->price+($service->price*Yii::$app->params ['tax_percent']);
+    
+    	$modifier_vw=VwServiceHistory::findOne(['id'=>$this->id]);
+    	if($modifier_vw->modifier_id!=""){
+    		$modifier=Modifier::findOne(['id'=>$modifier_vw->modifier_id]);
+    		if($modifier->tax==0)
+  			$value+=$modifier->price;
+  			else 
+  			$value+=$modifier->price+($modifier->price*Yii::$app->params ['tax_percent']);
+  	
+    	}
+    
+    	//var_dump($modifier);
+    
+    		return round($value, -2, PHP_ROUND_HALF_UP);
+    	
+    	 
     }
 
     public function getLastPay() {
@@ -192,38 +194,37 @@ class ServiceHistory extends \yii\db\ActiveRecord {
                 ->one();
     }
 
-    public function getDuration() {
-        $duration = 0;
-        $service = Service::findOne(['id' => $this->service_id]);
-        $duration += $service->duration;
-        
-        $connection = Yii::$app->getDb();
-        $command = $connection->createCommand(Yii::$app->params ['vw_service_history'], [':user_id' => '', ':id' => $this->id, ':status' => '']);
-        $modifier_vw = $command->queryOne();
-//      $modifier_vw = VwServiceHistory::findOne(['id' => $this->id]);
-        
-        if (isset($modifier_vw['modifier_id']) && !empty($modifier_vw['modifier_id'])) {
-            $modifier = Modifier::findOne(['id' => $modifier_vw['modifier_id']]);
-            $duration += $modifier->duration;
-        }
-        return $duration;
+    public function getDuration(){
+    	$duration=0;
+    	$service=Service::findOne(['id'=>$this->service_id]);
+    	$duration+=$service->duration;
+    
+    	$modifier_vw=VwServiceHistory::findOne(['id'=>$this->id]);
+    	if($modifier_vw->modifier_id!=""){
+    		$modifier=Modifier::findOne(['id'=>$modifier_vw->modifier_id]);
+    		$duration+=$modifier->duration;
+    	}
+    
+    	//var_dump($modifier);
+    
+    	return $duration;
+    
     }
-
-    public function getServiceName() {
-        $name = "";
-        $service = Service::findOne(['id' => $this->service_id]);
-        $name .= $service->name;
-
-        $connection = Yii::$app->getDb();
-        $command = $connection->createCommand(Yii::$app->params ['vw_service_history'], [':user_id' => '', ':id' => $this->id, ':status' => '']);
-        $modifier_vw = $command->queryOne();
-//    	$modifier_vw=VwServiceHistory::findOne(['id'=>$this->id]);
-        
-        if (isset($modifier_vw['modifier_id']) && !empty($modifier_vw['modifier_id'])) {
-            $modifier = Modifier::findOne(['id' => $modifier_vw['modifier_id']]);
-            $name .= " - " . $modifier->name;
-        }
-        return $name;
+    public function getServiceName(){
+    	$name="";
+    	$service=Service::findOne(['id'=>$this->service_id]);
+    	$name.=$service->name;
+    
+    	$modifier_vw=VwServiceHistory::findOne(['id'=>$this->id]);
+    	if($modifier_vw->modifier_id!=""){
+    		$modifier=Modifier::findOne(['id'=>$modifier_vw->modifier_id]);
+    		$name.=" - ".$modifier->name;
+    	}
+    
+    	//var_dump($modifier);
+    
+    	return $name;
+    
     }
 
     public function getExpertName() {
