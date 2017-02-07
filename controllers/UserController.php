@@ -753,7 +753,7 @@ class UserController extends Controller {
      */
     public function actionLogin() {
 
-        $this->layout = "json";
+       // $this->layout = "json";
         Yii::$app->response->format = 'json';
         $email = Yii::$app->request->post("email", null);
         $password = Yii::$app->request->post("password", null);
@@ -762,7 +762,7 @@ class UserController extends Controller {
         $device = Yii::$app->request->post("device", null);
 
         $typeToken = TypeToken::findOne($device);
-        if (empty($typeToken)) {
+        if (!isset($typeToken) || empty($typeToken)) {
 
             return [
                 'success' => false,

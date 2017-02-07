@@ -73,13 +73,6 @@ class LogToken extends \yii\db\ActiveRecord
                 ],
                 'value' => function() { return  date ( 'Y-m-d H:i:s' );},
             ],
-            [
-               'class' => 'yii\behaviors\AttributeBehavior',
-                'attributes' => [
-                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => 'status',
-                ],
-                'value' => 1,
-            ],
        ];
     }
 
