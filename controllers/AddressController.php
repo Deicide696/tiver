@@ -123,14 +123,14 @@ class AddressController extends Controller {
 
     public function actionGetUserAddress() {
 
-
+        Yii::$app->response->format = 'json';
         $token = Yii::$app->request->post("token", null);
 
         $model_token = LogToken::find()
-                ->where(['token' => $token, 'enable' => 1])
+                ->where([
+                    'token' => $token, 
+                    'status' => 1])
                 ->one();
-
-        //var_dump($searched);
 
         if ($model_token != null) {
 
@@ -141,16 +141,13 @@ class AddressController extends Controller {
                 $response['data'] = $model;
             } else {
                 $response["success"] = true;
-                //$response["data"]=["message"=>"Lo sentimos, no hay historial"];
                 $response["data"] = null;
             }
         } else {
             $response["success"] = false;
             $response["data"] = ["message" => "Token inválido"];
         }
-        $response = json_encode($response);
-        header('Content-Type: application/json');
-        print $response;
+        return $response;
     }
 
     public function actionRemoveUserAddress() {
