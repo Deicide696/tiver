@@ -71,8 +71,8 @@ class AssignedService extends \yii\db\ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'address' => Yii::t('app', 'Address'),
-            'date' => Yii::t('app', 'Date'),
-            'time' => Yii::t('app', 'Time'),
+            'date' => Yii::t('app', 'Date service'),
+            'time' => Yii::t('app', 'Time service'),
             'lat' => Yii::t('app', 'Lat'),
             'lng' => Yii::t('app', 'Lng'),
             'comment' => Yii::t('app', 'Comment'),
@@ -81,10 +81,10 @@ class AssignedService extends \yii\db\ActiveRecord
             'user_id' => Yii::t('app', 'User ID'),
             'city_id' => Yii::t('app', 'City ID'),
             'expert_id' => Yii::t('app', 'Expert ID'),
-            'coupon_id' => Yii::t('app', 'Coupon ID'),
+            'coupon_id' => Yii::t('app', 'Code coupon'),
             'created_date' => Yii::t('app', 'Created Date'),
             'updated_date' => Yii::t('app', 'Updated Date'),
-            'state' => Yii::t('app', 'State'),
+            'state' => Yii::t('app', 'Assigned'),
         ];
     }
     
