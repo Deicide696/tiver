@@ -67,7 +67,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
      */
     public function rules() {
         return [
-                [['FK_id_gender', 'FK_id_type_identification', 'FK_id_city', 'first_name', 'email', 'receive_interest_info', 'last_login', 'imei', 'enable'], 'required'],
+                [['FK_id_gender', 'FK_id_type_identification', 'FK_id_city', 'first_name', 'email', 'imei'], 'required'],
                 [['FK_id_gender', 'FK_id_type_identification', 'FK_id_city', 'phone', 'receive_interest_info', 'enable'], 'integer'],
                 [['birth_date', 'last_login', 'created_date', 'updated_date'], 'safe'],
                 [['personal_code'], 'string', 'max' => 6],
@@ -116,7 +116,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
             [
                 'class' => \yii\behaviors\TimestampBehavior::className(),
                 'attributes' => [
-                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT =>  ['created_date', 'updated_date'],
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT =>  ['created_date', 'updated_date', 'last_login'],
                     \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => 'updated_date',
                 ],
                 'value' => function() { return  date ( 'Y-m-d H:i:s' );},
@@ -184,9 +184,9 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
     /**
      * Generates "remember me" authentication key
      */
-    public function generateAuthKey() {
-        // $this->auth_key = Yii::$app->security->generateRandomString();
-    }
+//    public function generateAuthKey() {
+//        // $this->auth_key = Yii::$app->security->generateRandomString();
+//    }
 
     /**
      * Generates new password reset token

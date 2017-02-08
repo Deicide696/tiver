@@ -58,8 +58,6 @@ class SignupForm extends Model {
                 ['fb_id', 'string', 'max' => 45],
                 ['tpaga_id', 'required', 'on' => [self::SCENARIO_REGISTER, self::SCENARIO_REGISTER_FB]],
                 ['tpaga_id', 'string', 'max' => 45],
-                ['personal_code', 'string', 'max' => 6],
-                ['personal_code', 'unique', 'targetClass' => '\app\models\User', 'message' => 'Este código ya se encuentra en nuestros registros.'],
         ];
     }
 
@@ -79,31 +77,32 @@ class SignupForm extends Model {
             $user->phone = $this->phone;
             $user->email = $this->email;
             $user->FK_id_gender = $this->gender;
-//            $user->FK_id_rol = 1;
             $user->FK_id_city = 1;
             $user->FK_id_type_identification = 1;
             $user->setPassword($this->password);
             $user->tpaga_id = $this->tpaga_id;
-            $user->generateAuthKey();
             $ok = false;
             do {
                 $codigo = self::getRandomCode();
                 $encon = User::find()
                         ->where(['like','personal_code',$codigo])
-                        ->asArray()->one();
-                if (!isset($encon) && empty($encon)) {
+                        ->one();
+                if (!isset($encon) || empty($encon)) {
                     $user->personal_code = $codigo;
-                    if (!$user->save()) {
-                        $ok = true;
-                    }
+                    $ok = true;
                 }
-            } while ($ok);
+            } while (!$ok);
+            
             if ($user->save()) {
-                
+                return $user;
+            } else {
+                return var_dump($user->getErrors());
             }
-            return $user;
+            
+        }else {
+            return $this->getErrors();
         }
-        return null;
+        
     }
 
     public function signup_fb() {
@@ -118,28 +117,26 @@ class SignupForm extends Model {
             $user->phone = $this->phone;
             $user->email = $this->email;
             $user->FK_id_gender = $this->gender;
-            // $user->points = 0;
-//            $user->FK_id_rol = 1;
             $user->FK_id_city = 1;
             $user->FK_id_type_identification = 1;
-//            $user->enable = 1;
-//            $user->created_date = date('Y-m-d H:i:s');
-//            $user->updated_date = date('Y-m-d H:i:s');
+            
             $ok = false;
             do {
                 $codigo = self::getRandomCode();
                 $encon = User::find()
                         ->where(['like','personal_code',$codigo])
-                        ->asArray()->one();
-                if (!isset($encon) && empty($encon)) {
+                        ->one();
+                if (!isset($encon) || empty($encon)) {
                     $user->personal_code = $codigo;
-                    if (!$user->save()) {
-                        $ok = true;
-                    }
+                    $ok = true;
                 }
-            } while ($ok);
-
-            return $user;
+            } while (!$ok);
+            
+            if ($user->save()) {
+                return $user;
+            } else {
+                return var_dump($user->getErrors());
+            }
         }
         return null;
     }
@@ -159,11 +156,13 @@ class SignupForm extends Model {
             $user->phone = $this->phone;
             $user->email = $this->email;
             $user->imei = $this->imei;
-//            $user->updated_date = date('Y-m-d H:i:s');
-            if ($user->save()) {
-                
+            
+            if ($user->update()) {
+                return $user;
+            } else {
+                return var_dump($user->getErrors());
             }
-            return $user;
+            
         }
 
         return null;

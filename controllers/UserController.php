@@ -156,8 +156,8 @@ class UserController extends Controller {
                     'tpaga_id' => $tpaga_id
                 ]
             ];
+            
             if ($model->load($infoForm)) {
-//                var_dump($model); die();
                 // se gusarda el usuario mmz en la nueva tabla
                 if ($user = $model->signup()) {
                     // se elimina el registro del email en la lista de usuarios no registrado en mailchimp
@@ -201,9 +201,9 @@ class UserController extends Controller {
                             ]
                         ];
                     } else {
-                        Yii::trace(json_encode([
-                            'message' => "El usuario no se pudo guardar'  -  " . json_encode($user->getErrors())
-                        ]));
+//                        Yii::trace(json_encode([
+//                            'message' => "El usuario no se pudo guardar'  -  " . json_encode($user->getErrors())
+//                        ]));
                         return [
                             'success' => false,
                             'data' => [
@@ -212,9 +212,9 @@ class UserController extends Controller {
                         ];
                     }
                 } else {
-                    Yii::trace(json_encode([
-                        'message' => "El usuario no se pudo guardar'  -  " . json_encode($model->getErrors())
-                    ]));
+//                    Yii::trace(json_encode([
+//                        'message' => "El usuario no se pudo guardar'  -  " . json_encode($model->getErrors())
+//                    ]));
                     return [
                         'success' => false,
                         'data' => [
@@ -223,9 +223,9 @@ class UserController extends Controller {
                     ];
                 }
             } else {
-                Yii::trace(json_encode([
-                    'message' => "El usuario no se pudo guardar'  -  " . json_encode($model->getErrors())
-                ]));
+//                Yii::trace(json_encode([
+//                    'message' => "El usuario no se pudo guardar'  -  " . json_encode($model->getErrors())
+//                ]));
                 return [
                     'success' => false,
                     'data' => [
