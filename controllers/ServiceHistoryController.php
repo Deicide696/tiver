@@ -12,6 +12,7 @@ use yii\filters\VerbFilter;
 use app\models\User;
 use app\models\LogToken;
 use app\models\VwActualService;
+use app\models\VwServiceHistory;
 
 /**
  * ServiceHistoryController implements the CRUD actions for ServiceHistory model.
@@ -197,10 +198,6 @@ class ServiceHistoryController extends Controller {
             ];
             return $response;
         }
-
-//            $connection = Yii::$app->getDb();
-//            $command = $connection->createCommand(Yii::$app->params ['vw_service_history'],[':id' => '',':user_id' => $model_token->FK_id_user, ':status' => 1]);
-//            $model_history = $command->queryAll();
 
         $model_history = VwServiceHistory::find()
                 ->where(['user_id' => $model_token->FK_id_user, 'status' => 1])
