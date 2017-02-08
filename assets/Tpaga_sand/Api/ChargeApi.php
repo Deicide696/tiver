@@ -34,10 +34,10 @@
 namespace app\assets\Tpaga\Api;
 
 use app\assets\Tpaga\Configuration;
-use app\assets\Tpaga\ApiClient;
+//use app\assets\Tpaga\ApiClient;
 use app\assets\Tpaga\ApiException;
 use app\assets\Tpaga\ObjectSerializer;
-//use Tpaga\ApiClient;
+use Tpaga\ApiClient;
 
 /**
  * ChargeApi Class Doc Comment
@@ -439,4 +439,3 @@ class ChargeApi
     }
     
 }
-

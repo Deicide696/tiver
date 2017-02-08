@@ -113,22 +113,16 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
 
     public function behaviors() {
         return [
-            'timestamp' => [
-                'class' => 'yii\behaviors\TimestampBehavior',
+            [
+                'class' => \yii\behaviors\TimestampBehavior::className(),
                 'attributes' => [
-                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_date'],
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT =>  ['created_date', 'updated_date'],
+                    \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => 'updated_date',
                 ],
-                'value' => new Expression('NOW()'),
+                'value' => function() { return  date ( 'Y-m-d H:i:s' );},
             ],
-            'timestamp' => [
-                'class' => 'yii\behaviors\TimestampBehavior',
-                'attributes' => [
-                    \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_date'],
-                ],
-                'value' => new Expression('NOW()'),
-            ],
-            'activeBehavior' => [
-                'class' => 'yii\behaviors\AttributeBehavior',
+            [
+               'class' => 'yii\behaviors\AttributeBehavior',
                 'attributes' => [
                     \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => 'enable',
                 ],
@@ -425,11 +419,11 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
         return $this->hasMany(Coupon::className(), ['id' => 'coupon_id'])->viaTable('user_has_coupon', ['user_id' => 'id']);
     }
 
-    public function getRol() {
-        return $this->hasOne(Rol::className(), [
-                    'id' => 'FK_id_rol'
-        ]);
-    }
+//    public function getRol() {
+//        return $this->hasOne(Rol::className(), [
+//                    'id' => 'FK_id_rol'
+//        ]);
+//    }
 
     public function getGender() {
         return $this->hasOne(Gender::className(), [
@@ -478,10 +472,10 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
     }
 
     // RBAC
-    public static function isAdmin($email) {
+   /* public static function isAdmin($email) {
         if (static::findOne([
                     'email' => $email,
-                    'FK_id_rol' => self::ROLE_ADMIN
+                   // 'FK_id_rol' => self::ROLE_ADMIN
                 ])) {
             return true;
         } else {
@@ -493,7 +487,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
     public static function isUser($email) {
         if (static::findOne([
                     'email' => $email,
-                    'FK_id_rol' => self::ROLE_USER
+                   // 'FK_id_rol' => self::ROLE_USER
                 ])) {
             return true;
         } else {
@@ -505,13 +499,13 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
     public static function isSuper($email) {
         if (static::findOne([
                     'email' => $email,
-                    'FK_id_rol' => self::ROLE_SUPER
+                    //'FK_id_rol' => self::ROLE_SUPER
                 ])) {
             return true;
         } else {
 
             return false;
         }
-    }
+    }*/
 
 }

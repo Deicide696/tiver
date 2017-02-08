@@ -69,7 +69,9 @@ class SignupForm extends Model {
      * @return User|null the saved model or null if saving fails
      */
     public function signup() {
+        
         if ($this->validate()) {
+            
             $user = new User();
             $user->first_name = $this->firstname;
             $user->last_name = $this->lastname;
@@ -80,12 +82,9 @@ class SignupForm extends Model {
 //            $user->FK_id_rol = 1;
             $user->FK_id_city = 1;
             $user->FK_id_type_identification = 1;
-            $user->enable = 1;
             $user->setPassword($this->password);
             $user->tpaga_id = $this->tpaga_id;
             $user->generateAuthKey();
-            $user->created_date = date('Y-m-d H:i:s');
-            $user->updated_date = date('Y-m-d H:i:s');
             $ok = false;
             do {
                 $codigo = self::getRandomCode();
@@ -123,9 +122,9 @@ class SignupForm extends Model {
 //            $user->FK_id_rol = 1;
             $user->FK_id_city = 1;
             $user->FK_id_type_identification = 1;
-            $user->enable = 1;
-            $user->created_date = date('Y-m-d H:i:s');
-            $user->updated_date = date('Y-m-d H:i:s');
+//            $user->enable = 1;
+//            $user->created_date = date('Y-m-d H:i:s');
+//            $user->updated_date = date('Y-m-d H:i:s');
             $ok = false;
             do {
                 $codigo = self::getRandomCode();
@@ -151,6 +150,7 @@ class SignupForm extends Model {
      * @return User|null the saved model or null if saving fails
      */
     public function update() {
+        
         if ($this->validate()) {
             //print"->".$this->firstname;
             $user = User::findOne(['id' => $this->id, 'enable' => 1]);
@@ -159,7 +159,7 @@ class SignupForm extends Model {
             $user->phone = $this->phone;
             $user->email = $this->email;
             $user->imei = $this->imei;
-            $user->updated_date = date('Y-m-d H:i:s');
+//            $user->updated_date = date('Y-m-d H:i:s');
             if ($user->save()) {
                 
             }

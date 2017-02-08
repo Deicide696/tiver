@@ -37,7 +37,6 @@ use app\assets\Tpaga\Configuration;
 use app\assets\Tpaga\ApiClient;
 use app\assets\Tpaga\ApiException;
 use app\assets\Tpaga\ObjectSerializer;
-//use Tpaga\ApiClient;
 
 /**
  * ChargeApi Class Doc Comment
@@ -247,8 +246,8 @@ class ChargeApi
             if (!$response) {
                 return null;
             }
-            return $response;
-//            return $this->apiClient->getSerializer()->deserialize($response, '\app\assets\Tpaga\Model\CreditCardCharge', $httpHeader);
+
+            return $this->apiClient->getSerializer()->deserialize($response, '\app\assets\Tpaga\Model\CreditCardCharge', $httpHeader);
             
         } catch (ApiException $e) {
             switch ($e->getCode()) { 
@@ -439,4 +438,3 @@ class ChargeApi
     }
     
 }
-

@@ -119,18 +119,16 @@ class UserController extends Controller {
     }
 
     public function actionCreate() {
-
+        
         $model = new SignupForm([
             'scenario' => SignupForm::SCENARIO_REGISTER
-        ]);
-//        var_dump(Yii::$app->request->isPost, $_POST);die();
-
+                ]);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect([
                         'view',
                         'id' => $model->id
-            ]);
+                    ]);
         } else if (Yii::$app->request->isPost) {
             // se define el layout
             $this->layout = "json";
@@ -159,6 +157,7 @@ class UserController extends Controller {
                 ]
             ];
             if ($model->load($infoForm)) {
+//                var_dump($model); die();
                 // se gusarda el usuario mmz en la nueva tabla
                 if ($user = $model->signup()) {
                     // se elimina el registro del email en la lista de usuarios no registrado en mailchimp
@@ -186,7 +185,6 @@ class UserController extends Controller {
                                         ->setSubject(' ')
                                         ->setHtml(' ')
                                         ->addSubstitution('{{ username }}', [$user->first_name])
-                                        ->addSubstitution('{{ personal_code }}', [$user->personal_code])
                                         ->addFilter('templates', 'enabled', 1)
                                         ->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_welcome']);
                                 $resp = $sendGrid->send($email);
@@ -236,19 +234,16 @@ class UserController extends Controller {
                 ];
             }
         } else {
-            if (Yii::$app->user->can('super-admin')) {
+            $model = new User($id);
 
-                $model = new User();
-                return $this->render('create', [
-                            'model' => $model
-                ]);
-            } else {
-                throw new ForbiddenHttpException;
-            }
+            return $this->render('create', [
+                        'model' => $model
+                    ]);
         }
     }
 
     public function actionCheckPreregister() {
+        
         $model = new CheckPreRegister ();
         // Creación del usuario (WS) para la aplicación
         if (Yii::$app->request->isPost) {
@@ -286,6 +281,7 @@ class UserController extends Controller {
     }
 
     public function actionFacebook() {
+        
         Yii::trace(json_encode(Yii::$app->request->post()));
         // se define el layout
         $this->layout = "json";
@@ -369,7 +365,7 @@ class UserController extends Controller {
 //                            'FK_id_token_type' => $typeToken->id,
 //                            'status' => 1
 //                ]);
-                
+
                 $updateTokens = LogToken::find()
                         ->where([
                             'FK_id_user' => $user->id,
@@ -378,7 +374,7 @@ class UserController extends Controller {
                         ->one();
                 $updateTokens->status = 0;
                 $updateTokens->update();
-                
+
                 // se crea el token del nuevo usuario mmz
                 $tokenMmz = new LogToken ();
                 $token = MD5($user->id . $user->email . time());
@@ -636,11 +632,11 @@ class UserController extends Controller {
             $phone = Yii::$app->request->post("phone", null);
             $token = Yii::$app->request->post("token", null);
             try {
-                $modelToken = LogToken::find ()
-                    ->where ([
-                        'token' => $token, 
-                        'status' => 1])
-                    ->one ();
+                $modelToken = LogToken::find()
+                        ->where([
+                            'token' => $token,
+                            'status' => 1])
+                        ->one();
 
                 if (!empty($modelToken)) {
                     if ($modelToken->status) {
@@ -765,7 +761,7 @@ class UserController extends Controller {
      */
     public function actionLogin() {
 
-       // $this->layout = "json";
+        // $this->layout = "json";
         Yii::$app->response->format = 'json';
         $email = Yii::$app->request->post("email", null);
         $password = Yii::$app->request->post("password", null);
@@ -819,7 +815,7 @@ class UserController extends Controller {
 //                    'FK_id_token_type' => $typeToken->id,
 //                    'status' => 1
 //        ]);
-        
+
         $updateTokens = LogToken::find()
                 ->where([
                     'FK_id_user' => $user->id,
@@ -828,7 +824,7 @@ class UserController extends Controller {
                 ->one();
         $updateTokens->status = 0;
         $updateTokens->update();
-        
+
         $arrayLog = [
             'LogToken' => [
                 'token' => $token,
@@ -879,7 +875,7 @@ class UserController extends Controller {
                 ->one();
 
         $actual_service = false;
-        
+
         if (isset($model_history) && !empty($model_history)) {
             $actual_service = true;
         }
@@ -953,7 +949,7 @@ class UserController extends Controller {
                             $updateTokens->status = 0;
                             $updateTokens->update();
 
-                                    // se crea el token del nuevo usuario mmz
+                            // se crea el token del nuevo usuario mmz
                             $tokenMmz = new LogToken ();
                             $token = MD5($user->id . $user->email . time());
                             $arrayLog = [
@@ -1191,12 +1187,12 @@ class UserController extends Controller {
 
         $data = json_decode($_POST ['request'], true);
         $token = $data ['token'];
-        
-        $model_token = LogToken::find ()
-            ->where ([
-                'token' => $token, 
-                'status' => 1])
-            ->one ();
+
+        $model_token = LogToken::find()
+                ->where([
+                    'token' => $token,
+                    'status' => 1])
+                ->one();
 
         if (!isset($model_token) || empty($model_token)) {
             $response ["success"] = false;
@@ -1215,7 +1211,7 @@ class UserController extends Controller {
                 ])->where([
                     'id' => $model_token->user_id
                 ])->asArray()->all();
-        
+
         if ($model_user != null) {
             $response ["success"] = true;
             $response ['data'] = $model_user;
@@ -1223,7 +1219,7 @@ class UserController extends Controller {
             $response ["success"] = false;
             $response ["mensaje"] = "Usuario no existe";
         }
-       
+
         $response = json_encode($response);
         header('Content-Type: application/json');
         print $response;
