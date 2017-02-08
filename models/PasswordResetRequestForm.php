@@ -55,7 +55,7 @@ class PasswordResetRequestForm extends Model {
             
             if (!$token || !LogToken::isTokenValid($token->token)) {
                 if ($token) {
-                    $token->enable = 0;
+                    $token->status = 0;
                     $token->save();
                 }
                 $token = new LogToken();

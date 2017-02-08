@@ -178,37 +178,41 @@ class ServiceHistoryController extends Controller {
     public function actionHistory() {
         
         Yii::$app->response->format = 'json';
+        
         $token = Yii::$app->request->post ( "token", null );
         
         $model_token = LogToken::find ()
-            ->where (['token' => $token, 'enable' => 1])
+            ->where ([
+                'token' => $token, 
+                'status' => 1])
             ->one ();
-        
-        if ($model_token != null) {
-            
-            $connection = Yii::$app->getDb();
-            $command = $connection->createCommand(Yii::$app->params ['vw_service_history'],[':id' => '',':user_id' => $model_token->FK_id_user, ':status' => 1]);
-            $model_history = $command->queryAll();
-        
-//            $model_history = VwServiceHistory::find()
-//                    ->where(['user_id' => $model_token->FK_id_user, 'status' => 1])
-//                    ->orderBy(['date' => SORT_DESC])
-//                    ->asArray()
-//                    ->all();
-            
-            if ($model_history != null) {
-                $response ["success"] = true;
-                $response ['data'] = $model_history;
-            } else {
-                $response ["success"] = true;
-                $response ["data"] = null;
-            }
-        } else {
+
+        if (!isset($model_token) || empty($model_token)) {
             $response ["success"] = false;
-            $response ["data"] = [ 
-                            "message" => "Token inválido" 
+            $response ["data"] = [
+                "message" => "Token inválido"
             ];
+            return $response;
         }
+            
+//            $connection = Yii::$app->getDb();
+//            $command = $connection->createCommand(Yii::$app->params ['vw_service_history'],[':id' => '',':user_id' => $model_token->FK_id_user, ':status' => 1]);
+//            $model_history = $command->queryAll();
+        
+        $model_history = VwServiceHistory::find()
+                ->where(['user_id' => $model_token->FK_id_user, 'status' => 1])
+                ->orderBy(['date' => SORT_DESC])
+                ->asArray()
+                ->all();
+
+        if ($model_history != null) {
+            $response ["success"] = true;
+            $response ['data'] = $model_history;
+        } else {
+            $response ["success"] = true;
+            $response ["data"] = null;
+        }
+       
         return $response;
     }
 
@@ -219,32 +223,34 @@ class ServiceHistoryController extends Controller {
         $token = Yii::$app->request->post("token", null);
 
         $model_token = LogToken::find ()
-            ->where (['token' => $token, 'status' => 1])
+            ->where ([
+                'token' => $token, 
+                'status' => 1])
             ->one ();
 
-        if ($model_token != null) {
-            
-            $connection = Yii::$app->getDb();
-            $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => $model_token->FK_id_user,':id' => '']);
-            $model_history = $command->queryAll();
-            
-//            $model_history = VwActualService::find()->where([
-//                        'user_id' => $model_token->FK_id_user
-//                    ])->asArray()->all();
-            if ($model_history != null) {
-                $response ["success"] = true;
-                $response ['data'] = $model_history;
-            } else {
-                $response ["success"] = true;
-                // $response["data"]=["message"=>"Lo sentimos, no hay historial"];
-                $response ["data"] = null;
-            }
-        } else {
+        if (!isset($model_token) || empty($model_token)) {
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Token inválido"
             ];
+            return $response;
         }
+            
+            
+        $model_history = VwActualService::find()
+                ->where([
+                    'user_id' => $model_token->FK_id_user])
+                ->asArray()
+                ->all();
+            
+        if ($model_history != null) {
+            $response ["success"] = true;
+            $response ['data'] = $model_history;
+        } else {
+            $response ["success"] = true;
+            $response ["data"] = null;
+        }
+        
 
         return $response;
     }
@@ -256,23 +262,27 @@ class ServiceHistoryController extends Controller {
         $token = Yii::$app->request->post("token", null);
 
         $model_token = LogToken::find ()
-            ->where (['token' => $token, 'enable' => 1])
+            ->where ([
+                'token' => $token, 
+                'status' => 1])
             ->one ();
 
-        if ($model_token == null) {
+        if (!isset($model_token) || empty($model_token)) {
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Token inválido"
             ];
-
             return $response;
         }
 
         // Busca servicios que haya cancelado el especialista
-        $model = ServiceHistory::find()->select(['id', 'date', 'time', 'service_id'])->where([
+        $model = ServiceHistory::find()
+                ->select(['id', 'date', 'time', 'service_id'])
+                ->where([
                     'state' => 1,
-                    'user_id' => $model_token->FK_id_user
-                ])->asArray()->all();
+                    'user_id' => $model_token->FK_id_user])
+                ->asArray()
+                ->all();
 
         foreach ($model as $service) {
             $pay = ServiceHistory::findOne(['id' => $service['id']])->getLastPay();
@@ -313,6 +323,20 @@ class ServiceHistoryController extends Controller {
         $observations= Yii::$app->request->post("observations", null);
         $token = Yii::$app->request->post("token", null);
         
+        $model_token = LogToken::find ()
+            ->where ([
+                'token' => $token, 
+                'status' => 1])
+            ->one ();
+
+        if (!isset($model_token) || empty($model_token)) {
+            $response ["success"] = false;
+            $response ["data"] = [
+                "message" => "Token inválido"
+            ];
+            return $response;
+        }
+        
         if(is_null($service_id) || empty($service_id)){
             $response ["success"] = false;
             $response ["data"] = [
@@ -340,19 +364,6 @@ class ServiceHistoryController extends Controller {
             return $response;
         }
       
-        $model_token = LogToken::find ()
-            ->where (['token' => $token, 'enable' => 1])
-            ->one ();
-        
-        if (!isset($model_token) || empty($model_token)) {
-            $response ["success"] = false;
-            $response ["data"] = [
-                "message" => "Token inválido"
-            ];
-
-            return $response;
-        }
-        
         //  Buscamos si este usuario fue el que recibio este servicio y por lo tanto puede calificarlo 
         $serviceH = ServiceHistory::find()
                 ->where(['id' => $service_id,'user_id' => $model_token->FK_id_user, 'state' => 1])

@@ -126,13 +126,13 @@ class AddressController extends Controller {
         Yii::$app->response->format = 'json';
         $token = Yii::$app->request->post("token", null);
 
-        $model_token = LogToken::find()
-                ->where([
-                    'token' => $token, 
-                    'status' => 1])
-                ->one();
-
-        if ($model_token != null) {
+        $model_token = LogToken::find ()
+            ->where ([
+                'token' => $token, 
+                'status' => 1])
+            ->one ();
+        
+        if (isset($model_token) && !empty($model_token)) {
 
             $model = Address::find()->select(['address.id', 'address', 'tower_apartment', 'housing_type', 'type_housing_id', 'custom_address', 'lat', 'lng'])->joinwith('userHasAddress')->joinwith('typeHousing')->where(['user_has_address.user_id' => $model_token->FK_id_user, 'enable' => '1'])
                             ->asArray()->all();
@@ -158,11 +158,13 @@ class AddressController extends Controller {
         $address = Yii::$app->request->post("id_address", null);
 
         // Validamos el token
-        $model_token = LogToken::find()
-                ->where(['token' => $token, 'enable' => 1])
-                ->one();
+        $model_token = LogToken::find ()
+            ->where ([
+                'token' => $token, 
+                'status' => 1])
+            ->one ();
         
-        if ($model_token == null) {
+        if (!isset($model_token) || empty($model_token)) {
 
             $response ["success"] = false;
             $response ["data"] = [
@@ -215,15 +217,20 @@ class AddressController extends Controller {
         $address_other = Yii::$app->request->post("address_other", null);
         $type_housing = Yii::$app->request->post("housing_type", null);
 
-        $model_token = LogToken::find()
-                ->where(['token' => $token, 'enable' => 1])
-                ->one();
+        $model_token = LogToken::find ()
+            ->where ([
+                'token' => $token, 
+                'status' => 1])
+            ->one ();
 
-        if ($model_token == null) {
-            $response["success"] = false;
-            $response["data"] = ["message" => "Token inválido"];
+        if (!isset($model_token) || empty($model_token)) {
+            $response ["success"] = false;
+            $response ["data"] = [
+                "message" => "Token inválido"
+            ];
             return $response;
         }
+        
         //Validamos la cobertura
         $zone = Zone::getZone($lat, $lng);
         if (!$zone) {

@@ -141,6 +141,7 @@ class ChatController extends Controller {
 		return parent::beforeAction ( $action );
 	}
 	public function actionSendMessage() {
+            
 		Yii::$app->response->format = 'json';
 		
 		$token = Yii::$app->request->post ( 'token', '' );
@@ -149,17 +150,19 @@ class ChatController extends Controller {
 		$event = Yii::$app->request->post ( 'event', '' );
 		
 		$model_token = LogToken::find ()
-                        ->where (['token' => $token, 'enable' => 1])
-                        ->one ();
-		
-		// var_dump($searched);
-		if ($model_token == null) {
-			$response ["success"] = false;
-			$response ["data"] = [ 
-					"message" => "Token inválido" 
-			];
-			return $response;
-		}
+                    ->where ([
+                        'token' => $token, 
+                        'status' => 1])
+                    ->one ();
+
+                if (!isset($model_token) || empty($model_token)) {
+                    $response ["success"] = false;
+                    $response ["data"] = [
+                        "message" => "Token inválido"
+                    ];
+                    return $response;
+                }
+                
 		$id_user = $model_token->FK_id_user;
 		
 		$model_service = AssignedService::findOne ( [ 
@@ -364,17 +367,18 @@ class ChatController extends Controller {
 		$token = Yii::$app->request->post ( 'token', '' );
 	
 		$model_token = LogToken::find ()
-                        ->where (['token' => $token, 'enable' => 1])
-                        ->one ();
-		
-		// var_dump($searched);
-		if ($model_token == null) {
-			$response ["success"] = false;
-			$response ["data"] = [
-					"message" => "Token inválido"
-			];
-			return $response;
-		}
+                    ->where ([
+                        'token' => $token, 
+                        'status' => 1])
+                    ->one ();
+
+                if (!isset($model_token) || empty($model_token)) {
+                    $response ["success"] = false;
+                    $response ["data"] = [
+                        "message" => "Token inválido"
+                    ];
+                    return $response;
+                }
 		
 		$id_user = $model_token->FK_id_user;
 	

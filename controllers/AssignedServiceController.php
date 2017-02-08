@@ -170,20 +170,19 @@ class AssignedServiceController extends Controller {
 		$cupon = $_POST ['cupon'];
 		// $expert=$_POST['expert'};
 		
-		// Validamos el token
-		$model_token = LogToken::find ()->where ( [ 
-				'token' => $token,
-                                'status' => 1 
-		] )->one ();
-		if ($model_token == null) {
-			
-			$response ["success"] = false;
-			$response ["data"] = [ 
-					"message" => "Token inválido" 
-			];
-		//	$response = json_encode ( $response );
-			return $response;
-		}
+		$model_token = LogToken::find ()
+                    ->where ([
+                        'token' => $token, 
+                        'status' => 1])
+                    ->one ();
+
+                if (!isset($model_token) || empty($model_token)) {
+                    $response ["success"] = false;
+                    $response ["data"] = [
+                        "message" => "Token inválido"
+                    ];
+                    return $response;
+                }
 		
 		// Validamos la zona de la dorección
 		$zone = Zone::getZone ( $lat, $lng );
@@ -472,19 +471,20 @@ class AssignedServiceController extends Controller {
 		$date = Yii::$app->request->post ( "date", "" );
 		$token = Yii::$app->request->post ( "token", "" );
 		
-		// Validamos el token
-		$model_token = LogToken::find ()->where ( [ 
-				'token' => $token 
-		] )->one ();
-		if ($model_token == null) {
-			
-			$response ["success"] = false;
-			$response ["data"] = [ 
-					"message" => "Token inválido" 
-			];
-			// $response = json_encode ( $response );
-			return $response;
-		}
+		$model_token = LogToken::find ()
+                    ->where ([
+                        'token' => $token, 
+                        'status' => 1])
+                    ->one ();
+
+                if (!isset($model_token) || empty($model_token)) {
+                    $response ["success"] = false;
+                    $response ["data"] = [
+                        "message" => "Token inválido"
+                    ];
+                    return $response;
+                }
+                
 		$id_user = $model_token->FK_id_user;
 		
 		// Buscamos el servicio activo
@@ -981,6 +981,7 @@ class AssignedServiceController extends Controller {
 		return $response;
 	}
 	public function actionEditService() {
+            
 		Yii::$app->response->format = 'json';
 		
 		$time_new = Yii::$app->request->post ( "time_new", "" );
@@ -990,19 +991,20 @@ class AssignedServiceController extends Controller {
 		$comment = Yii::$app->request->post ( "comment", "" );
 		$token = Yii::$app->request->post ( "token", "" );
 		
-		// Validamos el token
-		$model_token = LogToken::find ()->where ( [ 
-				'token' => $token 
-		] )->one ();
-		if ($model_token == null) {
-			
-			$response ["success"] = false;
-			$response ["data"] = [ 
-					"message" => "Token inválido" 
-			];
-			// $response = json_encode ( $response );
-			return $response;
-		}
+		$model_token = LogToken::find ()
+                    ->where ([
+                        'token' => $token, 
+                        'status' => 1])
+                    ->one ();
+
+                if (!isset($model_token) || empty($model_token)) {
+                    $response ["success"] = false;
+                    $response ["data"] = [
+                        "message" => "Token inválido"
+                    ];
+                    return $response;
+                }
+        
 		$id_user = $model_token->FK_id_user;
 		// var_dump($id_user);
 		// exit();

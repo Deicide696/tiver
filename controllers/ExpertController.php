@@ -429,6 +429,7 @@ class ExpertController extends Controller {
     public function actionInmediatoAssign() {
         
         Yii::$app->response->format = 'json';
+        
         $lat = Yii::$app->request->post("address_lat", null);
         $lng = Yii::$app->request->post("address_lng", null);
         $address = Yii::$app->request->post("address", null);
@@ -441,18 +442,17 @@ class ExpertController extends Controller {
         $cupon = Yii::$app->request->post("cupon", null);
 
 
-        // Validamos el token
         $model_token = LogToken::find ()
-            ->where (['token' => $token, 'enable' => 1])
+            ->where ([
+                'token' => $token, 
+                'status' => 1])
             ->one ();
-        
-        if ($model_token == null) {
 
+        if (!isset($model_token) || empty($model_token)) {
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Token inválido"
             ];
-            // $response = json_encode ( $response );
             return $response;
         }
 
@@ -518,20 +518,20 @@ class ExpertController extends Controller {
         $token = Yii::$app->request->post("token", null);
         $event = Yii::$app->request->post("event", null);
 
-        // Validamos el token
         $model_token = LogToken::find ()
-            ->where (['token' => $token, 'enable' => 1])
+            ->where ([
+                'token' => $token, 
+                'status' => 1])
             ->one ();
-        
-        if ($model_token == null) {
 
+        if (!isset($model_token) || empty($model_token)) {
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Token inválido"
             ];
-            // $response = json_encode ( $response );
             return $response;
         }
+        
         // $_POST['text']='Mensaje desde el servidor: '.$_POST['text'];
         // var_dump(Yii::$app->request->post());
         // print 'Hell wrld';
@@ -712,13 +712,15 @@ class ExpertController extends Controller {
         $token = Yii::$app->request->post("token", null);
          
         $model_token = LogToken::find ()
-            ->where (['token' => $token, 'enable' => 1])
+            ->where ([
+                'token' => $token, 
+                'status' => 1])
             ->one ();
-        
+
         if (!isset($model_token) || empty($model_token)) {
             $response ["success"] = false;
             $response ["data"] = [
-                "message" => "Token no existe o es inválido"
+                "message" => "Token inválido"
             ];
             return $response;
         }
@@ -748,38 +750,28 @@ class ExpertController extends Controller {
     public function actionGetService(){
         
         Yii::$app->response->format = 'json';
+        
         $id = Yii::$app->request->post("id", null);
         $token = Yii::$app->request->post("token", null);
          
         $model_token = LogToken::find ()
-            ->where (['token' => $token, 'enable' => 1])
+            ->where ([
+                'token' => $token, 
+                'status' => 1])
             ->one ();
-        
-         $expert = Expert::find()
-                ->where(['id' => $id])->one();
-        if (!empty($expert)){
-            
-            $response ["success"] = True;
-            $response ["data"] = [
-                "path" => $expert->path
-            ];
-        } else {
-            $response ["success"] = False;
-            $response ["data"] = [
-                "message" => "Error"
-            ];
-        }
-        
+
         if (!isset($model_token) || empty($model_token)) {
             $response ["success"] = false;
             $response ["data"] = [
-                "message" => "Token no existe o es inválido"
+                "message" => "Token inválido"
             ];
             return $response;
         }
         
-        $expert = Expert::find()
-                ->where(['id' => $id])->one();
+         $expert = Expert::find()
+                ->where(['id' => $id])
+                ->one();
+         
         if (!empty($expert)){
             
             $response ["success"] = True;
@@ -792,6 +784,7 @@ class ExpertController extends Controller {
                 "message" => "Error"
             ];
         }
+        
         return $response;
     }
 }

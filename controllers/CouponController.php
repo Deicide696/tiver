@@ -919,9 +919,12 @@ class CouponController extends Controller {
         $cupon = Yii::$app->request->post('code', '');
         $token = Yii::$app->request->post('token', '');
 
-        $model_token = LogToken::find()
-                ->where(['token' => $token])
-                ->one();
+        $model_token = LogToken::find ()
+            ->where ([
+                'token' => $token, 
+                'status' => 1])
+            ->one ();
+        
         if (!isset($model_token) || empty($model_token)) {
 
             $response ["success"] = false;
@@ -1031,9 +1034,12 @@ class CouponController extends Controller {
         $cupon = Yii::$app->request->post('cupon', '');
         $token = Yii::$app->request->post('token', '');
 
-        $model_token = LogToken::find()
-                ->where(['token' => $token])
-                ->one();
+        $model_token = LogToken::find ()
+            ->where ([
+                'token' => $token, 
+                'status' => 1])
+            ->one ();
+        
         if (!isset($model_token) || empty($model_token)) {
 
             $response ["success"] = false;
@@ -1042,6 +1048,7 @@ class CouponController extends Controller {
             ];
             return $response;
         }
+        
         $model = Coupon::find()
                 ->where(['code' => $cupon, 'enable' => 1])
                 ->joinWith(['couponHasCategoryServices.categoryService'])

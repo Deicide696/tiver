@@ -33,7 +33,7 @@ class ResetPasswordForm extends Model {
         if (empty($token) || !is_string($token)) {
             throw new InvalidParamException('Password reset token cannot be blank.');
         }
-        $this->_tokenMmz = LogToken::findOne(['token' => $token, 'enable' => 1]);
+        $this->_tokenMmz = LogToken::findOne(['token' => $token, 'status' => 1]);
         if ($this->_tokenMmz) {
             $this->_user = User::findOne(['id' => $this->_tokenMmz->FK_id_user, 'enable' => 1]);
             if (!$this->_user) {

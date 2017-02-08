@@ -160,35 +160,31 @@ class ZoneController extends Controller
     	Yii::$app->response->format = 'json';
     	$token = Yii::$app->request->post ( "token", "" );
     	
-    	// Validamos el token
     	$model_token = LogToken::find ()
-            ->where (['token' => $token, 'enable' => 1])
+            ->where ([
+                'token' => $token, 
+                'status' => 1])
             ->one ();
+
+        if (!isset($model_token) || empty($model_token)) {
+            $response ["success"] = false;
+            $response ["data"] = [
+                "message" => "Token inválido"
+            ];
+            return $response;
+        }
         
-    	if ($model_token == null) {
-    			
-    		$response ["success"] = false;
-    		$response ["data"] = [
-    				"message" => "Token inválido"
-    		];
-    		// $response = json_encode ( $response );
-    		return $response;
-    	}
     	$model=Zone::find()->joinWith('vertex')->asArray()->all();
      	if($model!=null){
-	    		$response["success"]=true;
-	    		$response['data']=$model;
-	    		return $response;
-	    			
-	    	}
-	    	else{
-	    		$response["success"]=false;
-	    		$response["data"]=["message"=>"Lo sentimos, no hay categorias"];
-	    		return $response;
-	    	}
-    	
-    	///
-    	
+            $response["success"]=true;
+            $response['data']=$model;
+            return $response;
+        }
+        else{
+            $response["success"]=false;
+            $response["data"]=["message"=>"Lo sentimos, no hay categorias"];
+            return $response;
+        }
     }
     public function beforeAction($action) {
     	$this->enableCsrfValidation = false;

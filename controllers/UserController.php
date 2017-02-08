@@ -362,13 +362,23 @@ class UserController extends Controller {
 //            $user = User::find()->where("enable='1' and(fb_id='$user_id' or email='$email') and FK_id_rol=1")->one();
             $user = User::find()->where("enable='1' and(fb_id='$user_id' or email='$email')")->one();
             if ($user) {
-                $updateTokens = LogToken::updateAll([
-                            'enable' => 0
-                                ], [
+//                $updateTokens = LogToken::updateAll([
+//                            'enable' => 0
+//                                ], [
+//                            'FK_id_user' => $user->id,
+//                            'FK_id_token_type' => $typeToken->id,
+//                            'status' => 1
+//                ]);
+                
+                $updateTokens = LogToken::find()
+                        ->where([
                             'FK_id_user' => $user->id,
                             'FK_id_token_type' => $typeToken->id,
-                            'status' => 1
-                ]);
+                            'status' => 1])
+                        ->one();
+                $updateTokens->status = 0;
+                $updateTokens->update();
+                
                 // se crea el token del nuevo usuario mmz
                 $tokenMmz = new LogToken ();
                 $token = MD5($user->id . $user->email . time());
@@ -626,9 +636,11 @@ class UserController extends Controller {
             $phone = Yii::$app->request->post("phone", null);
             $token = Yii::$app->request->post("token", null);
             try {
-                $modelToken = LogToken::find()
-                        ->where(['token' => $token, 'enable' => 1])
-                        ->one();
+                $modelToken = LogToken::find ()
+                    ->where ([
+                        'token' => $token, 
+                        'status' => 1])
+                    ->one ();
 
                 if (!empty($modelToken)) {
                     if ($modelToken->status) {
@@ -800,13 +812,23 @@ class UserController extends Controller {
         // se crea el token del nuevo usuario mmz
         $tokenMmz = new LogToken ();
         $token = MD5($user->id . $user->email . time());
-        LogToken::updateAll([
-                    'status' => 0
-                        ], [
+//        LogToken::updateAll([
+//                    'status' => 0
+//                        ], [
+//                    'FK_id_user' => $user->id,
+//                    'FK_id_token_type' => $typeToken->id,
+//                    'status' => 1
+//        ]);
+        
+        $updateTokens = LogToken::find()
+                ->where([
                     'FK_id_user' => $user->id,
                     'FK_id_token_type' => $typeToken->id,
-                    'status' => 1
-        ]);
+                    'status' => 1])
+                ->one();
+        $updateTokens->status = 0;
+        $updateTokens->update();
+        
         $arrayLog = [
             'LogToken' => [
                 'token' => $token,
@@ -915,14 +937,23 @@ class UserController extends Controller {
                                     'enable' => 1
                         ]);
                         if ($user) {
-                            $updateTokens = LogToken::updateAll([
-                                        'enable' => 0
-                                            ], [
+//                            $updateTokens = LogToken::updateAll([
+//                                        'enable' => 0
+//                                            ], [
+//                                        'FK_id_user' => $user->id,
+//                                        'FK_id_token_type' => $typeToken->id,
+//                                        'status' => 1
+//                            ]);
+                            $updateTokens = LogToken::find()
+                                    ->where([
                                         'FK_id_user' => $user->id,
                                         'FK_id_token_type' => $typeToken->id,
-                                        'status' => 1
-                            ]);
-                            // se crea el token del nuevo usuario mmz
+                                        'status' => 1])
+                                    ->one();
+                            $updateTokens->status = 0;
+                            $updateTokens->update();
+
+                                    // se crea el token del nuevo usuario mmz
                             $tokenMmz = new LogToken ();
                             $token = MD5($user->id . $user->email . time());
                             $arrayLog = [
@@ -1160,32 +1191,39 @@ class UserController extends Controller {
 
         $data = json_decode($_POST ['request'], true);
         $token = $data ['token'];
-        $model_token = LogToken::find()
-                ->where(['token' => $token, 'enable' => 1])
-                ->one();
+        
+        $model_token = LogToken::find ()
+            ->where ([
+                'token' => $token, 
+                'status' => 1])
+            ->one ();
 
-        if ($model_token != null) {
+        if (!isset($model_token) || empty($model_token)) {
+            $response ["success"] = false;
+            $response ["data"] = [
+                "message" => "Token inválido"
+            ];
+            return $response;
+        }
 
-            $model_user = User::find()->select([
-                        'id',
-                        'name',
-                        'last_name',
-                        'email',
-                        'phone'
-                    ])->where([
-                        'id' => $model_token->user_id
-                    ])->asArray()->all();
-            if ($model_user != null) {
-                $response ["success"] = true;
-                $response ['data'] = $model_user;
-            } else {
-                $response ["success"] = false;
-                $response ["mensaje"] = "Usuario no existe";
-            }
+        $model_user = User::find()->select([
+                    'id',
+                    'name',
+                    'last_name',
+                    'email',
+                    'phone'
+                ])->where([
+                    'id' => $model_token->user_id
+                ])->asArray()->all();
+        
+        if ($model_user != null) {
+            $response ["success"] = true;
+            $response ['data'] = $model_user;
         } else {
             $response ["success"] = false;
-            $response ["mensaje"] = "Token inválido";
+            $response ["mensaje"] = "Usuario no existe";
         }
+       
         $response = json_encode($response);
         header('Content-Type: application/json');
         print $response;

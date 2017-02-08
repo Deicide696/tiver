@@ -116,25 +116,28 @@ class CreditCardController extends Controller {
     }
 
     public function actionDeactive() {
+        
         Yii::$app->response->format = 'json';
 
         $token = Yii::$app->request->post("token", null);
         $card = Yii::$app->request->post("id_card", null);
 
         // Validamos el token
-        $model_token = LogToken::find()
-                ->where(['token' => $token, 'enable' => 1])
-                ->one();
+        $model_token = LogToken::find ()
+            ->where ([
+                'token' => $token, 
+                'status' => 1])
+            ->one ();
 
-        if ($model_token == null) {
+        if (!isset($model_token) || empty($model_token)) {
 
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Token inválido"
             ];
-            // $response = json_encode ( $response );
             return $response;
         }
+        
         $id_user = $model_token->FK_id_user;
 
         $model_card = CreditCard::find()->where([
@@ -176,6 +179,7 @@ class CreditCardController extends Controller {
     }
 
     public function actionAdd() {
+        
         Yii::$app->response->format = 'json';
 
         $token = Yii::$app->request->post("token", null);
@@ -186,11 +190,13 @@ class CreditCardController extends Controller {
         // $exp2=Yii::$app->request->post("exp2", null);
         // $cvv=Yii::$app->request->post("cvv", null);
 
-        $model_token = LogToken::find()
-                ->where(['token' => $token, 'enable' => 1])
-                ->one();
+        $model_token = LogToken::find ()
+            ->where ([
+                'token' => $token, 
+                'status' => 1])
+            ->one ();
 
-        if ($model_token == null) {
+        if (!isset($model_token) || empty($model_token)) {
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Token inválido"
@@ -248,57 +254,58 @@ class CreditCardController extends Controller {
 
     public function actionGetCreditCard() {
 
+        Yii::$app->response->format = 'json';
         $token = Yii::$app->request->post("token", null);
 
-        $model_token = LogToken::find()
-                ->where(['token' => $token, 'enable' => 1])
-                ->one();
+        $model_token = LogToken::find ()
+            ->where ([
+                'token' => $token, 
+                'status' => 1])
+            ->one ();
 
-        if (isset($model_token) && !empty($model_token)) {
-
-            $model_creditcard = CreditCard::find()
-                    ->where(['user_id' => $model_token->FK_id_user])
-                    ->asArray()->all();
-
-            if ($model_creditcard != null) {
-                $model_user = User::find()->where([
-                            'id' => $model_token->FK_id_user
-                        ])->one();
-
-                foreach ($model_creditcard as $tarjeta) {
-
-                    //print PHP_EOL."getting -> ".$tarjeta ['hash'].PHP_EOL;
-                    $info = Yii::$app->TPaga->GetCreditCard($model_user->tpaga_id, $tarjeta ['hash']);
-                    $bin = $info->bin;
-                    $last_four = $info->last_four;
-                    $type = $info->type;
-                    $tar = [
-                        "id" => $tarjeta ['id'],
-                        "hash" => $tarjeta ['hash'],
-                        "enable" => $tarjeta ['enable'],
-                        "bin" => $bin,
-                        "last_four" => $last_four,
-                        "type" => $type
-                    ];
-                    $resp [] = $tar;
-                }
-
-                $response ["success"] = true;
-                $response ['data'] = $resp;
-            } else {
-                $response ["success"] = true;
-                // $response["data"]=["message"=>"Lo sentimos, no hay historial"];
-                $response ["data"] = null;
-            }
-        } else {
+        if (!isset($model_token) || empty($model_token)) {
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Token inválido"
             ];
+            return $response;
         }
-        $response = json_encode($response);
-        header('Content-Type: application/json');
-        print $response;
+
+        $model_creditcard = CreditCard::find()
+                ->where(['user_id' => $model_token->FK_id_user])
+                ->asArray()->all();
+
+        if ($model_creditcard != null) {
+            $model_user = User::find()->where([
+                        'id' => $model_token->FK_id_user
+                    ])->one();
+
+            foreach ($model_creditcard as $tarjeta) {
+
+                //print PHP_EOL."getting -> ".$tarjeta ['hash'].PHP_EOL;
+                $info = Yii::$app->TPaga->GetCreditCard($model_user->tpaga_id, $tarjeta ['hash']);
+                $bin = $info->bin;
+                $last_four = $info->last_four;
+                $type = $info->type;
+                $tar = [
+                    "id" => $tarjeta ['id'],
+                    "hash" => $tarjeta ['hash'],
+                    "enable" => $tarjeta ['enable'],
+                    "bin" => $bin,
+                    "last_four" => $last_four,
+                    "type" => $type
+                ];
+                $resp [] = $tar;
+            }
+
+            $response ["success"] = true;
+            $response ['data'] = $resp;
+        } else {
+            $response ["success"] = true;
+            $response ["data"] = null;
+        }
+       
+        return $response;
     }
 
     // Android
