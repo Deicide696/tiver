@@ -11,6 +11,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\models\User;
 use app\models\LogToken;
+use app\models\VwActualService;
 
 /**
  * ServiceHistoryController implements the CRUD actions for ServiceHistory model.
@@ -18,7 +19,7 @@ use app\models\LogToken;
 class ServiceHistoryController extends Controller {
 
     public function behaviors() {
-        
+
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
@@ -30,6 +31,7 @@ class ServiceHistoryController extends Controller {
             ],
         ];
     }
+
     /**
      * Finds user by user_email and user_password
      *
@@ -39,26 +41,26 @@ class ServiceHistoryController extends Controller {
      */
     public function Auth($email, $password) {
         // username, password are mandatory fields
-        if(empty($email) || empty($password)){
+        if (empty($email) || empty($password)) {
             return null;
         }
         // get user using requested email
         $email = User::findOne([
-            'email' => $email,
+                    'email' => $email,
         ]);
-    
+
         // if no record matching the requested user
-        if(empty($email)){
-            return null;    
+        if (empty($email)) {
+            return null;
         }
         // validate password        
         $isPass = Yii::$app->security->validatePassword($password, $email->password);
-    
+
         // if password validation fails
-        if(!$isPass){                
-            return null;            
-        }            
-    
+        if (!$isPass) {
+            return null;
+        }
+
         // if user validates (both user_email, user_password are valid)
         return $email;
     }
@@ -75,7 +77,7 @@ class ServiceHistoryController extends Controller {
         return $this->render('index', [
                     'searchModel' => $searchModel,
                     'dataProvider' => $dataProvider
-                ]);
+        ]);
     }
 
     /**
@@ -87,7 +89,7 @@ class ServiceHistoryController extends Controller {
     public function actionView($id) {
         return $this->render('view', [
                     'model' => $this->findModel($id)
-                ]);
+        ]);
     }
 
     /**
@@ -103,11 +105,11 @@ class ServiceHistoryController extends Controller {
             return $this->redirect([
                         'view',
                         'id' => $model->id
-                    ]);
+            ]);
         } else {
             return $this->render('create', [
                         'model' => $model
-                    ]);
+            ]);
         }
     }
 
@@ -125,11 +127,11 @@ class ServiceHistoryController extends Controller {
             return $this->redirect([
                         'view',
                         'id' => $model->id
-                    ]);
+            ]);
         } else {
             return $this->render('update', [
                         'model' => $model
-                    ]);
+            ]);
         }
     }
 
@@ -145,7 +147,7 @@ class ServiceHistoryController extends Controller {
 
         return $this->redirect([
                     'index'
-                ]);
+        ]);
     }
 
     /**
@@ -169,6 +171,7 @@ class ServiceHistoryController extends Controller {
         $this->enableCsrfValidation = false;
         return parent::beforeAction($action);
     }
+
     /**
      * Get Hitorical service of a user
      * 
@@ -176,16 +179,16 @@ class ServiceHistoryController extends Controller {
      * @return json response service
      */
     public function actionHistory() {
-        
+
         Yii::$app->response->format = 'json';
-        
-        $token = Yii::$app->request->post ( "token", null );
-        
-        $model_token = LogToken::find ()
-            ->where ([
-                'token' => $token, 
-                'status' => 1])
-            ->one ();
+
+        $token = Yii::$app->request->post("token", null);
+
+        $model_token = LogToken::find()
+                ->where([
+                    'token' => $token,
+                    'status' => 1])
+                ->one();
 
         if (!isset($model_token) || empty($model_token)) {
             $response ["success"] = false;
@@ -194,11 +197,11 @@ class ServiceHistoryController extends Controller {
             ];
             return $response;
         }
-            
+
 //            $connection = Yii::$app->getDb();
 //            $command = $connection->createCommand(Yii::$app->params ['vw_service_history'],[':id' => '',':user_id' => $model_token->FK_id_user, ':status' => 1]);
 //            $model_history = $command->queryAll();
-        
+
         $model_history = VwServiceHistory::find()
                 ->where(['user_id' => $model_token->FK_id_user, 'status' => 1])
                 ->orderBy(['date' => SORT_DESC])
@@ -212,21 +215,21 @@ class ServiceHistoryController extends Controller {
             $response ["success"] = true;
             $response ["data"] = null;
         }
-       
+
         return $response;
     }
 
     public function actionActualService() {
-        
+
         Yii::$app->response->format = 'json';
 
         $token = Yii::$app->request->post("token", null);
 
-        $model_token = LogToken::find ()
-            ->where ([
-                'token' => $token, 
-                'status' => 1])
-            ->one ();
+        $model_token = LogToken::find()
+                ->where([
+                    'token' => $token,
+                    'status' => 1])
+                ->one();
 
         if (!isset($model_token) || empty($model_token)) {
             $response ["success"] = false;
@@ -235,14 +238,14 @@ class ServiceHistoryController extends Controller {
             ];
             return $response;
         }
-            
-            
+
+
         $model_history = VwActualService::find()
                 ->where([
                     'user_id' => $model_token->FK_id_user])
                 ->asArray()
                 ->all();
-            
+
         if ($model_history != null) {
             $response ["success"] = true;
             $response ['data'] = $model_history;
@@ -250,22 +253,22 @@ class ServiceHistoryController extends Controller {
             $response ["success"] = true;
             $response ["data"] = null;
         }
-        
+
 
         return $response;
     }
 
     public function actionPendingService() {
-        
+
         Yii::$app->response->format = 'json';
 
         $token = Yii::$app->request->post("token", null);
 
-        $model_token = LogToken::find ()
-            ->where ([
-                'token' => $token, 
-                'status' => 1])
-            ->one ();
+        $model_token = LogToken::find()
+                ->where([
+                    'token' => $token,
+                    'status' => 1])
+                ->one();
 
         if (!isset($model_token) || empty($model_token)) {
             $response ["success"] = false;
@@ -308,26 +311,26 @@ class ServiceHistoryController extends Controller {
         $response ['data'] = null;
         return $response;
     }
+
     /**
      * Set qualify of service 
      * 
      * @return json response
      */
-    
     public function actionQualifyService() {
-     
+
         Yii::$app->response->format = 'json';
-        
-        $service_id= Yii::$app->request->post("service_id", null);
-        $qualify= Yii::$app->request->post("qualify", null);
-        $observations= Yii::$app->request->post("observations", null);
+
+        $service_id = Yii::$app->request->post("service_id", null);
+        $qualify = Yii::$app->request->post("qualify", null);
+        $observations = Yii::$app->request->post("observations", null);
         $token = Yii::$app->request->post("token", null);
-        
-        $model_token = LogToken::find ()
-            ->where ([
-                'token' => $token, 
-                'status' => 1])
-            ->one ();
+
+        $model_token = LogToken::find()
+                ->where([
+                    'token' => $token,
+                    'status' => 1])
+                ->one();
 
         if (!isset($model_token) || empty($model_token)) {
             $response ["success"] = false;
@@ -336,41 +339,41 @@ class ServiceHistoryController extends Controller {
             ];
             return $response;
         }
-        
-        if(is_null($service_id) || empty($service_id)){
+
+        if (is_null($service_id) || empty($service_id)) {
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "El ID del Servicio no debe ser Nulo o Vacío."
             ];
             return $response;
         }
-        if(is_null($qualify) || empty($qualify)){
+        if (is_null($qualify) || empty($qualify)) {
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "La Calificación de Experto no debe ser Nulo o Vacío."
             ];
             return $response;
-        }if(is_null($qualify) || empty($qualify)){
+        }if (is_null($qualify) || empty($qualify)) {
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "La Calificación de Experto no debe ser Nulo o Vacío."
             ];
             return $response;
-        }if(is_null($token) || empty($token)){
+        }if (is_null($token) || empty($token)) {
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "El token del Usuario no debe ser Nulo o Vacío."
             ];
             return $response;
         }
-      
+
         //  Buscamos si este usuario fue el que recibio este servicio y por lo tanto puede calificarlo 
         $serviceH = ServiceHistory::find()
-                ->where(['id' => $service_id,'user_id' => $model_token->FK_id_user, 'state' => 1])
+                ->where(['id' => $service_id, 'user_id' => $model_token->FK_id_user, 'state' => 1])
                 ->asArray()
                 ->one();
-        
-        if(!isset($serviceH) || empty($serviceH)){
+
+        if (!isset($serviceH) || empty($serviceH)) {
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Este servicio no encuentra asociado a este usuario o no esta activo."
@@ -378,23 +381,23 @@ class ServiceHistoryController extends Controller {
 
             return $response;
         }
-        
+
         // Busca el servicio que se calificará que este finalizado y este pagado
         $model = ServiceHistoryHasPay::find()
                 ->where([
                     'service_history.id' => $service_id,
                     'pay.state' => 1,
                 ])
-                ->joinWith(['serviceHistory','pay'])
+                ->joinWith(['serviceHistory', 'pay'])
                 ->asArray()
                 ->one();
-        
-        if(isset($model) && !empty($model)){
-            $serviceH= ServiceHistory::findOne($model['serviceHistory']['id']);
-           
+
+        if (isset($model) && !empty($model)) {
+            $serviceH = ServiceHistory::findOne($model['serviceHistory']['id']);
+
             $serviceH->qualification = $qualify;
             $serviceH->observations = $observations;
-            if($serviceH->save(true, ['qualification','observations'])){
+            if ($serviceH->save(true, ['qualification', 'observations'])) {
                 $response ["success"] = true;
                 $response ["data"] = [
                     "message" => "Gracias por calificar este servicio. Tu opinión es muy importante para nosotros"
@@ -406,7 +409,7 @@ class ServiceHistoryController extends Controller {
                     "message" => "Hemos tenido un problema al registrar tu calificación. Porfavor intenta de nuevo"
                 ];
                 return $response;
-            }  
+            }
         } else {
             $response ["success"] = false;
             $response ["data"] = [
@@ -416,4 +419,5 @@ class ServiceHistoryController extends Controller {
         }
         return true;
     }
+
 }
