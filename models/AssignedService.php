@@ -256,16 +256,6 @@ class AssignedService extends \yii\db\ActiveRecord
                                 if($model["discount"] > 0){
                                     $discount = ($price * $model["discount"]) / 100; 
                                     $price = ($price - $discount);
-                                    /*if($discountCoupon){
-                                        $userHasCoupons2 = UserHasCoupon::find()
-                                                    ->where(['user_id' => $userHasCoupon['user_id'],
-                                                            'coupon_id' => $model['id']])
-                                                    ->one();
-                                        $userHasCoupons2->used = 1;
-                                        $userHasCoupons2->enable = 0;
-                                        $userHasCoupons2->update();
-                                        break;
-                                    }*/
                                     goto b;
                                 }
                             }
@@ -366,30 +356,27 @@ class AssignedService extends \yii\db\ActiveRecord
         return $price;
     }
     
-    public function getTax() {
+       public function getTax(){
+        $price=0;
+        $service=Service::findOne(['id'=>$this->service_id]);
         
-        $price = 0;
-        $service = Service::findOne(['id' => $this->service_id]);
-
-        if ($service->tax == 0){
-            $price += $service->price;
-        }
-        else{
-            $price += ($service->price * Yii::$app->params ['tax_percent']);
-        }
-        $connection = Yii::$app->getDb();
-        $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => $this->user_id,':id' => $this->id]);
-        $modifier_vw = $command->queryAll();
         
-        if (isset($modifier_vw[0]) && !empty($modifier_vw[0]['modifier_id'])) {
-            $modifier = Modifier::findOne(['id' => $modifier_vw[0]['modifier_id']]);
-            if ($modifier->tax == 0){
-                $price += $modifier->price;
-            } else {
-                    $price += ($modifier->price * Yii::$app->params ['tax_percent']);
+        if($service->tax==0){
+            $price+=$service->price;
+        }else {
+            $price+=($service->price*Yii::$app->params ['tax_percent']);
+        }
+        $modifier_vw=VwActualService::findOne(['id'=>$this->id]);
+        if($modifier_vw->modifier_id!=""){
+            $modifier=Modifier::findOne(['id'=>$modifier_vw->modifier_id]);
+            if($modifier->tax==0){
+                $price+=$modifier->price;
+            }else {
+                $price+=($modifier->price*Yii::$app->params ['tax_percent']);
             }
         }
         return $price;
+    
     }
 
     public function getDuration(){
