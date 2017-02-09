@@ -273,7 +273,7 @@ class UserController extends Controller {
                 return [
                     'success' => False,
                     'data' => [
-                        'message' => json_encode($model->getErrors())
+                        'message' => $model->getErrors()
                     ]
                 ];
             }
@@ -770,6 +770,7 @@ class UserController extends Controller {
         $device = Yii::$app->request->post("device", null);
 
         $typeToken = TypeToken::findOne($device);
+        
         if (!isset($typeToken) || empty($typeToken)) {
 
             return [
@@ -822,9 +823,10 @@ class UserController extends Controller {
                     'FK_id_token_type' => $typeToken->id,
                     'status' => 1])
                 ->one();
-        $updateTokens->status = 0;
-        $updateTokens->update();
-
+        if (isset($updateTokens) && !empty($updateTokens)) {
+            $updateTokens->status = 0;
+            $updateTokens->update();
+        }
         $arrayLog = [
             'LogToken' => [
                 'token' => $token,
