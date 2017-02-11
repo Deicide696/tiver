@@ -305,25 +305,25 @@ class ExpertController extends Controller {
     }
 
     public function actionLoginExpert() {
-        $correo = $_POST ['login'];
-        // $cost='4';
-        $contrasena = $_POST ['password'];
-
-        $searched = Expert::find()->where([
-                    'email' => $correo
-                ])->one();
-        // var_dump($searched);
+        
+        Yii::$app->response->format = 'json';
+        $correo = Yii::$app->request->post("login", null);
+        $contrasena = Yii::$app->request->post("password", null);
         $gcm_id = Yii::$app->request->post("gcm_id", null);
         $os_id = Yii::$app->request->post("os_id", null);
         $device = Yii::$app->request->post("device", null);
+        
+         $searched = Expert::find()
+                 ->where([
+                    'email' => $correo
+                ])->one();
+         
         if ($searched == null) {
 
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Correo incorrecto, verifica la información"
             ];
-            $response = json_encode($response);
-            // header('Content-Type: application/json');
             return $response;
         }
         if (!$searched->enable == 1) {
@@ -332,27 +332,24 @@ class ExpertController extends Controller {
             $response ["data"] = [
                 "message" => "Este usuario se encuentra deshabilitado"
             ];
-            $response = json_encode($response);
-            // header('Content-Type: application/json');
             return $response;
         }
         // Usuario existe
         $hash = $searched->password;
         if (!Yii::$app->getSecurity()->validatePassword($contrasena, $hash)) {
-            // Contraseñas no coinciden
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Contraseña incorrecta, intenta de nuevo"
             ];
-            $response = json_encode($response);
-            // header('Content-Type: application/json');
             return $response;
-        } // Se hace match de contraseñas
+        } 
+        
         // Buscamos y actualizamos el token GCM
         $gcm_token = GcmTokenExpert::find()->where([
                     "expert_id" => $searched->id,
                     "type_token_id" => $device
                 ])->one();
+        
         if ($gcm_token != null) {
             $gcm_token->token = $gcm_id;
             $gcm_token->one_signal_token = $os_id;
@@ -372,8 +369,6 @@ class ExpertController extends Controller {
         $response ["data"] = [
             "id" => $searched->id
         ];
-        $response = json_encode($response);
-        // header('Content-Type: application/json');
         return $response;
     }
 

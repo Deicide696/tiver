@@ -33,21 +33,19 @@ use Yii;
  * @property CompletedService[] $completedServices
  * @property Conversation[] $conversations
  */
-class AssignedService extends \yii\db\ActiveRecord
-{
+class AssignedService extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'assigned_service';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['address', 'date', 'time', 'lat', 'lng', 'service_id', 'user_id', 'city_id', 'expert_id'], 'required'],
             [['date', 'time', 'created_date', 'updated_date'], 'safe'],
@@ -66,8 +64,7 @@ class AssignedService extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'id' => Yii::t('app', 'ID'),
             'address' => Yii::t('app', 'Address'),
@@ -87,110 +84,108 @@ class AssignedService extends \yii\db\ActiveRecord
             'state' => Yii::t('app', 'Assigned'),
         ];
     }
-    
-        /**
-    * @inheritdoc
-    */
-     public function behaviors()
-    {
-       return [           
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors() {
+        return [
             [
                 'class' => \yii\behaviors\TimestampBehavior::className(),
                 'attributes' => [
-                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT =>  ['created_date', 'updated_date'],
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_date', 'updated_date'],
                     \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => 'updated_date',
                 ],
                 'value' => function() { return  date ( 'Y-m-d H:i:s' );},
             ],
-       ];
+        ];
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCity()
-    {
+    public function getCity() {
         return $this->hasOne(City::className(), ['id' => 'city_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCoupon()
-    {
+    public function getCoupon() {
         return $this->hasOne(Coupon::className(), ['id' => 'coupon_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getExpert()
-    {
+    public function getExpert() {
         return $this->hasOne(Expert::className(), ['id' => 'expert_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getService()
-    {
+    public function getService() {
         return $this->hasOne(Service::className(), ['id' => 'service_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getUser()
-    {
+    public function getUser() {
         return $this->hasOne(User::className(), ['id' => 'user_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getAssignedServiceHasModifier()
-    {
+    public function getAssignedServiceHasModifier() {
         return $this->hasMany(AssignedServiceHasModifier::className(), ['assigned_service_id' => 'id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCompletedServices()
-    {
+    public function getCompletedServices() {
         return $this->hasMany(CompletedService::className(), ['assigned_service_id' => 'id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getConversations()
-    {
+    public function getConversations() {
         return $this->hasMany(Conversation::className(), ['assigned_service_id' => 'id']);
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getExpertName() {
         $expert = Expert::findOne(['id' => $this->expert_id]);
         return $expert->name . " " . $expert->last_name;
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getUserName() {
         $user = User::findOne(['id' => $this->user_id]);
         return $user->first_name . " " . $user->last_name;
     }
+
     /**
      * 
      * @return type
      */
-
     public function getPrice() {
-        
+
         $price = 0;
         $service = Service::findOne(['id' => $this->service_id]);
 
         if ($service->tax == 0) {
             $price += $service->price;
         } else {
-            $price += (int)round(($service->price + ($service->price * Yii::$app->params ['tax_percent'])), -2, PHP_ROUND_HALF_UP);
+            $price += (int) round(($service->price + ($service->price * Yii::$app->params ['tax_percent'])), -2, PHP_ROUND_HALF_UP);
         }
         $modifier_vw = VwActualService::findOne(['id' => $this->id]);
         if ($modifier_vw->modifier_id != "") {
@@ -201,7 +196,7 @@ class AssignedService extends \yii\db\ActiveRecord
                 $price += (int) round($modifier->price + ($modifier->price * Yii::$app->params ['tax_percent']), -2, PHP_ROUND_HALF_UP);
             }
         }
-        
+
         $userHasCoupons = UserHasCoupon::find()
             ->where([
                 'user_id' => $this->user_id,
@@ -209,52 +204,51 @@ class AssignedService extends \yii\db\ActiveRecord
                 'enable' => 1])
             ->asArray()
             ->all();
-          
+
         if (isset($userHasCoupons) && !empty($userHasCoupons)) {
-            
+
             foreach ($userHasCoupons as $userHasCoupon) {
-                
+
                 $model = Coupon::find()
-                    ->where(['coupon.id' =>$userHasCoupon['coupon_id'],'coupon.enable' => 1])
-                    ->joinWith(['couponHasCategoryServices.categoryService.service'])
-                    ->joinWith(['couponHasServices.service s'])
-                    ->asArray()
-                    ->one();
-                
+                        ->where(['coupon.id' => $userHasCoupon['coupon_id'], 'coupon.enable' => 1])
+                        ->joinWith(['couponHasCategoryServices.categoryService.service'])
+                        ->joinWith(['couponHasServices.service s'])
+                        ->asArray()
+                        ->one();
+
                 if (isset($model) && !empty($model)) {
-                    
+
                     $day = date_parse(date('Y-m-d H:i:s'));
                     $day2 = date_parse($model['due_date']);
-                    
+
                     if ($day > $day2) {
                         break;
                     }
                     if (!empty($model["couponHasCategoryServices"])) {
                         $category = $model["couponHasCategoryServices"][0]["categoryService"]['description'];
-                        if(isset($model["couponHasCategoryServices"][0]["categoryService"]['service']) && !empty($model["couponHasCategoryServices"][0]["categoryService"]['description'])){
+                        if (isset($model["couponHasCategoryServices"][0]["categoryService"]['service']) && !empty($model["couponHasCategoryServices"][0]["categoryService"]['description'])) {
                             foreach ($model["couponHasCategoryServices"][0]["categoryService"]['service'] as $serviceValid) {
-                                if($serviceValid['id'] == $this->service_id){
+                                if ($serviceValid['id'] == $this->service_id) {
                                     $priceold = $price;
-                                    if($model["quantity"] > 0){
-                                        if($model["discount"] > 0){
-                                            $discount = ($price * $model["discount"]) / 100; 
+                                    if ($model["quantity"] > 0) {
+                                        if ($model["discount"] > 0) {
+                                            $discount = ($price * $model["discount"]) / 100;
                                             $price = ($price - $discount);
                                             goto a;
                                         }
                                     }
-
                                 }
                             }
                         }
                         a:
                     } else if (!empty($model["couponHasServices"])) {
-                        
+
                         $service = $model["couponHasServices"][0]['service']['id'];
-                        if($service == $this->service_id){
+                        if ($service == $this->service_id) {
                             $priceold = $price;
-                            if($model["quantity"] > 0){
-                                if($model["discount"] > 0){
-                                    $discount = ($price * $model["discount"]) / 100; 
+                            if ($model["quantity"] > 0) {
+                                if ($model["discount"] > 0) {
+                                    $discount = ($price * $model["discount"]) / 100;
                                     $price = ($price - $discount);
                                     goto b;
                                 }
@@ -265,10 +259,10 @@ class AssignedService extends \yii\db\ActiveRecord
                 }
             }
         }
-        
+
         return $price;
     }
-    
+
     public function setDiscountCoupon($price) {
 
         $userHasCoupons = UserHasCoupon::find()
@@ -278,71 +272,68 @@ class AssignedService extends \yii\db\ActiveRecord
                 'enable' => 1])
             ->asArray()
             ->all();
-          
+
         if (isset($userHasCoupons) && !empty($userHasCoupons)) {
-            
+
             foreach ($userHasCoupons as $userHasCoupon) {
-                
+
                 $model = Coupon::find()
-                    ->where(['coupon.id' =>$userHasCoupon['coupon_id'],'coupon.enable' => 1])
-                    ->joinWith(['couponHasCategoryServices.categoryService.service'])
-                    ->joinWith(['couponHasServices.service s'])
-                    ->asArray()
-                    ->one();
-                
+                        ->where(['coupon.id' => $userHasCoupon['coupon_id'], 'coupon.enable' => 1])
+                        ->joinWith(['couponHasCategoryServices.categoryService.service'])
+                        ->joinWith(['couponHasServices.service s'])
+                        ->asArray()
+                        ->one();
+
                 if (isset($model) && !empty($model)) {
-                    
+
                     $day = date_parse(date('Y-m-d H:i:s'));
                     $day2 = date_parse($model['due_date']);
-                    
+
                     if ($day > $day2) {
                         break;
                     }
                     if (!empty($model["couponHasCategoryServices"])) {
                         $category = $model["couponHasCategoryServices"][0]["categoryService"]['description'];
-                        if(isset($model["couponHasCategoryServices"][0]["categoryService"]['service']) && !empty($model["couponHasCategoryServices"][0]["categoryService"]['description'])){
+                        if (isset($model["couponHasCategoryServices"][0]["categoryService"]['service']) && !empty($model["couponHasCategoryServices"][0]["categoryService"]['description'])) {
                             foreach ($model["couponHasCategoryServices"][0]["categoryService"]['service'] as $serviceValid) {
-                                if($serviceValid['id'] == $this->service_id){
+                                if ($serviceValid['id'] == $this->service_id) {
                                     $priceold = $price;
-                                    if($model["quantity"] > 0){
-                                        if($model["discount"] > 0){
-                                            $discount = ($price * $model["discount"]) / 100; 
+                                    if ($model["quantity"] > 0) {
+                                        if ($model["discount"] > 0) {
+                                            $discount = ($price * $model["discount"]) / 100;
                                             $price = ($price - $discount);
-                                                $userHasCoupons2 = UserHasCoupon::find()
+                                            $userHasCoupons2 = UserHasCoupon::find()
                                                     ->where(['user_id' => $userHasCoupon['user_id'],
-                                                            'coupon_id' => $model['id']])
+                                                        'coupon_id' => $model['id']])
                                                     ->one();
-                                                $userHasCoupons2->used = 1;
-                                                $userHasCoupons2->enable = 0;
-                                                $userHasCoupons2->update();
-                                                break;
+                                            $userHasCoupons2->used = 1;
+                                            $userHasCoupons2->enable = 0;
+                                            $userHasCoupons2->update();
+                                            break;
                                             goto a;
                                         }
                                     }
-
                                 }
                             }
                         }
                         a:
                     } else if (!empty($model["couponHasServices"])) {
-                        
+
                         $service = $model["couponHasServices"][0]['service']['id'];
-                        if($service == $this->service_id){
+                        if ($service == $this->service_id) {
                             $priceold = $price;
-                            if($model["quantity"] > 0){
-                                if($model["discount"] > 0){
-                                    $discount = ($price * $model["discount"]) / 100; 
+                            if ($model["quantity"] > 0) {
+                                if ($model["discount"] > 0) {
+                                    $discount = ($price * $model["discount"]) / 100;
                                     $price = ($price - $discount);
-                                    if($discountCoupon){
-                                        $userHasCoupons2 = UserHasCoupon::find()
-                                                    ->where(['user_id' => $userHasCoupon['user_id'],
-                                                            'coupon_id' => $model['id']])
-                                                    ->one();
-                                        $userHasCoupons2->used = 1;
-                                        $userHasCoupons2->enable = 0;
-                                        $userHasCoupons2->update();
-                                        break;
-                                    }
+                                    $userHasCoupons2 = UserHasCoupon::find()
+                                            ->where(['user_id' => $userHasCoupon['user_id'],
+                                                'coupon_id' => $model['id']])
+                                            ->one();
+                                    $userHasCoupons2->used = 1;
+                                    $userHasCoupons2->enable = 0;
+                                    $userHasCoupons2->update();
+                                    break;
                                     goto b;
                                 }
                             }
@@ -352,74 +343,68 @@ class AssignedService extends \yii\db\ActiveRecord
                 }
             }
         }
-        
+
         return $price;
     }
-    
-       public function getTax(){
-        $price=0;
-        $service=Service::findOne(['id'=>$this->service_id]);
+
+    public function getTax() {
         
-        
-        if($service->tax==0){
-            $price+=$service->price;
-        }else {
-            $price+=($service->price*Yii::$app->params ['tax_percent']);
+        $price = 0;
+        $service = Service::findOne(['id' => $this->service_id]);
+
+        if ($service->tax == 0) {
+            $price += $service->price;
+        } else {
+            $price += ($service->price * Yii::$app->params ['tax_percent']);
         }
-        $modifier_vw=VwActualService::findOne(['id'=>$this->id]);
-        if($modifier_vw->modifier_id!=""){
-            $modifier=Modifier::findOne(['id'=>$modifier_vw->modifier_id]);
-            if($modifier->tax==0){
-                $price+=$modifier->price;
-            }else {
-                $price+=($modifier->price*Yii::$app->params ['tax_percent']);
+        $modifier_vw = VwActualService::findOne(['id' => $this->id]);
+        if ($modifier_vw->modifier_id != "") {
+            $modifier = Modifier::findOne(['id' => $modifier_vw->modifier_id]);
+            if ($modifier->tax == 0) {
+                $price += $modifier->price;
+            } else {
+                $price += ($modifier->price * Yii::$app->params ['tax_percent']);
             }
         }
         return $price;
-    
     }
 
-    public function getDuration(){
-        $duration=0;
-        $service=Service::findOne(['id'=>$this->service_id]);
-        $duration+=$service->duration;
-    
-        $modifier_vw=VwActualService::findOne(['id'=>$this->id]);
-        if($modifier_vw->modifier_id!=""){
-            $modifier=Modifier::findOne(['id'=>$modifier_vw->modifier_id]);
-            $duration+=$modifier->duration;
+    public function getDuration() {
+        
+        $duration = 0;
+        $service = Service::findOne(['id' => $this->service_id]);
+        $duration += $service->duration;
+
+        $modifier_vw = VwActualService::findOne(['id' => $this->id]);
+        if ($modifier_vw->modifier_id != "") {
+            $modifier = Modifier::findOne(['id' => $modifier_vw->modifier_id]);
+            $duration += $modifier->duration;
         }
-    
-        //var_dump($modifier);
-    
         return $duration;
-         
     }
 
+    public function getServiceName() {
 
-     public function getServiceName(){
-        $name="";
-        $service=Service::findOne(['id'=>$this->service_id]);
-        $name.=$service->name;
-    
-        $modifier_vw=VwActualService::findOne(['id'=>$this->id]);
-        if($modifier_vw->modifier_id!=""){
-            $modifier=Modifier::findOne(['id'=>$modifier_vw->modifier_id]);
-            $name.=" - ".$modifier->name;
+        $name = "";
+        $service = Service::findOne(['id' => $this->service_id]);
+        $name .= $service->name;
+
+        $modifier_vw = VwActualService::findOne(['id' => $this->id]);
+        if ($modifier_vw->modifier_id != "") {
+            $modifier = Modifier::findOne(['id' => $modifier_vw->modifier_id]);
+            $name .= " - " . $modifier->name;
         }
-    
-        //var_dump($modifier);
-    
         return $name;
-    
     }
 
     public function getProcessId() {
+
         $script = "ps -ef | grep '" . $this->id . ".txt' | grep -v grep | awk '{print $2}'";
         return exec($script);
     }
 
     public function getNumAttempts() {
+
         $num = 0;
         $model = LogAssignedService::find()
                 ->select('max(attempt)')
@@ -431,13 +416,10 @@ class AssignedService extends \yii\db\ActiveRecord
     }
 
     public function getModifierId() {
-        
+
         $modifier = "";
-        $connection = Yii::$app->getDb();
-        $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'],[':user_id' => '',':id' => $this->id]);
-        $modifier_vw = $command->queryAll();
-//      $modifier_vw = VwActualService::findOne(['id' => $this->id]);
-        
+        $modifier_vw = VwActualService::findOne(['id' => $this->id]);
+
         if ($modifier_vw->modifier_id != "") {
             $modifier = $modifier_vw->modifier_id;
         }
@@ -445,6 +427,7 @@ class AssignedService extends \yii\db\ActiveRecord
     }
 
     public function beforeDelete() {
+        
         if (parent::beforeDelete()) {
             //Eliminamos chat del servicio
 

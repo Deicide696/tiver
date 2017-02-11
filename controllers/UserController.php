@@ -859,7 +859,7 @@ class UserController extends Controller {
             $gcm_token->token = $gcm_id;
             $gcm_token->one_signal_token = $os_id;
             $gcm_token->updated_date = date('Y-m-d H:i:s');
-            $gcm_token->save();
+            $gcm_token->update();
         } else { // Si no existe, creamos uno nuevo
             $gcm_token = new GcmToken ();
             $gcm_token->one_signal_token = $os_id;

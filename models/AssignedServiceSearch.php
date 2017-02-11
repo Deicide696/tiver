@@ -45,7 +45,7 @@ class AssignedServiceSearch extends AssignedService
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-        		'sort'=> ['defaultOrder' => ['date'=>SORT_ASC,'time'=>SORT_ASC]]
+            'sort'=> ['defaultOrder' => ['date'=>SORT_ASC,'time'=>SORT_ASC]]
         ]);
 
         $this->load($params);

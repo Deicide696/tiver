@@ -19,7 +19,7 @@ class CouponSearch extends Coupon
     {
         return [
             [['id', 'type_coupon_id'], 'integer'],
-            [['name', 'code'], 'safe'],
+            [['name', 'code', 'created_date'], 'safe'],
         ];
     }
 
@@ -45,8 +45,9 @@ class CouponSearch extends Coupon
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort'=> ['defaultOrder' => ['created_date'=>SORT_DESC]]
         ]);
-
+        
         $this->load($params);
 
         if (!$this->validate()) {

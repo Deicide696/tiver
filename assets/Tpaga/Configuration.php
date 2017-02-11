@@ -68,8 +68,8 @@ class Configuration
      *
      * @var string
      */
-    protected $accessToken = '4bk73tpors4das7k9a3a33ffjml7enhk';
-
+    protected $accessToken = 'k87ddruralv6l7b5gjfbq4dsgnn7tb5d';
+//  protected $accessToken = '4bk73tpors4das7k9a3a33ffjml7enhk';
     /**
      * Username for HTTP basic authentication
      *

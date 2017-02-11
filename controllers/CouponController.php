@@ -43,9 +43,9 @@ class CouponController extends Controller {
      * @return mixed
      */
     public function actionIndex() {
+        
         $searchModel = new CouponSearch ();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider

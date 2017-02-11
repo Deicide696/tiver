@@ -43,49 +43,38 @@ class TPaga_sand extends Component {
     }
 
     public function CreateCreditCard($id_customer, $number, $exp_month, $exp_year, $cvv, $card_holder, $address) {
+        
         $api_client = new ApiClient ();
         //$api_client->api_key = self::api_key;
         // Agregamos tarjeta de credito al usuario creado
         $credit_card = new CreditCardCreate ();
         $credit_card->primary_account_number = "$number";
         $credit_card->expiration_month = "$exp_month";
-
         $credit_card->expiration_year = "$exp_year";
         $credit_card->card_verification_code = "$cvv";
         $credit_card->billing_address = $address;
-
         $credit_card->card_holder_name = "$card_holder";
-
-
-        //var_dump($credit_card);
 
         try {
             $credit_card_api = new CreditCardAPI($api_client);
-            // return Charge (model)
             $response = $credit_card_api->addCreditCard($id_customer, $credit_card);
             $id_card = $response->id;
-            //print "<br>Tarjeta creada: " . $id_card . "<br><br>";
             return $id_card;
         } catch (Exception $e) {
-            //echo 'Caught exception: ', $e->getMessage (), "\n";
             return false;
         }
     }
 
     public function CreateCreditCardToken($id_customer, $credit_card) {
+        
         $api_client = new ApiClient ();
-
-        //var_dump($credit_card);
 
         try {
             $credit_card_api = new CreditCardAPI($api_client);
-            // return Charge (model)
             $response = $credit_card_api->addCreditCardToken($id_customer, $credit_card);
             $id_card = $response->id;
-            //print "<br>Tarjeta creada: " . $id_card . "<br><br>";
             return $id_card;
         } catch (Exception $e) {
-            //echo 'Caught exception: ', $e->getMessage (), "\n";
             return false;
         }
     }
@@ -136,10 +125,7 @@ class TPaga_sand extends Component {
 
         try {
             $refund_api = new RefundApi($api_client);
-            // return Charge (model)
             $response = $refund_api->refundCreditCardCharge($refund);
-            //var_dump ( $response );
-            //print "<br>Pago creado: " . $id_payment . "<br><br>";
             return $response;
         } catch (Exception $e) {
             echo 'Caught exception: ', $e->getMessage(), "\n";

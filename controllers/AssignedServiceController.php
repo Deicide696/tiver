@@ -407,9 +407,9 @@ class AssignedServiceController extends Controller {
             // 'id_not' => $model->id,
             'type' => Yii::$app->params ['notification_type_assgigned_expert']
         ];
-        if ($tokens != null)
+        if ($tokens != null){
             Yii::$app->PushNotifier->sendNotificationExpertOS("Nuevo servicio", "Tienes un nuevo servicio", $data, $tokens);
-
+        }
         $id_serv = $model->id;
         $url = Yii::$app->params ['path_scripts'];
         // $url="/var/www/html/tiver";
@@ -466,6 +466,7 @@ class AssignedServiceController extends Controller {
     }
 
     public function actionCancelService() {
+        
         Yii::$app->response->format = 'json';
         $time = Yii::$app->request->post("time", "");
         $date = Yii::$app->request->post("date", "");
@@ -554,9 +555,9 @@ class AssignedServiceController extends Controller {
             "ticker" => "Servicio cancelado",
             'type' => Yii::$app->params ['notification_type_canceled_expert']
         ];
-        if ($tokens != null)
+        if ($tokens != null){
             Yii::$app->PushNotifier->sendNotificationExpertOS("Servicio eliminado", "Se ha cancelado un servicio que tenías asignado", $data, $tokens);
-
+        }
         $model_history = VwActualService::find()->where([
                             'user_id' => $id_user
                         ])->
@@ -641,8 +642,9 @@ class AssignedServiceController extends Controller {
                 "ticker" => "Servicio cancelado",
                 'type' => Yii::$app->params ['notification_type_canceled_expert']
             ];
-            if ($tokens != null)
+            if ($tokens != null){
                 Yii::$app->PushNotifier->sendNotificationUserOS("Servicio eliminado", "Se ha cancelado un servicio que tenías asignado", $data, $tokens);
+            }
             // print "No hay especialistas disponibles" . PHP_EOL;
             $response ["success"] = true;
             $response ["data"] = [
@@ -988,13 +990,13 @@ class AssignedServiceController extends Controller {
 
         Yii::$app->response->format = 'json';
 
+        $token = Yii::$app->request->post("token", "");
         $time_new = Yii::$app->request->post("time_new", "");
         $time_old = Yii::$app->request->post("time_old", "");
         $date_old = Yii::$app->request->post("date_old", "");
         $date_new = Yii::$app->request->post("date_new", "");
         $comment = Yii::$app->request->post("comment", "");
-        $token = Yii::$app->request->post("token", "");
-
+        
         $model_token = LogToken::find()
                 ->where([
                     'token' => $token,
@@ -1010,25 +1012,22 @@ class AssignedServiceController extends Controller {
         }
 
         $id_user = $model_token->FK_id_user;
-        // var_dump($id_user);
-        // exit();
+        
         // Buscamos el servicio activo
         $services = assignedService::find()
-                ->where([
-                    "user_id" => $id_user,
-                    // "expert_id" => $id_expert,
-                    "date" => $date_old,
-                    "time" => $time_old
-                ])
-                ->joinWith('service')
-                ->one();
-
-        if ($services == null) {
+            ->where([
+                "user_id" => $id_user,
+                "date" => $date_old,
+                "time" => $time_old
+            ])
+            ->joinWith('service')
+            ->one();
+        
+        if (!isset($services) || empty($services)) {
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Lo sentimos, este servicio ya fue finalizado o no existe"
             ];
-            // $response = json_encode ( $response );
             return $response;
         }
 
@@ -1039,7 +1038,6 @@ class AssignedServiceController extends Controller {
             $response ["data"] = [
                 "message" => "Esta dirección se encuentra fuera de la zona de cobertura"
             ];
-            // $response = json_encode ( $response );
             return $response;
         }
 
@@ -1128,8 +1126,9 @@ class AssignedServiceController extends Controller {
                 'time_wait' => Yii::$app->params ['seconds_wait'],
                 'type' => Yii::$app->params ['notification_type_edited_expert']
             ];
-            if ($tokens != null)
+            if ($tokens != null){
                 Yii::$app->PushNotifier->sendNotificationExpertOS("Servicio editado", "Se ha editado un servicio que tenías asignado", $data, $tokens);
+            }
         } else {
             // envio de notificacion push OS
             $tokens = Expert::findOne([
@@ -1137,7 +1136,7 @@ class AssignedServiceController extends Controller {
                     ])->getPushTokens();
 
             // print_r($tokens);
-            $data = [
+            $data_new = [
                 "ticker" => "Tienes trabajo",
                 'time' => $time_new,
                 'date' => $date_new,
@@ -1154,20 +1153,21 @@ class AssignedServiceController extends Controller {
                 'time_wait' => Yii::$app->params ['seconds_wait'],
                 'type' => Yii::$app->params ['notification_type_assgigned_expert']
             ];
-            if ($tokens != null)
-                Yii::$app->PushNotifier->sendNotificationExpertOS("Nuevo servicio", "Tienes un nuevo servicio", $data, $tokens);
-
+            if ($tokens != null){
+                Yii::$app->PushNotifier->sendNotificationExpertOS("Nuevo servicio", "Tienes un nuevo servicio", $data_new, $tokens);
+            }
             $tokens_old = Expert::findOne([
                         "id" => $old_expert
                     ])->getPushTokens();
 
             // print_r($tokens);
-            $data = [
+            $data_cancel = [
                 "ticker" => "Servicio cancelado",
                 'type' => Yii::$app->params ['notification_type_canceled_expert']
             ];
-            if ($tokens_old != null)
-                Yii::$app->PushNotifier->sendNotificationExpertOS("Servicio eliminado", "Se ha cancelado un servicio que tenías asignado", $data, $tokens_old);
+            if ($tokens_old != null){
+                Yii::$app->PushNotifier->sendNotificationExpertOS("Servicio eliminado", "Se ha cancelado un servicio que tenías asignado", $data_cancel, $tokens_old);
+            }
         }
 
         //
