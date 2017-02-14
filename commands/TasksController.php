@@ -24,9 +24,10 @@ class TasksController extends Controller {
                     "time" => $time
                 ]);
 
-
+//print var_dump($services,$idService,$date,$time).PHP_EOL; die();
         $num_intent = $services->getNumAttempts();
 
+        print $num_intent. PHP_EOL;
         print PHP_EOL . date('Y-m-d H:i:s') . PHP_EOL;
         print "$idService -> $date $time -> $num_intent" . PHP_EOL;
 
@@ -64,8 +65,10 @@ class TasksController extends Controller {
                         "ticker" => "Servicio cancelado",
                         'type' => Yii::$app->params ['notification_type_canceled_user']
                     ];
-                    if ($tokens != null)
+                    if ($tokens != null){
                         Yii::$app->PushNotifier->sendNotificationUserOS("Servicio cancelado", "No encontramos ningn especialista disponible y se ha cancelado el servicio", $data, $tokens);
+                    }
+                        
                 } else {
 
 
@@ -140,9 +143,10 @@ class TasksController extends Controller {
                                 "ticker" => "Servicio cancelado",
                                 'type' => Yii::$app->params ['notification_type_canceled_user']
                             ];
-                            if ($tokens != null)
+                            if ($tokens != null){
+                                print var_dump("DATA: ", $data, " TOKENS: ", $tokens) . PHP_EOL;
                                 Yii::$app->PushNotifier->sendNotificationUserOS("Servicio cancelado", "No encontramos ningn especialista disponible y se ha cancelado el servicio", $data, $tokens);
-
+                            }
                             print "No hay especialistas disponibles" . PHP_EOL;
                         } else {
                             // Guardamos la edicin
@@ -180,14 +184,15 @@ class TasksController extends Controller {
                                     'time_wait' => Yii::$app->params ['seconds_wait'],
                                     'type' => Yii::$app->params ['notification_type_assgigned_expert']
                                 ];
-                                if ($tokens != null)
+                                if ($tokens != null){
                                     Yii::$app->PushNotifier->sendNotificationExpertOS("Nuevo servicio", "Tienes un nuevo servicio", $data, $tokens);
+                                }
                                         // //////
 
                                 $url = Yii::$app->params ['path_scripts'];
                                 // $url="/var/www/html/tiver";
                                 $script = 'php ' . $url . '/./yii tasks/check-service "' . $idService . '" "' . $date . '" "' . $time . '"';
-                                $log = $url . "/web/$idService.txt";
+                                $log = $url . "/web/logs/$idService.txt";
                                 exec("(sleep " . Yii::$app->params ['seconds_wait'] . "; $script >> $log) > /dev/null 2>&1 &");
                                 //Insertar LOG de asignacin
                                 $model_log = new LogAssignedService();
@@ -208,10 +213,12 @@ class TasksController extends Controller {
                         }
                     }
                 }
-            } else
+            } else{
                 print "Servicio $idService ya fue aceptado" . PHP_EOL;
-        } else
+            }
+        } else{
             print "Servicio $idService no existe" . PHP_EOL;
+        }
 
 // Yii::$app->PushNotifier->sendNotificationUserOS ( "Servicio finalizado", "El servicio ha sido cobrado", $data, $tokens );
     }

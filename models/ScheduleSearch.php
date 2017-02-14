@@ -12,6 +12,8 @@ use app\models\Schedule;
  */
 class ScheduleSearch extends Schedule
 {
+    
+    public $expert_name;
     /**
      * @inheritdoc
      */
@@ -19,7 +21,7 @@ class ScheduleSearch extends Schedule
     {
         return [
             [['id', 'expert_id', 'weekday_id'], 'integer'],
-            [['start_time', 'finish_time', 'date_created'], 'safe'],
+            [['start_time', 'finish_time', 'date_created', 'expert_name'], 'safe'],
         ];
     }
 
@@ -57,7 +59,7 @@ class ScheduleSearch extends Schedule
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        $query->joinWith('expert');
         $query->andFilterWhere([
             'id' => $this->id,
             'start_time' => $this->start_time,
@@ -66,6 +68,7 @@ class ScheduleSearch extends Schedule
             'expert_id' => $this->expert_id,
             'weekday_id' => $this->weekday_id,
         ]);
+        $query->andFilterWhere(['like', 'expert.name', $this->expert_name]);
 
         return $dataProvider;
     }

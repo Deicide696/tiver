@@ -17,9 +17,8 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="col col-sm-2 pull-left">
             <h1 class="" style="margin: 0px;"><?= Html::encode($this->title) ?></h1>
         </div>
-        
         <div class="col col-sm-2 pull-right text-right">
-            <?= yii::$app->user->can('create-expert') ? Html::a(Yii::t('app', 'New Expert'), ['create'], ['class' => 'btn btn-success']): '' ?>
+            <?= yii::$app->user->can('create-expert') ? Html::a('<span class="glyphicon glyphicon-plus"></span> '.Yii::t('app', 'Create'), ['create'], ['class' => 'btn btn-success']): '' ?>
         </div>
     </div>
 

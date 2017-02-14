@@ -153,24 +153,21 @@ class AssignedServiceController extends Controller {
 
     // Android
     public function actionAssignService() {
-
+	
         Yii::$app->response->format = 'json';
-        // $data = json_decode($_POST['request']);
-        // print_r($_POST);
-        $address = $_POST ['address'];
-        $address_comp = $_POST ['address_comp'];
-        $date = $_POST ['date'];
-        $time = $_POST ['time'];
-        $service = $_POST ['service'];
-        // $service_name = $_POST ['service_name'];
-        $token = $_POST ['token'];
-        $modifier = $_POST ['modifier'];
-        $comment = $_POST ['comment'];
-        $lat = $_POST ['address_lat'];
-        $lng = $_POST ['address_lng'];
-        $cupon = $_POST ['cupon'];
-        // $expert=$_POST['expert'};
 
+        $address = trim(Yii::$app->request->post("address", ""));
+        $address_comp = trim(Yii::$app->request->post("address_comp", ""));
+        $date = trim(Yii::$app->request->post("date", ""));
+        $time = trim(Yii::$app->request->post("time", ""));
+        $service = trim(Yii::$app->request->post("service", ""));
+        $token = trim(Yii::$app->request->post("token", ""));
+        $modifier = trim(Yii::$app->request->post("modifier", ""));
+        $comment = trim(Yii::$app->request->post("comment", ""));
+        $lat = trim(Yii::$app->request->post("address_lat", ""));
+        $lng = trim(Yii::$app->request->post("address_lng", ""));
+        $cupon = trim(Yii::$app->request->post("cupon", ""));   
+//        var_dump($address,$address_comp,$date,$time,$service,$token,$modifier,$comment,$lat,$lng,$cupon);die();
         $model_token = LogToken::find()
                 ->where([
                     'token' => $token,
@@ -186,46 +183,47 @@ class AssignedServiceController extends Controller {
         }
 
         // Validamos la zona de la dorección
-        $zone = Zone::getZone($lat, $lng);
-        if (!$zone) {
+        $zone = Zone::getZone ( $lat, $lng );
+        if (! $zone) {
             $response ["success"] = false;
-            $response ["data"] = [
-                "message" => "Esta dirección se encuentra fuera de la zona de cobertura"
+            $response ["data"] = [ 
+                "message" => "Esta dirección se encuentra fuera de la zona de cobertura" 
             ];
-            //	$response = json_encode ( $response );
             return $response;
         }
 
         // Buscamos expertos disponibles para ese día y de ese servicio
-        $day = date('N', strtotime($date));
-        //	$experts = Expert::find ()->where ( "expert.enable='1' and expert.zone_id='$zone' and (schedule.weekday_id='$day' and '$time' between schedule.start_time and schedule.finish_time) and (expert_has_service.service_id='$service')" )->joinwith ( 'schedule' )->joinwith ( 'assignedService' )->joinwith ( 'expertHasService' )->orderBy ( new Expression ( 'rand()' ) )->all ();
+        $day = date ( 'N', strtotime ( $date ) );
+//	$experts = Expert::find ()->where ( "expert.enable='1' and expert.zone_id='$zone' and (schedule.weekday_id='$day' and '$time' between schedule.start_time and schedule.finish_time) and (expert_has_service.service_id='$service')" )->joinwith ( 'schedule' )->joinwith ( 'assignedService' )->joinwith ( 'expertHasService' )->orderBy ( new Expression ( 'rand()' ) )->all ();
 
         $experts = Expert::find()
-                ->where("zone_id=" . $zone . " AND (schedule.weekday_id=" . $day . " AND '" . $time . "' between schedule.start_time AND schedule.finish_time) AND (expert_has_service.service_id=" . $service . ") AND expert.enable = 1")
-                ->joinwith('schedule')
-                ->joinwith('assignedService')
-                ->joinwith('expertHasService')
-                ->orderBy(new Expression('rand()'))
-                ->all();
+        ->where("zone_id=".$zone." AND (schedule.weekday_id=".$day." AND '".$time."' between schedule.start_time AND schedule.finish_time) AND (expert_has_service.service_id=".$service. ") AND expert.enable = 1")
+        ->joinwith('schedule')
+//        ->joinwith('assignedService')
+        ->joinwith('expertHasService')
+        ->orderBy(new Expression('rand()'))
+        ->all();   
 
         // obtenemos la duración del servicio, (duracion serv+ duracion mod)
         $dur_serv = 0;
-        $dur_serv += Service::find()->select([
-                    'duration'
-                ])->where([
-                    'id' => $service
-                ])->one()->duration;
-        if ($modifier != '')
-            $dur_serv += Modifier::find()->select([
-                        'duration'
-                    ])->where([
-                        'id' => $modifier
-                    ])->one()->duration;
+        $dur_serv += Service::find ()
+            ->select(['duration'])
+                ->where(['id' => $service])
+                ->one()
+                ->duration;
+//         var_dump(isset($cupon) && !empty($cupon), $cupon,isset($modifier) && !empty($modifier),$modifier,$experts);die();
+        if (isset($modifier) && !empty($modifier)){
+            $dur_serv += Modifier::find ()
+                ->select(['duration'])
+                ->where(['id' => $modifier])
+                ->one()
+                ->duration;
+        }	
+                // print "---> $dur_serv";
 
-        // print "---> $dur_serv";
-
-        foreach ($experts as $expert) {
-            $disponible = $expert->validateDateTime($date, $time, $dur_serv);
+        foreach ( $experts as $expert ) {
+            
+            $disponible = $expert->validateDateTime ( $date, $time, $dur_serv );
             // print "-disp->".$disponible;
 
             if ($disponible) { // Si está disponible
@@ -260,40 +258,43 @@ class AssignedServiceController extends Controller {
         if (!isset($expert_id)) {
 
             $response ["success"] = false;
-            $response ["data"] = [
-                "message" => "El servicio no se pudo asignar porque no tenemos especialistas disponibles en este horario ($time $date)"
+            $response ["data"] = [ 
+                "message" => "El servicio no se pudo asignar porque no tenemos especialistas disponibles en este horario ($time $date)" 
             ];
-            //	$response = json_encode ( $response );
             return $response;
         }
 
         // Todo OK, se guarda el servicio
         $model = new AssignedService ();
-        if ($address_comp != '')
+        
+        if ($address_comp != ''){
             $model->address = $address . " - " . $address_comp;
-        else
+        } else {
             $model->address = $address;
+        }
         $model->date = $date;
         $model->time = $time;
         $model->lat = $lat;
         $model->lng = $lng;
         $model->comment = $comment;
         $model->service_id = $service;
-
-        if ($cupon != "") {
-            $model_coupon = Coupon::find()->where([
-                        'code' => $cupon
-                    ])->one();
+//        var_dump(isset($cupon) && !empty($cupon));die();
+        if (isset($cupon) && !empty($cupon)) {
+            
+            $model_coupon = Coupon::find ()
+                ->where(['code' => $cupon])
+                ->one ();
+            
             $model->coupon_id = $model_coupon->id;
             // Cambiamos el estado del cupon
             $model_coupon->used = 1;
-            if (!$model_coupon->save()) {
-                $response ["success"] = false;
-                $response ["data"] = [
-                    "message" => json_encode($model_coupon->getErrors())
-                ];
-                //		$response = json_encode ( $response );
-                return $response;
+            
+            if (! $model_coupon->save ()) {
+                    $response ["success"] = false;
+                    $response ["data"] = [ 
+                                    "message" => json_encode ( $model_coupon->getErrors () ) 
+                    ];
+                    return $response;
             }
         }
 
@@ -306,39 +307,39 @@ class AssignedServiceController extends Controller {
         $model->city_id = 1;
 
         // VAlidamos el Nuevo servicio
-        if (!$model->validate()) {
-            $response ["success"] = false;
-            $response ["data"] = [
-                "message" => json_encode($model->getErrors())
-            ];
-            //	$response = json_encode ( $response );
-            //	header ( 'Content-Type: application/json' );
-            print $response;
+        if (! $model->validate ()) {
+                $response ["success"] = false;
+                $response ["data"] = [ 
+                                "message" => json_encode ( $model->getErrors () ) 
+                ];
+        //	$response = json_encode ( $response );
+        //	header ( 'Content-Type: application/json' );
+                print $response;
         }
         // Guardamos el Nuevo servicio
-        if (!$model->save()) {
-            $response ["success"] = false;
-            $response ["data"] = [
-                "message" => json_encode($model->getErrors())
-            ];
-            //	$response = json_encode ( $response );
-            return $response;
+        if (! $model->save ()) {
+                $response ["success"] = false;
+                $response ["data"] = [ 
+                                "message" => json_encode ( $model->getErrors () ) 
+                ];
+        //	$response = json_encode ( $response );
+                return $response;
         }
 
         // Si el servicio tiene modificadores, los guardamos
-        if (!empty($modifier)) {
-            $model2 = new AssignedServiceHasModifier ();
-            $model2->assigned_service_id = $model->id;
-            $model2->modifier_id = $modifier;
-            // $model2->item_modifier_id = '1';
-            if (!$model2->save()) {
-                $response ["success"] = false;
-                $response ["data"] = [
-                    "message" => json_encode($model2->getErrors())
-                ];
-                $response = json_encode($response);
-                return $response;
-            }
+        if (! empty ( $modifier )) {
+                $model2 = new AssignedServiceHasModifier ();
+                $model2->assigned_service_id = $model->id;
+                $model2->modifier_id = $modifier;
+                // $model2->item_modifier_id = '1';
+                if (! $model2->save ()) {
+                        $response ["success"] = false;
+                        $response ["data"] = [ 
+                                        "message" => json_encode ( $model2->getErrors () ) 
+                        ];
+                        $response = json_encode ( $response );
+                        return $response;
+                }
         }
         // Enviar notificación push
         /*
@@ -376,20 +377,19 @@ class AssignedServiceController extends Controller {
 
         // Enviar notificación push OS
 
-        if ($address_comp != "")
-            $address .= " - " . $address_comp;
+        if ($address_comp != ""){
+                $address .= " - " . $address_comp;
+        }
 
-        // print_r($tokens);
+        $model_user = User::find ()->where([ 
+            'id' => $model_token->FK_id_user ])
+            ->one ();
 
-        $model_user = User::find()->where([
-                    'id' => $model_token->FK_id_user
-                ])->one();
+        $tokens = Expert::findOne([ 
+                        "id" => $expert_id ])
+                ->getPushTokens ();
 
-        $tokens = Expert::findOne([
-                    "id" => $expert_id
-                ])->getPushTokens();
-
-        $data = [
+        $data = [ 
             "ticker" => "Tienes trabajo",
             'time' => $time,
             'date' => $date,
@@ -402,23 +402,24 @@ class AssignedServiceController extends Controller {
             'id_service' => $service,
             'id_modifier' => $modifier,
             'comments' => $comment,
-            'timestamp' => date("U"),
+            'timestamp' => date ( "U" ),
             'time_wait' => Yii::$app->params ['seconds_wait'],
-            // 'id_not' => $model->id,
-            'type' => Yii::$app->params ['notification_type_assgigned_expert']
+            'type' => Yii::$app->params ['notification_type_assgigned_expert'] 
         ];
+
         if ($tokens != null){
-            Yii::$app->PushNotifier->sendNotificationExpertOS("Nuevo servicio", "Tienes un nuevo servicio", $data, $tokens);
+                Yii::$app->PushNotifier->sendNotificationExpertOS ( "Nuevo servicio", "Tienes un nuevo servicio", $data, $tokens );
         }
+
         $id_serv = $model->id;
         $url = Yii::$app->params ['path_scripts'];
         // $url="/var/www/html/tiver";
-        $log = $url . "/web/$id_serv.txt";
+        $log = $url . "/web/logs/$id_serv.txt";
         $script = 'php ' . $url . '/./yii tasks/check-service "' . $id_serv . '" "' . $date . '" "' . $time . '"';
         // $url="/var/www/html/tiver/web/log_date.txt";
-//                var_dump($log,$script);die();
-        exec("(sleep " . Yii::$app->params ['seconds_wait'] . "; $script > $log) > /dev/null 2>&1 &");
+        exec ( "(sleep " . Yii::$app->params ['seconds_wait'] . "; $script > $log) > /dev/null 2>&1 &" );
         // Insertamos el log
+
         // Insertar LOG
         $model_log = new LogAssignedService ();
         $model_log->assigned = "1";
@@ -427,19 +428,20 @@ class AssignedServiceController extends Controller {
         $model_log->date = $date;
         $model_log->time = $time;
         $model_log->accepted = "0";
-        $model_log->attempt = $model->getNumAttempts() + 1;
+        $model_log->attempt = $model->getNumAttempts () + 1;
         $model_log->assigned_service_id = $model->id;
         $model_log->expert_id = $model->expert_id;
-        $model_log->save();
+        $model_log->save ();
         // /
+
         // print $script;
         $response ["success"] = true;
-        $response ["data"] = [
-            "message" => "Nuevo servicio correctamente"
+        $response ["data"] = [ 
+                        "message" => "Nuevo servicio correctamente" 
         ];
 //		$response = json_encode ( $response );
         return $response;
-    }
+	}
 
     public function actionGetAssignedService() {
         Yii::$app->response->format = 'json';
@@ -713,7 +715,7 @@ class AssignedServiceController extends Controller {
         $url = Yii::$app->params ['path_scripts'];
         // $url="/var/www/html/tiver";
         $script = 'php ' . $url . '/./yii tasks/check-service "' . $services->id . '" "' . $date . '" "' . $time . '" ';
-        $log = $url . "/web/$id.txt";
+        $log = $url . "/web/logs/$id.txt";
         exec("(sleep " . Yii::$app->params ['seconds_wait'] . "; $script > $log) > /dev/null 2>&1 &");
         // Guardamos el log de asignación
         $model_log = new LogAssignedService ();
@@ -947,7 +949,7 @@ class AssignedServiceController extends Controller {
         $id_serv = $services->id;
         $url = Yii::$app->params ['path_scripts'];
         // $url="/var/www/html/tiver";
-        $log = $url . "/web/$id_serv.txt";
+        $log = $url . "/web/logs/$id_serv.txt";
         $script = 'php ' . $url . '/./yii tasks/check-service "' . $id_serv . '" "' . $date_new . '" "' . $time_new . '"';
         // $url="/var/www/html/tiver/web/log_date.txt";
         exec("(sleep " . Yii::$app->params ['seconds_wait'] . "; $script > $log) > /dev/null 2>&1 &");
@@ -1174,7 +1176,7 @@ class AssignedServiceController extends Controller {
         $id_serv = $services->id;
         $url = Yii::$app->params ['path_scripts'];
         // $url="/var/www/html/tiver";
-        $log = $url . "/web/$id_serv.txt";
+        $log = $url . "/web/logs/$id_serv.txt";
         $script = 'php ' . $url . '/./yii tasks/check-service "' . $id_serv . '" "' . $date_new . '" "' . $time_new . '"';
         // $url="/var/www/html/tiver/web/log_date.txt";
         exec("(sleep " . Yii::$app->params ['seconds_wait'] . "; $script > $log) > /dev/null 2>&1 &");

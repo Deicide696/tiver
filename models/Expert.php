@@ -316,7 +316,9 @@ class Expert extends \yii\db\ActiveRecord {
                     'expert_id' => $this->id,
                     'date' => $date,
                     'state' => 1
-                ])->joinWith('service')->asArray()->all();
+                ])->joinWith('service')
+                ->asArray()
+                ->all();
 //        $services = assignedService::find ()->where ("expert_id=' $this->id' and date ='$date' and assigned_service.id<>'$id_actual'" )->joinWith ( 'service' )->asArray ()->all ();
 
         if ($services == null) {
@@ -350,13 +352,13 @@ class Expert extends \yii\db\ActiveRecord {
             //print"$serv_solicitado -> $inicio_serv - $fin_serv".PHP_EOL;
             //Evaluamos si el servicio solicitado se encuentra dentro del inicio y fin+walktime de otro servicio
             if ($serv_solicitado >= $inicio_serv && $serv_solicitado <= $fin_serv) {
-                //print"ocupado".PHP_EOL;
+                print"ocupado".PHP_EOL;
                 return false;
             }
             //print"$inicio_serv -> $serv_solicitado - $serv_solicitado_fin".PHP_EOL	;
             //Evaluamos si el servicio solicitado junto a su duracion no se trunca con el servicio, 
             if ($inicio_serv >= $serv_solicitado && $inicio_serv <= $serv_solicitado_fin) {
-                //print"ocupado2".PHP_EOL;
+                print"ocupado2".PHP_EOL;
                 return false;
             }
 

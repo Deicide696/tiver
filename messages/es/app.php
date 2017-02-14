@@ -62,6 +62,7 @@ return [
     'Coupon' => 'Cupón',
     'New Coupon' => 'Nuevo Cupón',
     'New User' => 'Nuevo Usuario',
+    'New' => 'Nuevo',
     'Amount' => 'Monto',
     'Type Coupon ID' => 'Cupón Asignado a',
     'Assigned' => 'Asignado',
