@@ -312,13 +312,13 @@ class Expert extends \yii\db\ActiveRecord {
 
     public function validateDateTime($date, $time, $duration_serv, $walk_time = 30) {
         
-        $services = assignedService::find()->where([
-                    'expert_id' => $this->id,
-                    'date' => $date,
-                    'state' => 1
-                ])->joinWith('service')
-                ->asArray()
-                ->all();
+        $services = AssignedService::find()->where([
+                'expert_id' => $this->id,
+                'date' => $date,
+                'state' => 1
+            ])->joinWith('service')
+            ->asArray()
+            ->all();
 //        $services = assignedService::find ()->where ("expert_id=' $this->id' and date ='$date' and assigned_service.id<>'$id_actual'" )->joinWith ( 'service' )->asArray ()->all ();
 
         if ($services == null) {
