@@ -72,7 +72,9 @@ echo ceiling(1.27, 0.05)."<br>";  // 1.30
 //    echo '$d1 es mayor que $d2.'."<br>";
 //}
 
-echo password_hash("123456", PASSWORD_DEFAULT)."\n";
+echo password_hash("123456", PASSWORD_DEFAULT) ."<br>";
 //echo var_dump("Hola",$user);
-echo "Hola";
-echo "Hola: ".Yii::$app->security->generatePasswordHash("123456");
+//echo "Hola";
+//echo "Hola: ".Yii::$app->security->generatePasswordHash("123456").", aja<br>";
+
+echo "Hora:" .date("H:i:s",strtotime("13:05:00"));
