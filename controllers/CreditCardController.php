@@ -182,9 +182,9 @@ class CreditCardController extends Controller {
         
         Yii::$app->response->format = 'json';
 
-        $token = Yii::$app->request->post("token", null);
-        $token_card = Yii::$app->request->post("token_card", null);
-        $token_body = Yii::$app->request->post("token_body", null);
+        $token = trim(Yii::$app->request->post("token", null));
+        $token_card = trim(Yii::$app->request->post("token_card", null));
+        $token_body = trim(Yii::$app->request->post("token_body", null));
         
         $model_token = LogToken::find ()
             ->where ([
