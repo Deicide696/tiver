@@ -8,9 +8,9 @@ use app\models\AssignedService;
 use app\models\Zone;
 use app\models\Expert;
 use yii\db\Expression;
-use app\models\GcmTokenExpert;
+//use app\models\GcmTokenExpert;
 use app\models\User;
-use app\models\GcmToken;
+//use app\models\GcmToken;
 use app\models\LogAssignedService;
 
 class TasksController extends Controller {
@@ -34,7 +34,9 @@ class TasksController extends Controller {
         if ($services != null) {
             if ($services->state == 0) {
                 //Insertar LOG de omitido, primero se valida si no fue rechazado
-                $model_l = LogAssignedService::find()->where(['assigned_service_id' => $services->id, 'expert_id' => $services->expert_id, 'rejected' => '1', 'date' => $date, 'time' => $time])->one();
+                $model_l = LogAssignedService::find()
+                        ->where(['assigned_service_id' => $services->id, 'expert_id' => $services->expert_id, 'rejected' => '1', 'date' => $date, 'time' => $time])
+                        ->one();
 
                 if ($model_l == null) {
                     $model_log = new LogAssignedService();
@@ -110,32 +112,35 @@ class TasksController extends Controller {
 
                             $user = User::findOne(["id" => $services->user_id]);
                             $value = $services->getPrice();
-
-                            try {
-                                //Enviar mail de pago en mora
-                                $sendGrid = new \SendGrid(Yii::$app->params ['sengrid_user'], Yii::$app->params ['sendgrid_pass']);
-                                $email = new \SendGrid\Email ();
-                                $email
-                                        ->setFrom(Yii::$app->params ['sendgrid_from'])
-                                        ->setFromName(Yii::$app->params ['sendgrid_from_name'])
-                                        ->addTo($user->email)
-                                        ->setSubject(' ')
-                                        ->setHtml(' ')
-                                        ->setHtml(' ')
-                                        ->addSubstitution('{{ username }}', [$user->first_name])
-                                        ->addSubstitution('{{ buydate }}', [$services->date])
-                                        ->addSubstitution('{{ useraddress }}', [$services->address])
-                                        ->addSubstitution('{{ item.servname }}', [$value])
-                                        ->addSubstitution('{{ item.servmodif }}', [$value])
-                                        ->addSubstitution('{{ item.prodprecio }}', [$value])
-                                        ->addSubstitution('{{ item.servesp }}', [$value])
-                                        ->addSubstitution('{{ total }}', [$value])
-                                        ->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_cancelado']);
-                                $resp = $sendGrid->send($email);
-                            } catch (\Exception $e) {
-                                Yii::error($e->getMessage());
-                                echo "Error al enviar mail" . $e->getMessage() . PHP_EOL;
+                            
+                            if(isset($user) && !empty($user) && isset($services) && !empty($services) && isset($value) && !empty($value)){
+                               try {
+                                    //var_dump($services);
+    //                                Enviar mail de pago en mora
+                                    $sendGrid = new \SendGrid(Yii::$app->params ['sengrid_user'], Yii::$app->params ['sendgrid_pass']);
+                                    $email = new \SendGrid\Email ();
+                                    $email->setFrom(Yii::$app->params ['sendgrid_from'])
+                                            ->setFromName(Yii::$app->params ['sendgrid_from_name'])
+                                            ->addTo($user->email)
+                                            ->setSubject(' ')
+                                            ->setHtml(' ')
+                                            ->setHtml(' ')
+                                            ->addSubstitution('{{ username }}', [$user->first_name])
+                                            ->addSubstitution('{{ buydate }}', [$services->date])
+                                            ->addSubstitution('{{ useraddress }}', [$services->address])
+                                            ->addSubstitution('{{ item.servname }}', [$value])
+                                            ->addSubstitution('{{ item.servmodif }}', [$value])
+                                            ->addSubstitution('{{ item.prodprecio }}', [$value])
+                                            ->addSubstitution('{{ item.servesp }}', [$value])
+                                            ->addSubstitution('{{ total }}', [$value])
+                                            ->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_cancelado']);
+                                    $resp = $sendGrid->send($email);
+                                } catch (\Exception $e) {
+                                    Yii::error($e->getMessage());
+                                    echo "Error al enviar mail" . $e->getMessage() . PHP_EOL;
+                                } 
                             }
+                            
 
                             $services->delete();
                             // print_r($tokens);
@@ -144,7 +149,7 @@ class TasksController extends Controller {
                                 'type' => Yii::$app->params ['notification_type_canceled_user']
                             ];
                             if ($tokens != null){
-                                print var_dump("DATA: ", $data, " TOKENS: ", $tokens) . PHP_EOL;
+//                                print var_dump("DATA: ", $data, " TOKENS: ", $tokens) . PHP_EOL;
                                 Yii::$app->PushNotifier->sendNotificationUserOS("Servicio cancelado", "No encontramos ningn especialista disponible y se ha cancelado el servicio", $data, $tokens);
                             }
                             print "No hay especialistas disponibles" . PHP_EOL;
@@ -184,11 +189,12 @@ class TasksController extends Controller {
                                     'time_wait' => Yii::$app->params ['seconds_wait'],
                                     'type' => Yii::$app->params ['notification_type_assgigned_expert']
                                 ];
+//                                var_dump($services->time,$services->date,$services->date,$services->lat,$services->id,$services->lng,$model_user->first_name,$model_user->last_name,$services->service_id,$services->service_id,$services->getModifierId(),$services->comment);
                                 if ($tokens != null){
                                     Yii::$app->PushNotifier->sendNotificationExpertOS("Nuevo servicio", "Tienes un nuevo servicio", $data, $tokens);
                                 }
                                         // //////
-
+//                                        var_dump($services);die();
                                 $url = Yii::$app->params ['path_scripts'];
                                 // $url="/var/www/html/tiver";
                                 $script = 'php ' . $url . '/./yii tasks/check-service "' . $idService . '" "' . $date . '" "' . $time . '"';

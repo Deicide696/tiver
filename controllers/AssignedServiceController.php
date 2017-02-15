@@ -486,21 +486,19 @@ class AssignedServiceController extends Controller {
         $id_user = $model_token->FK_id_user;
 
         // Buscamos el servicio activo
-        $services = assignedService::find()->where([
-                            "user_id" => $id_user,
-                            // "expert_id" => $id_expert,
-                            "date" => $date,
-                            "time" => $time
-                        ])->
-                        // "state" => 1
-                        joinWith('service')->one();
+        $services = assignedService::find()
+            ->where(["user_id" => $id_user,
+                // "expert_id" => $id_expert,
+                "date" => $date,
+                "time" => $time])
+            ->joinWith('service')
+            ->one();
 
-        if ($services == null) {
+        if(!isset($services) || empty($services)){
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Lo sentimos, este servicio ya fue finalizado o no existe"
             ];
-            // $response = json_encode ( $response );
             return $response;
         }
         // Guardamos la cancelación;
@@ -514,37 +512,31 @@ class AssignedServiceController extends Controller {
             ];
             return $response;
         }
-        $tokens = Expert::findOne([
-                    "id" => $services->expert_id
-                ])->getPushTokens();
+        $tokens = Expert::findOne(["id" => $services->expert_id])
+                ->getPushTokens();
 
-        $user = User::findOne([
-                    "id" => $id_user
-                ]);
+        $user = User::findOne(["id" => $id_user]);
+        
         $value = $services->getPrice();
 
-        // Enviar mail de pago en mora
-        $sendGrid = new \SendGrid(Yii::$app->params ['sengrid_user'], Yii::$app->params ['sendgrid_pass']);
-        $email = new \SendGrid\Email ();
-        $email->setFrom(Yii::$app->params ['sendgrid_from'])->setFromName(Yii::$app->params ['sendgrid_from_name'])->addTo($user->email)->setSubject(' ')->setHtml(' ')->setHtml(' ')->addSubstitution('{{ username }}', [
-            $user->first_name
-        ])->addSubstitution('{{ buydate }}', [
-            $services->date
-        ])->addSubstitution('{{ useraddress }}', [
-            $services->address
-        ])->addSubstitution('{{ item.servname }}', [
-            $value
-        ])->addSubstitution('{{ item.servmodif }}', [
-            $value
-        ])->addSubstitution('{{ item.prodprecio }}', [
-            $value
-        ])->addSubstitution('{{ item.servesp }}', [
-            $value
-        ])->addSubstitution('{{ total }}', [
-            $value
-        ])->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_cancelado']);
-        $resp = $sendGrid->send($email);
-
+                        //      Enviar mail de Servicio Cancelado
+        if(isset($user) && !empty($user) && isset($value) && !empty($value)){
+            
+            $sendGrid = new \SendGrid(Yii::$app->params ['sengrid_user'], Yii::$app->params ['sendgrid_pass']);
+            $email = new \SendGrid\Email ();
+            $email->setFrom(Yii::$app->params ['sendgrid_from'])
+                    ->setFromName(Yii::$app->params ['sendgrid_from_name'])
+                    ->addTo($user->email)
+                    ->setSubject(' ')
+                    ->setHtml(' ')
+                    ->setHtml(' ')
+                    ->addSubstitution('{{ username }}', [$user->first_name])
+                    ->addSubstitution('{{ buydate }}', [$services->date])
+                    ->addSubstitution('{{ item.servname }}', [$value])
+                    ->addSubstitution('{{ item.servmodif }}', [$value])
+                    ->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_cancelado']);
+            $resp = $sendGrid->send($email);
+        }
         $services->delete();
 
         // print_r($tokens);
@@ -552,14 +544,15 @@ class AssignedServiceController extends Controller {
             "ticker" => "Servicio cancelado",
             'type' => Yii::$app->params ['notification_type_canceled_expert']
         ];
+        
         if ($tokens != null){
             Yii::$app->PushNotifier->sendNotificationExpertOS("Servicio eliminado", "Se ha cancelado un servicio que tenías asignado", $data, $tokens);
         }
-        $model_history = VwActualService::find()->where([
-                            'user_id' => $id_user
-                        ])->
-                        // 'status' => '1'
-                        asArray()->one();
+        $model_history = VwActualService::find()
+            ->where(['user_id' => $id_user])
+            ->asArray()
+            ->one();
+        
         $actual_service = false;
         if ($model_history != null) {
             $actual_service = true;
@@ -1510,5 +1503,4 @@ class AssignedServiceController extends Controller {
         $this->enableCsrfValidation = false;
         return parent::beforeAction($action);
     }
-
 }
