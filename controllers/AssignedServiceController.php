@@ -800,10 +800,10 @@ class AssignedServiceController extends Controller {
         $time = $_POST ['time'];
 
         $services = assignedService::find()->where([
-                            "user_id" => $id_user,
-                            "date" => $date,
-                            "time" => $time])
-                        ->joinWith('service')->one();
+                "user_id" => $id_user,
+                "date" => $date,
+                "time" => $time])
+            ->joinWith('service')->one();
 
         if ($services == null) {
             $response ["success"] = false;
@@ -904,7 +904,7 @@ class AssignedServiceController extends Controller {
         }
 
         $model_user = User::find()->where([
-                    'id' => $model_token->FK_id_user
+                    'id' => $id_user
                 ])->one();
 
         // envio de notificacion push OS
@@ -915,8 +915,8 @@ class AssignedServiceController extends Controller {
         // print_r($tokens);
         $data = [
             "ticker" => "Tienes trabajo",
-            'time' => $time_new,
-            'date' => $date_new,
+            'time' => $time,
+            'date' => $date,
             'address' => $services->address,
             'lat' => $services->lat,
             'id_serv' => $services->id,
@@ -938,7 +938,7 @@ class AssignedServiceController extends Controller {
         $url = Yii::$app->params ['path_scripts'];
         // $url="/var/www/html/tiver";
         $log = $url . "/web/logs/$id_serv.txt";
-        $script = 'php ' . $url . '/./yii tasks/check-service "' . $id_serv . '" "' . $date_new . '" "' . $time_new . '"';
+        $script = 'php ' . $url . '/./yii tasks/check-service "' . $id_serv . '" "' . $date. '" "' . $time . '"';
         // $url="/var/www/html/tiver/web/log_date.txt";
         exec("(sleep " . Yii::$app->params ['seconds_wait'] . "; $script > $log) > /dev/null 2>&1 &");
 
