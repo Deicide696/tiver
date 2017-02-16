@@ -413,9 +413,9 @@ class AssignedServiceController extends Controller {
         $log = $url . "/web/logs/$id_serv.txt";
         $script = 'php ' . $url . '/./yii tasks/check-service "' . $id_serv . '" "' . $date . '" "' . $time . '"';
         // $url="/var/www/html/tiver/web/log_date.txt";
-        exec ( "(sleep " . Yii::$app->params ['seconds_wait'] . "; $script > $log) > /dev/null 2>&1 &" );
+        exec ( "(sleep " . Yii::$app->params ['seconds_wait'] . "; $script >> $log) > /dev/null 2>&1 &" );
         // Insertamos el log
-
+//        var_dump($log, $script, "(sleep " . Yii::$app->params ['seconds_wait'] . "; $script > $log) > /dev/null 2>&1 &");
         // Insertar LOG
         $model_log = new LogAssignedService ();
         $model_log->assigned = "1";

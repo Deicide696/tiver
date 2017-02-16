@@ -84,7 +84,12 @@ class TasksController extends Controller {
                     } else {
                         $day = date('N', strtotime($services->date));
                         // Buscamos especialistas disponibles para la fecha y hora del servicio
-                        $experts = Expert::find()->where(" expert.id<>'$services->expert_id' and  enable='1' and zone_id='$zone' and (schedule.weekday_id='$day' and '$services->time' between schedule.start_time and schedule.finish_time) and (expert_has_service.service_id='$services->service_id')")->joinwith('schedule')->joinwith('assignedService')->joinwith('expertHasService')->orderBy(new Expression('rand()'))->all();
+                        $experts = Expert::find()
+                                ->where(" expert.id<>'$services->expert_id' and  enable='1' and zone_id='$zone' and (schedule.weekday_id='$day' and '$services->time' between schedule.start_time and schedule.finish_time) and (expert_has_service.service_id='$services->service_id')")
+                                ->joinwith('schedule')
+                                ->joinwith('assignedService')
+                                ->joinwith('expertHasService')
+                                ->orderBy(new Expression('rand()'))->all();
 
                         foreach ($experts as $expert) {
 
@@ -191,7 +196,7 @@ class TasksController extends Controller {
                                 ];
 //                                var_dump($services->time,$services->date,$services->date,$services->lat,$services->id,$services->lng,$model_user->first_name,$model_user->last_name,$services->service_id,$services->service_id,$services->getModifierId(),$services->comment);
                                 if ($tokens != null){
-                                    Yii::$app->PushNotifier->sendNotificationExpertOS("Nuevo servicio", "Tienes un nuevo servicio", $data, $tokens);
+                                    Yii::$app->PushNotifier->sendNotificationExpertOS("Nuevo servicio", "Tienes un nuevo servicio TASK", $data, $tokens);
                                 }
                                         // //////
 //                                        var_dump($services);die();
@@ -199,7 +204,7 @@ class TasksController extends Controller {
                                 // $url="/var/www/html/tiver";
                                 $script = 'php ' . $url . '/./yii tasks/check-service "' . $idService . '" "' . $date . '" "' . $time . '"';
                                 $log = $url . "/web/logs/$idService.txt";
-                                exec("(sleep " . Yii::$app->params ['seconds_wait'] . "; $script >> $log) > /dev/null 2>&1 &");
+                                exec("(sleep " . Yii::$app->params ['seconds_wait'] . "; $script > $log) > /dev/null 2>&1 &");
                                 //Insertar LOG de asignacin
                                 $model_log = new LogAssignedService();
                                 $model_log->assigned = "1";
