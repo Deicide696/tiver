@@ -10,19 +10,12 @@ use app\models\AssignedServiceSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-//use yii\base\Object;
-//use app\assets\Tpaga\Model\Address;
 use app\models\LogToken;
 use app\models\Service;
-//use app\models\GcmToken;
 use app\models\Coupon;
-//use app\models\Vertex;
 use app\models\Zone;
-//use app\models\GcmTokenExpert;
 use app\models\Expert;
 use app\models\Pay;
-//use app\models\VwServiceHistoryExpert;
-//use app\models\UserHasAddress;
 use app\models\CreditCard;
 use app\models\VwActualServiceExpert;
 use app\models\VwActualService;
@@ -374,16 +367,12 @@ class AssignedServiceController extends Controller {
 
         // Enviar notificación push OS
 
-//        if ($address_comp != ""){
-//                $address .= " - " . $address_comp;
-//        }
-
         $model_user = User::find()
             ->where(['id' => $model_token->FK_id_user ])
             ->one ();
 
         $tokens = Expert::findOne(["id" => $expert_id ])
-                ->getPushTokens ();
+            ->getPushTokens ();
 
         $data = [ 
             "ticker" => "Tienes trabajo",
@@ -402,11 +391,11 @@ class AssignedServiceController extends Controller {
             'time_wait' => Yii::$app->params ['seconds_wait'],
             'type' => Yii::$app->params ['notification_type_assgigned_expert'] 
         ];
-
+       
         if ($tokens != null){
             Yii::$app->PushNotifier->sendNotificationExpertOS ( "Nuevo servicio", "Tienes un nuevo servicio", $data, $tokens );
         }
-
+        
         $id_serv = $model->id;
         $url = Yii::$app->params ['path_scripts'];
         // $url="/var/www/html/tiver";
