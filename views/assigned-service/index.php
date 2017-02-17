@@ -53,18 +53,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
             'coupon.code',
-            [
-                'attribute' => 'time',
-                'format' => 'Time',
-            ],
-            [
-                'attribute' => 'date',
-                'format' => 'Date',
-            ],
-            [
-                'attribute' => 'created_date',
-                'format' => 'DateTime',
-            ],
+            'time:time',
+            'date:date',
+            'created_date:datetime',
             [
                 'attribute' => 'state',
                 'format' => 'html',

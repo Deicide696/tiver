@@ -53,9 +53,9 @@ class AssignedServiceController extends Controller {
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider
-                ]);
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider
+        ]);
     }
 
     /**
@@ -165,6 +165,14 @@ class AssignedServiceController extends Controller {
         $lng = trim(Yii::$app->request->post("address_lng", ""));
         $cupon = trim(Yii::$app->request->post("cupon", ""));   
         
+                        //      Fortmat Date and Time  //
+        if (isset($time) && !empty($time)) {
+            $time = date("H:i:s",strtotime($time));
+        }
+        if (isset($date) && !empty($date)) {
+            $date = date("Y-m-d",strtotime($date));
+        }
+        
         $model_token = LogToken::find()
                 ->where([
                     'token' => $token,
@@ -177,13 +185,6 @@ class AssignedServiceController extends Controller {
                 "message" => "Token inválido"
             ];
             return $response;
-        }
-                        //      Fortmat Date and Time  //
-        if (isset($time) && !empty($time)) {
-            $time = date("H:i:s",strtotime($time));
-        }
-        if (isset($date) && !empty($date)) {
-            $date = date("Y-m-d",strtotime($date));
         }
                         //      Validamos la zona de la dorección
         $zone = Zone::getZone ( $lat, $lng );
@@ -1182,12 +1183,20 @@ class AssignedServiceController extends Controller {
 
         Yii::$app->response->format = 'json';
 
-        $id_user = Yii::$app->request->post("id_user", "");
-        $id_expert = Yii::$app->request->post("id_expert", "");
-        $date = Yii::$app->request->post("date", "");
-        $time = Yii::$app->request->post("time", "");
-        $value = Yii::$app->request->post("value", "");
+        $id_user = trim(Yii::$app->request->post("id_user", ""));
+        $id_expert = trim(Yii::$app->request->post("id_expert", ""));
+        $date = trim(Yii::$app->request->post("date", ""));
+        $time = trim(Yii::$app->request->post("time", ""));
+        $value = trim(Yii::$app->request->post("value", ""));
 
+                          //      Fortmat Date and Time  //
+        if (isset($time) && !empty($time)) {
+            $time = date("H:i:s",strtotime($time));
+        }
+        if (isset($date) && !empty($date)) {
+            $date = date("Y-m-d",strtotime($date));
+        }
+        
         $services = AssignedService::find()
                 ->where([
                     "user_id" => $id_user,
