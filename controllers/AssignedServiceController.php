@@ -1188,8 +1188,7 @@ class AssignedServiceController extends Controller {
         $date = trim(Yii::$app->request->post("date", ""));
         $time = trim(Yii::$app->request->post("time", ""));
         $value = trim(Yii::$app->request->post("value", ""));
-
-                          //      Fortmat Date and Time  //
+        
         if (isset($time) && !empty($time)) {
             $time = date("H:i:s",strtotime($time));
         }
@@ -1217,10 +1216,10 @@ class AssignedServiceController extends Controller {
             return $response;
         }
         // Obtener precio del servicio
-        if (empty($value)) {
-            $value = $services->getPrice();
-        }
-
+//        if (empty($value)) {
+//            $value = $services->getPrice();
+//        }
+        $value = $services->getPrice();
         $tax = $services->getTax();
         $duracion = ($services->getDuration()) - 15;
         $cupon = "";
@@ -1299,12 +1298,6 @@ class AssignedServiceController extends Controller {
 
             //      Si no se realizo el cargo a la tarjeta
             if (!isset($data_pay) || empty($data_pay)) {
-
-
-                /* $connection = Yii::$app->getDb();
-                  $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'], [':user_id' => $id_user, ':id' => '']);
-                  $model_history = $command->queryAll(); */
-
 
                 $model_history = VwActualService::find()->where([
                                     'user_id' => $id_user
