@@ -1348,7 +1348,7 @@ class AssignedServiceController extends Controller {
                 $info_charge = Yii::$app->TPaga->GetChargeCreditCard($data_pay->id);
                 //      Data send to email the user
 
-                $total = $data_pay->amount;
+                $total =  number_format($data_pay->amount,0);
                 $dateTime = date_format(date_create($services->created_date), 'd-m-Y H:i:s');
                 $feeNumber = $data_pay->installments;
                 $paymentReference = $data_pay->order_id;
@@ -1366,7 +1366,7 @@ class AssignedServiceController extends Controller {
 
                 if ($paid_pay) {
 
-                    $value = number_format($services->setDiscountCoupon($total),0);
+                    $value = $services->setDiscountCoupon($total);
                     $pay->state = 1;
                     $email->addSubstitution('{{ username }}', [$username])
                             ->addSubstitution('{{ buydate }}', [$buydate])
