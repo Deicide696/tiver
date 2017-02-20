@@ -1098,9 +1098,10 @@ class UserController extends Controller {
         // $usuario->user_pass = ''; //toma el dato especifico user_pass
         if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->resetPassword()) {
             Yii::$app->session->setFlash('success', 'New password was saved.');
-            return $this->render('password_change', [
+            /*return $this->render('password_change', [
                         'model' => null
-            ]);
+            ]);*/
+            return $this->redirect(['site/index', 'success-password-reset' => true]);
         }
         return $this->render('password_change', [
                     'model' => $model

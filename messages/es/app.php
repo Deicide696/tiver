@@ -18,8 +18,8 @@
  */
 return [
     'Connection Ip' => 'IP de conexión',
-    'Created Date' => 'F. de Creación',
-    'Updated Date' => 'F. de Actualización',
+    'Created Date' => 'F. Creación',
+    'Updated Date' => 'F. Actualización',
     'State' => 'Estado',
     'Enable' => 'Activo',
     'Fk Id Token Type' => 'ID Tipo de token',

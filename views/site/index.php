@@ -15,6 +15,15 @@ if (isset($_GET['success']) && $_GET['success'] == true) {
         'body' => 'EL correo de Recuperación de contraseña fue enviado exitosamente.'
     ]);
 }
+if (isset($_GET['success-password-reset']) && $_GET['success-password-reset'] == true) {
+    echo Growl::widget([
+        'type' => Growl::TYPE_INFO,
+        'icon' => 'glyphicon glyphicon-ok-sign',
+        'title' => '¡Contraseña Restablecida!',
+        'showSeparator' => true,
+        'body' => 'Contraseña fue restablecida exitosamente.'
+    ]);
+}
 ?>
 <div class="site-index">
 

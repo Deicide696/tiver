@@ -1366,7 +1366,7 @@ class AssignedServiceController extends Controller {
 
                 if ($paid_pay) {
 
-                    $value = $services->setDiscountCoupon($total);
+                    $value = number_format($services->setDiscountCoupon($total));
                     $pay->state = 1;
                     $email->addSubstitution('{{ username }}', [$username])
                             ->addSubstitution('{{ buydate }}', [$buydate])

@@ -47,6 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'label' => 'Duración(mins)',
+                'format' => 'html',
                 'value' => function($searchModel) {
 
                     return$searchModel->getDuration();
