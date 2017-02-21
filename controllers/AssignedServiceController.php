@@ -403,7 +403,7 @@ class AssignedServiceController extends Controller {
         $log = $url . "/web/logs/$id_serv.txt";
         $script = 'php ' . $url . '/./yii tasks/check-service "' . $id_serv . '" "' . $date . '" "' . $time . '"';
         // $url="/var/www/html/tiver/web/log_date.txt";
-        exec ( "(sleep " . Yii::$app->params ['seconds_wait'] . "; $script > $log) > /dev/null 2>&1 &" );
+        exec ( "(sleep " . Yii::$app->params ['seconds_wait'] . "; $script >> $log) > /dev/null 2>&1 &" );
         // Insertamos el log
 //        var_dump($log, $script, "(sleep " . Yii::$app->params ['seconds_wait'] . "; $script > $log) > /dev/null 2>&1 &");
         // Insertar LOG
@@ -557,6 +557,7 @@ class AssignedServiceController extends Controller {
     }
 
     public function actionDeclineService() {
+        
         Yii::$app->response->format = 'json';
         $date = Yii::$app->request->post("date", "");
         $time = Yii::$app->request->post("time", "");
@@ -686,15 +687,16 @@ class AssignedServiceController extends Controller {
             'time_wait' => Yii::$app->params ['seconds_wait'],
             'type' => Yii::$app->params ['notification_type_assgigned_expert']
         ];
-        if ($tokens != null)
+        if ($tokens != null){
             Yii::$app->PushNotifier->sendNotificationExpertOS("Nuevo servicio", "Tienes un nuevo servicio", $data, $tokens);
+        }
         // //////
 
         $url = Yii::$app->params ['path_scripts'];
         // $url="/var/www/html/tiver";
         $script = 'php ' . $url . '/./yii tasks/check-service "' . $services->id . '" "' . $date . '" "' . $time . '" ';
         $log = $url . "/web/logs/$id.txt";
-        exec("(sleep " . Yii::$app->params ['seconds_wait'] . "; $script > $log) > /dev/null 2>&1 &");
+        exec("(sleep " . Yii::$app->params ['seconds_wait'] . "; $script >> $log) > /dev/null 2>&1 &");
         // Guardamos el log de asignación
         $model_log = new LogAssignedService ();
         $model_log->assigned = "1";
@@ -1286,7 +1288,7 @@ class AssignedServiceController extends Controller {
 
             //      Data send to email the user
             $username = $user->first_name;
-            $buydate = date_format(date_create($services->date), 'd-m-Y');
+            $buydate = date_format(date_create($services->date), 'd-m-Y H:i:s');
             $useraddress = $services->address;
             $servmodif = (isset($services->assignedServiceHasModifier) && !empty($services->assignedServiceHasModifier)) ? $services->assignedServiceHasModifier[0]->modifier->name : "";
             $servname = (isset($services->service) && !empty($services->service)) ? $services->service->name : "";
