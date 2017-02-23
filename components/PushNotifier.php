@@ -90,14 +90,6 @@ class PushNotifier extends Component {
             $this->sendNotificationExpert($data, $ids);
             return;
         }
-        $content = array(
-            "es" => $mensaje,
-            "en" => $mensaje
-        );
-        $heading = array(
-            "es" => $titulo,
-            "en" => $titulo
-        );
         $time_wait = 20000;
         
         if (isset($data ['time_wait'])){
@@ -110,8 +102,6 @@ class PushNotifier extends Component {
                     'All'
                 ),
                 'data' => $data,
-                 'contents' => $content,
-                'headings' => $heading,
                 'ttl' => $time_wait,
                 'android_background_data' => true
             );
@@ -120,13 +110,12 @@ class PushNotifier extends Component {
                 'app_id' => Yii::$app->params ['os_id_expert'],
                 'include_player_ids' => $ids,
                 'data' => $data,
-                'contents' => $content,
-                'headings' => $heading,
                 'ttl' => $time_wait,
                 'android_background_data' => true
             );
         }
         $response = $this->sendMessage($fields, Yii::$app->params ['os_api_key_expert']);
+        
         $return ["allresponses"] = $response;
         $return = json_encode($return);
     }

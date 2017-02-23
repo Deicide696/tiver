@@ -68,16 +68,16 @@ class Configuration
      *
      * @var string
      */
-    protected $accessToken = '4bk73tpors4das7k9a3a33ffjml7enhk';
-
+    
+    protected $accessToken = '4bk73tpors4das7k9a3a33ffjml7enhk';  // ID private Produción
+//    protected $accessToken = 'k87ddruralv6l7b5gjfbq4dsgnn7tb5d';  // ID private Sandbox
     /**
      * Username for HTTP basic authentication
      *
      * @var string
      */
-   // protected $username = 'h5fc3s6hp3slpef9t7vr6dajcuqbdumk';//sandbox
- //   protected $username = '4bk73tpors4das7k9a3a33ffjml7enhk';
-    protected $username = 'k87ddruralv6l7b5gjfbq4dsgnn7tb5d';  // ID private sandbox
+    protected $username = '4bk73tpors4das7k9a3a33ffjml7enhk'; // ID private Produción
+//    protected $username = 'k87ddruralv6l7b5gjfbq4dsgnn7tb5d';  // ID private Sandbox
 
     /**
      * Password for HTTP basic authentication
@@ -98,8 +98,8 @@ class Configuration
      *
      * @var string
      */
-//    protected $host = 'https://api.tpaga.co/api';
-     protected $host = 'https://sandbox.tpaga.co/api';
+    protected $host = 'https://api.tpaga.co/api';   // API Producción
+//     protected $host = 'https://sandbox.tpaga.co/api';   // API Sandbox
 
     /**
      * Timeout (second) of the HTTP request, by default set to 0, no timeout

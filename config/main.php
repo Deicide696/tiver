@@ -12,6 +12,16 @@ return [
 
     'modules' => [],
     'components' => [
+        'formatter' => [
+            'class' => 'yii\i18n\Formatter',
+            'dateFormat' => 'php:d-m-Y',
+            'datetimeFormat'=>'php:d-M-Y H:i:s',
+            'timeFormat' => 'H:i:s',
+            'decimalSeparator' => ',',
+            'thousandSeparator' => '.',
+            'locale' => 'es-CO', //your language locale
+            'defaultTimeZone' => 'America/Bogota', // time zone
+        ],
         'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',
             'useFileTransport' => false,

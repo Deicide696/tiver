@@ -12,12 +12,14 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="schedule-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
-    <p>
-        <?= Html::a('Nueva disponibilidad', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
+    <div class="row" style="padding-bottom: 15px;">
+        <div class="col col-sm-2 pull-left">
+            <h1 class="" style="margin: 0px;"><?= Html::encode($this->title) ?></h1>
+        </div>
+        <div class="col col-sm-2 pull-right text-right">
+            <?= yii::$app->user->can('create-expert') ? Html::a('<span class="glyphicon glyphicon-plus"></span> '.Yii::t('app', 'Create'), ['create'], ['class' => 'btn btn-success']): '' ?>
+        </div>
+    </div>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -41,8 +43,8 @@ $this->params['breadcrumbs'][] = $this->title;
            // 'date_created',
            // 'expert_id',	
         			[
-        		'attribute' => 'Nombre especialista',
-        		'format' => 'raw',
+        		'attribute' => 'expert_name',
+        		'label' => 'Nombre Especialista',
         		'value' =>'expert.name'
         		],
         		[

@@ -2,13 +2,11 @@
 
 namespace app\components;
 
+use Yii;
 use app\assets\Tpaga\Api\CreditCardApi;
 use app\assets\Tpaga\Api\CustomerApi;
 use app\assets\Tpaga\ApiClient;
 use yii\base\Component;
-use Yii;
-
-use app\assets\Tpaga\Model\Address;
 use app\assets\Tpaga\Model\CreditCardCharge;
 use app\assets\Tpaga\Model\CreditCardCreate;
 use app\assets\Tpaga\Model\Customer;
@@ -26,7 +24,7 @@ class TPaga extends Component {
 		//$api_client->api_key = self::api_key;
 		
 		// create customer object
-		$customer = new \app\assets\Tpaga\Model\Customer();
+		$customer = new Customer();
 		$customer->first_name = $first_name;
 		$customer->last_name = $last_name;
 		$customer->email = $email;
@@ -35,7 +33,7 @@ class TPaga extends Component {
 		
 	
 		try {
-			$customer_api = new CustomerAPI ( $api_client );
+			$customer_api = new CustomerApi( $api_client );
 			// return Charge (model)
 			$response = $customer_api->createCustomer ( $customer );
 			//var_dump ( $response );
@@ -67,7 +65,7 @@ class TPaga extends Component {
 		//var_dump($credit_card);
 		
 		try {
-			$credit_card_api = new CreditCardAPI ( $api_client );
+			$credit_card_api = new CreditCardApi( $api_client );
 			// return Charge (model)
 			$response = $credit_card_api->addCreditCard ( $id_customer, $credit_card );	
 			$id_card = $response->id;
@@ -85,7 +83,7 @@ class TPaga extends Component {
 		//var_dump($credit_card);
 	
 		try {
-			$credit_card_api = new CreditCardAPI ( $api_client );
+			$credit_card_api = new CreditCardApi( $api_client );
 			// return Charge (model)
 			$response = $credit_card_api->addCreditCardToken ( $id_customer, $credit_card );
 		$id_card = $response->id;
@@ -99,11 +97,11 @@ class TPaga extends Component {
 	}
 	
 	public function GetCreditCard($id_customer,$hash) {
-		$api_client = new ApiClient ();
+		$api_client = new ApiClient();
 		//$api_client->api_key = self::api_key;
 	
 		try {
-			$credit_card_api = new CreditCardAPI ( $api_client );
+			$credit_card_api = new CreditCardApi ( $api_client );
 			// return Charge (model)
 			$response = $credit_card_api->getCreditCardById( $id_customer, $hash );
 			return($response);
@@ -132,7 +130,7 @@ class TPaga extends Component {
 		$charge->order_id = $order_id;
 		$charge->description = "Pago de servicios Tiver";
 		try {
-			$charge_api = new CreditCardAPI ( $api_client );
+			$charge_api = new CreditCardApi( $api_client );
 			// return Charge (model)
 			$response = $charge_api->addCreditCardCharge ( $charge );
 			//var_dump ( $response );

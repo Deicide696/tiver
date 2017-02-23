@@ -31,26 +31,24 @@ use Yii;
  * @property Modifier[] $modifiers
  * @property ServiceHistory[] $serviceHistories
  */
-class Service extends \yii\db\ActiveRecord
-{
+class Service extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'service';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['name', 'price', 'tax', 'icon', 'category_service_id'], 'required'],
             [['price', 'tax', 'duration', 'status', 'category_service_id'], 'integer'],
             [['name'], 'string', 'max' => 100],
-        	[['description'], 'string', 'max' => 255],
+            [['description'], 'string', 'max' => 255],
             [['icon'], 'string', 'max' => 200]
         ];
     }
@@ -58,16 +56,15 @@ class Service extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'id' => 'ID',
             'name' => 'Servicio',
             'price' => 'Precio',
             'tax' => 'I.V.A.',
-        		   'status' => 'Activo',
+            'status' => 'Activo',
             'duration' => 'Duración (mins)',
-        		'description' => 'Descripción',
+            'description' => 'Descripción',
             'category_service_id' => 'Categoría',
         ];
     }
@@ -75,104 +72,92 @@ class Service extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getAssignedService()
-    {
+    public function getAssignedService() {
         return $this->hasMany(AssignedService::className(), ['service_id' => 'id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCityHasService()
-    {
+    public function getCityHasService() {
         return $this->hasMany(CityHasService::className(), ['service_id' => 'id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCouponHasService()
-    {
+    public function getCouponHasService() {
         return $this->hasMany(CouponHasService::className(), ['service_id' => 'id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCoupon()
-    {
+    public function getCoupon() {
         return $this->hasMany(Coupon::className(), ['id' => 'coupon_id'])->viaTable('coupon_has_service', ['service_id' => 'id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getExpertHasService()
-    {
+    public function getExpertHasService() {
         return $this->hasMany(ExpertHasService::className(), ['service_id' => 'id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getExpert()
-    {
+    public function getExpert() {
         return $this->hasMany(Expert::className(), ['id' => 'expert_id'])->viaTable('expert_has_service', ['service_id' => 'id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getPrice()
-    {
+    public function getPrice() {
         return $this->hasMany(Price::className(), ['service_id' => 'id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCategoryService()
-    {
+    public function getCategoryService() {
         return $this->hasOne(CategoryService::className(), ['id' => 'category_service_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getServiceHasCode()
-    {
+    public function getServiceHasCode() {
         return $this->hasMany(ServiceHasCode::className(), ['service_id' => 'id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCode()
-    {
+    public function getCode() {
         return $this->hasMany(Code::className(), ['id' => 'code_id'])->viaTable('service_has_code', ['service_id' => 'id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getServiceHasModifier()
-    {
+    public function getServiceHasModifier() {
         return $this->hasMany(ServiceHasModifier::className(), ['service_id' => 'id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getModifier()
-    {
+    public function getModifier() {
         return $this->hasMany(Modifier::className(), ['id' => 'modifier_id'])->viaTable('service_has_modifier', ['service_id' => 'id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getServiceHistorie()
-    {
+    public function getServiceHistorie() {
         return $this->hasMany(ServiceHistory::className(), ['service_id' => 'id']);
     }
+
 }

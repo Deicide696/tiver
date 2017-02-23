@@ -182,14 +182,10 @@ class CreditCardController extends Controller {
         
         Yii::$app->response->format = 'json';
 
-        $token = Yii::$app->request->post("token", null);
-        $token_card = Yii::$app->request->post("token_card", null);
-        $token_body = Yii::$app->request->post("token_body", null);
-        // $number=Yii::$app->request->post("number", null);
-        // $exp1=Yii::$app->request->post("exp1", null);
-        // $exp2=Yii::$app->request->post("exp2", null);
-        // $cvv=Yii::$app->request->post("cvv", null);
-
+        $token = trim(Yii::$app->request->post("token", null));
+        $token_card = trim(Yii::$app->request->post("token_card", null));
+        $token_body = trim(Yii::$app->request->post("token_body", null));
+        
         $model_token = LogToken::find ()
             ->where ([
                 'token' => $token, 
@@ -204,15 +200,19 @@ class CreditCardController extends Controller {
             return $response;
         }
 
-        $model_user = User::find()->where([
-                    'id' => $model_token->FK_id_user
-                ])->one();
-        if ($model_user == null) {
+        $model_user = User::find()
+            ->where([
+                'id' => $model_token->FK_id_user])
+            ->one();
+        
+        if (!isset($model_user) || empty($model_user)) {
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Usuario no existe"
             ];
         }
+//        var_dump($model_user);die();
+        
         // crear tarjeta de crédito
         //$city = new \app\assets\Tpaga\Model\City ();
         //$city->country = "CO";

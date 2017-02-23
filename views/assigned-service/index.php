@@ -47,24 +47,16 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'label' => 'Duración(mins)',
+                'format' => 'html',
                 'value' => function($searchModel) {
 
                     return$searchModel->getDuration();
                 }
             ],
             'coupon.code',
-            [
-                'attribute' => 'time',
-                'format' => 'Time',
-            ],
-            [
-                'attribute' => 'date',
-                'format' => 'Date',
-            ],
-            [
-                'attribute' => 'created_date',
-                'format' => 'DateTime',
-            ],
+            'time:time',
+            'date:date',
+            'created_date:datetime',
             [
                 'attribute' => 'state',
                 'format' => 'html',

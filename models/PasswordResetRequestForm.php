@@ -51,7 +51,7 @@ class PasswordResetRequestForm extends Model {
         ]);
         if ($user) {
             $tokenType = TypeToken::findOne(['name' => 'remember-password']);
-            $token = LogToken::findOne(['FK_id_token_type' => $tokenType->id, 'FK_id_user' => $user->id, 'enable' => 1]);
+            $token = LogToken::findOne(['FK_id_token_type' => $tokenType->id, 'FK_id_user' => $user->id, 'status' => 1]);
             
             if (!$token || !LogToken::isTokenValid($token->token)) {
                 if ($token) {

@@ -34,6 +34,9 @@ return [
         'authManager' => [
             'class' => 'yii\rbac\DbManager',
         ],
+        'PushNotifier' => [
+            'class' => 'app\components\PushNotifier'
+        ],
     ],
     'aliases' => [
         '@mdm/admin' => '@app/vendor/mdmsoft/yii2-admin',
