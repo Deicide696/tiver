@@ -8,8 +8,8 @@ use app\models\CategoryService;
 /* @var $this yii\web\View */
 /* @var $model app\models\Service */
 
-$this->title = 'Nuevo servicio';
-$this->params['breadcrumbs'][] = ['label' => 'Servicios', 'url' => ['index']];
+$this->title = Yii::t('app', 'New').' '.Yii::t('app', 'Service');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Services'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="service-create">

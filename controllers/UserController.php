@@ -120,6 +120,9 @@ class UserController extends Controller {
 
     public function actionCreate() {
         
+        Yii::trace("Entro a crear un usuario");
+        Yii::info("Que cagada","informacion");
+        Yii::trace('start calculating average revenue');
         $model = new SignupForm([
             'scenario' => SignupForm::SCENARIO_REGISTER
                 ]);
@@ -201,9 +204,9 @@ class UserController extends Controller {
                             ]
                         ];
                     } else {
-//                        Yii::trace(json_encode([
-//                            'message' => "El usuario no se pudo guardar'  -  " . json_encode($user->getErrors())
-//                        ]));
+                        Yii::trace(json_encode([
+                            'message' => "El usuario no se pudo guardar'  -  " . json_encode($user->getErrors())
+                        ]));
                         return [
                             'success' => false,
                             'data' => [
@@ -212,9 +215,9 @@ class UserController extends Controller {
                         ];
                     }
                 } else {
-//                    Yii::trace(json_encode([
-//                        'message' => "El usuario no se pudo guardar'  -  " . json_encode($model->getErrors())
-//                    ]));
+                    Yii::trace(json_encode([
+                        'message' => "El usuario no se pudo guardar'  -  " . json_encode($model->getErrors())
+                    ]));
                     return [
                         'success' => false,
                         'data' => [
@@ -223,9 +226,9 @@ class UserController extends Controller {
                     ];
                 }
             } else {
-//                Yii::trace(json_encode([
-//                    'message' => "El usuario no se pudo guardar'  -  " . json_encode($model->getErrors())
-//                ]));
+                Yii::trace(json_encode([
+                    'message' => "El usuario no se pudo guardar'  -  " . json_encode($model->getErrors())
+                ]));
                 return [
                     'success' => false,
                     'data' => [
@@ -234,7 +237,7 @@ class UserController extends Controller {
                 ];
             }
         } else {
-            $model = new User($id);
+            $model = new User();
 
             return $this->render('create', [
                         'model' => $model

@@ -7,17 +7,20 @@ use yii\grid\GridView;
 /* @var $searchModel app\models\AddressSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Direcciones';
+$this->title = Yii::t('app', 'Addresses');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="address-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
-    <p>
-        <?= Html::a('Nueva dirección', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
+    <div class="row" style="padding-bottom: 15px;">
+        <div class="col col-sm-2 pull-left">
+            <h1 class="" style="margin: 0px;"><?= Html::encode($this->title) ?></h1>
+        </div>
+        
+        <div class="col col-sm-2 pull-right text-right">
+            <?= yii::$app->user->can('create-user') ? Html::a('<span class="glyphicon glyphicon-plus"></span> '.Yii::t('app', 'New'), ['create'], ['class' => 'btn btn-success']): '' ?>
+        </div>
+    </div>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,

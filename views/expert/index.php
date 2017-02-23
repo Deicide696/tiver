@@ -8,7 +8,7 @@ use kartik\grid\GridView;
 /* @var $searchModel app\models\ExpertSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Especialistas';
+$this->title = Yii::t('app', 'Experts');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="expert-index">
@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         
         <div class="col col-sm-2 pull-right text-right">
-            <?= yii::$app->user->can('create-expert') ? Html::a(Yii::t('app', 'New Expert'), ['create'], ['class' => 'btn btn-success']): '' ?>
+            <?= yii::$app->user->can('create-user') ? Html::a('<span class="glyphicon glyphicon-plus"></span> '.Yii::t('app', 'New'), ['create'], ['class' => 'btn btn-success']): '' ?>
         </div>
     </div>
 

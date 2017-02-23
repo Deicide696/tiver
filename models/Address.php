@@ -51,12 +51,12 @@ class Address extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'address' => 'Dirección',
+            'address' => Yii::t('app', 'Address'),
             'tower_apartment' => 'Complemento',
             'custom_address' => 'Nombre personalizado',
             'lat' => 'Lat',
             'lng' => 'Lng',
-            'type_housing_id' => 'Tipo',
+            'type_housing_id' => Yii::t('app', 'Type'),
         ];
     }
 

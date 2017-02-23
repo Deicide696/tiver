@@ -54,23 +54,23 @@ AppAsset::register($this);
                             ]
                         ];
                         $menuItems[] = [
-                            'label' => '<span class="glyphicon glyphicon-briefcase"></span> Especialistas',
+                            'label' => '<span class="glyphicon glyphicon-briefcase"></span> '.Yii::t('app', 'Experts'),
                             'items' => [
-                                ['label' => 'Especialistas', 'url' => ['/expert']],
+                                ['label' => Yii::t('app', 'Experts'), 'url' => ['/expert']],
                                 ['label' => 'Disponibilidad', 'url' => ['/schedule']],
                                 ['label' => 'Especialistas & servicios', 'url' => ['/expert-has-service']]
                             ]
                         ];
                         $menuItems[] = [
-                            'label' => '<span class="glyphicon glyphicon-cog"></span> Configuración',
+                            'label' => '<span class="glyphicon glyphicon-cog"></span> '.Yii::t('app', 'Configuration'),
                             'items' => [
-                                ['label' => 'Cupones', 'url' => ['/coupon']],
-                                ['label' => 'Tipos de dirección', 'url' => ['/type-housing']],
-                                ['label' => 'Niveles de modificadores', 'url' => ['/type-modifier']],
-                                ['label' => 'Tipos de identificación', 'url' => ['/type-identification']],
-                                ['label' => 'Zonas', 'url' => ['/zone']],
-                                ['label' => 'Ciudades', 'url' => ['/city']],
-                                ['label' => 'Direcciones', 'url' => ['/address']],
+                                ['label' => Yii::t('app', 'Coupons'), 'url' => ['/coupon']],
+                                ['label' => Yii::t('app', 'Zones'), 'url' => ['/zone']],
+                                ['label' => Yii::t('app', 'Cities'), 'url' => ['/city']],
+                                ['label' => Yii::t('app', 'Addresses'), 'url' => ['/address']],
+                                ['label' => Yii::t('app', 'Housing Types'), 'url' => ['/type-housing']],
+                                ['label' => Yii::t('app', 'Types Identification'), 'url' => ['/type-identification']],
+                                ['label' => Yii::t('app', 'Modifier Types'), 'url' => ['/type-modifier']],
                             ]
                         ];
                         if(Yii::$app->user->can('super-admin')) {

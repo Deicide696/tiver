@@ -38,8 +38,8 @@ class TypeIdentification extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'description' => 'Tipo de identificación',
+            'id' => Yii::t('app', 'ID'),
+            'description' => Yii::t('app', 'Type Identification'),
         ];
     }
 

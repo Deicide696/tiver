@@ -85,7 +85,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         
         <div class="col col-sm-2 pull-right text-right">
-            <?= yii::$app->user->can('create-coupon') ? Html::a(Yii::t('app', 'New Coupon'), ['create'], ['class' => 'btn btn-success']): '' ?>
+            <?= yii::$app->user->can('create-user') ? Html::a('<span class="glyphicon glyphicon-plus"></span> '.Yii::t('app', 'New'), ['create'], ['class' => 'btn btn-success']): '' ?>
         </div>
     </div>
     <?php Pjax::begin(); ?>

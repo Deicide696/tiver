@@ -40,7 +40,7 @@ if (isset($_GET['success']) && $_GET['success'] == true) {
         </div>
         
         <div class="col col-sm-2 pull-right text-right">
-            <?= yii::$app->user->can('create-user') ? Html::a(Yii::t('app', 'New User'), ['create'], ['class' => 'btn btn-success']): '' ?>
+            <?= yii::$app->user->can('create-user') ? Html::a('<span class="glyphicon glyphicon-plus"></span> '.Yii::t('app', 'New'), ['create'], ['class' => 'btn btn-success']): '' ?>
         </div>
     </div>
     
