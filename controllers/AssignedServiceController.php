@@ -1224,7 +1224,7 @@ class AssignedServiceController extends Controller {
         $value = $services->getPrice();
         $tax = $services->getTax();
 
-        print_r("Precio: " . $value . " - IVA: " . $tax); die();
+//        print_r("Precio: " . $value . " - IVA: " . $tax); die();
         $duracion = ($services->getDuration()) - 15;
         $cupon = "";
 
