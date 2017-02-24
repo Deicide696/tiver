@@ -182,17 +182,29 @@ class AssignedService extends \yii\db\ActiveRecord {
         $price = 0;
         $service = Service::findOne(['id' => $this->service_id]);
 
-        if ($service->tax == 0) {
+        if ($service->tax == 0)
+        {
             $price += $service->price;
-        } else {
+        }
+
+        else
+        {
             $price += (int) round(($service->price + ($service->price * Yii::$app->params ['tax_percent'])), -2, PHP_ROUND_HALF_UP);
         }
+
         $modifier_vw = VwActualService::findOne(['id' => $this->id]);
-        if ($modifier_vw->modifier_id != "") {
+
+        if ($modifier_vw->modifier_id != "")
+        {
             $modifier = Modifier::findOne(['id' => $modifier_vw->modifier_id]);
-            if ($modifier->tax == 0) {
+
+            if ($modifier->tax == 0)
+            {
                 $price += $modifier->price;
-            } else {
+            }
+
+            else
+            {
                 $price += (int) round($modifier->price + ($modifier->price * Yii::$app->params ['tax_percent']), -2, PHP_ROUND_HALF_UP);
             }
         }
@@ -205,10 +217,10 @@ class AssignedService extends \yii\db\ActiveRecord {
             ->asArray()
             ->all();
 
-        if (isset($userHasCoupons) && !empty($userHasCoupons)) {
-
-            foreach ($userHasCoupons as $userHasCoupon) {
-
+        if (isset($userHasCoupons) && !empty($userHasCoupons))
+        {
+            foreach ($userHasCoupons as $userHasCoupon)
+            {
                 $model = Coupon::find()
                         ->where(['coupon.id' => $userHasCoupon['coupon_id'], 'coupon.enable' => 1])
                         ->joinWith(['couponHasCategoryServices.categoryService.service'])
@@ -216,22 +228,32 @@ class AssignedService extends \yii\db\ActiveRecord {
                         ->asArray()
                         ->one();
 
-                if (isset($model) && !empty($model)) {
-
+                if (isset($model) && !empty($model))
+                {
                     $day = date_parse(date('Y-m-d H:i:s'));
                     $day2 = date_parse($model['due_date']);
 
-                    if ($day > $day2) {
+                    if ($day > $day2)
+                    {
                         break;
                     }
-                    if (!empty($model["couponHasCategoryServices"])) {
+
+                    if (!empty($model["couponHasCategoryServices"]))
+                    {
                         $category = $model["couponHasCategoryServices"][0]["categoryService"]['description'];
-                        if (isset($model["couponHasCategoryServices"][0]["categoryService"]['service']) && !empty($model["couponHasCategoryServices"][0]["categoryService"]['description'])) {
-                            foreach ($model["couponHasCategoryServices"][0]["categoryService"]['service'] as $serviceValid) {
-                                if ($serviceValid['id'] == $this->service_id) {
+
+                        if (isset($model["couponHasCategoryServices"][0]["categoryService"]['service']) && !empty($model["couponHasCategoryServices"][0]["categoryService"]['description']))
+                        {
+                            foreach ($model["couponHasCategoryServices"][0]["categoryService"]['service'] as $serviceValid)
+                            {
+                                if ($serviceValid['id'] == $this->service_id)
+                                {
                                     $priceold = $price;
-                                    if ($model["quantity"] > 0) {
-                                        if ($model["discount"] > 0) {
+
+                                    if ($model["quantity"] > 0)
+                                    {
+                                        if ($model["discount"] > 0)
+                                        {
                                             $discount = ($price * $model["discount"]) / 100;
                                             $price = ($price - $discount);
                                             goto a;
@@ -241,13 +263,19 @@ class AssignedService extends \yii\db\ActiveRecord {
                             }
                         }
                         a:
-                    } else if (!empty($model["couponHasServices"])) {
+                    }
 
+                    else if (!empty($model["couponHasServices"]))
+                    {
                         $service = $model["couponHasServices"][0]['service']['id'];
-                        if ($service == $this->service_id) {
+
+                        if ($service == $this->service_id)
+                        {
                             $priceold = $price;
-                            if ($model["quantity"] > 0) {
-                                if ($model["discount"] > 0) {
+                            if ($model["quantity"] > 0)
+                            {
+                                if ($model["discount"] > 0)
+                                {
                                     $discount = ($price * $model["discount"]) / 100;
                                     $price = ($price - $discount);
                                     goto b;
@@ -347,25 +375,71 @@ class AssignedService extends \yii\db\ActiveRecord {
         return $price;
     }
 
-    public function getTax() {
-        
+    public function getTax()
+    {
         $price = 0;
         $service = Service::findOne(['id' => $this->service_id]);
 
-        if ($service->tax == 0) {
+        if ($service->tax == 0)
+        {
             $price += $service->price;
-        } else {
-            $price += ($service->price * Yii::$app->params ['tax_percent']);
         }
+
+        else
+        {
+            $iva = $service->price * Yii::$app->params ['tax_percent'];
+
+            $round_iva = (int) round(($service->price * Yii::$app->params ['tax_percent']), -2, PHP_ROUND_HALF_UP);
+
+            if($round_iva > $iva)
+            {
+                $extra_price = $round_iva - $iva;
+
+                $extra_iva = $extra_price * 0.16;
+
+                $price += ($service->price * Yii::$app->params ['tax_percent']) + $extra_iva;
+            }
+
+            else
+            {
+                $price += ($service->price * Yii::$app->params ['tax_percent']);
+            }
+
+        }
+
         $modifier_vw = VwActualService::findOne(['id' => $this->id]);
-        if ($modifier_vw->modifier_id != "") {
+
+        if ($modifier_vw->modifier_id != "")
+        {
             $modifier = Modifier::findOne(['id' => $modifier_vw->modifier_id]);
-            if ($modifier->tax == 0) {
+
+            if ($modifier->tax == 0)
+            {
                 $price += $modifier->price;
-            } else {
-                $price += ($modifier->price * Yii::$app->params ['tax_percent']);
+            }
+
+            else
+            {
+                $iva = $modifier->price * Yii::$app->params ['tax_percent'];
+
+                $round_iva = (int) round(($modifier->price * Yii::$app->params ['tax_percent']), -2, PHP_ROUND_HALF_UP);
+
+                if($round_iva > $iva)
+                {
+                    $extra_price = $round_iva - $iva;
+
+                    $extra_iva = $extra_price * 0.16;
+
+                    $price += ($modifier->price * Yii::$app->params ['tax_percent']) + $extra_iva;
+                }
+
+                else
+                {
+                    $price += ($modifier->price * Yii::$app->params ['tax_percent']);
+                }
             }
         }
+
         return $price;
     }
 
