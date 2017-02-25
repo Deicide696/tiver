@@ -1181,8 +1181,8 @@ class AssignedServiceController extends Controller {
         return $response;
     }
 
-    public function actionCheckoutExpert() {
-
+    public function actionCheckoutExpert()
+    {
         Yii::$app->response->format = 'json';
 
         $id_user = trim(Yii::$app->request->post("id_user", ""));
@@ -1191,10 +1191,13 @@ class AssignedServiceController extends Controller {
         $time = trim(Yii::$app->request->post("time", ""));
         $value = trim(Yii::$app->request->post("value", ""));
         
-        if (isset($time) && !empty($time)) {
+        if (isset($time) && !empty($time))
+        {
             $time = date("H:i:s",strtotime($time));
         }
-        if (isset($date) && !empty($date)) {
+
+        if (isset($date) && !empty($date))
+        {
             $date = date("Y-m-d",strtotime($date));
         }
         
@@ -1209,22 +1212,25 @@ class AssignedServiceController extends Controller {
                 ->joinWith('assignedServiceHasModifier.modifier')
                 ->one();
 
-        //var_dump($services, $id_user);        die();
-        if (!isset($services) || empty($services)) {
+        if (!isset($services) || empty($services))
+        {
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Lo sentimos, este servicio ya fue finalizado o no existe"
             ];
+
             return $response;
         }
+
         // Obtener precio del servicio
 //        if (empty($value)) {
 //            $value = $services->getPrice();
 //        }
+
         $value = $services->getPrice();
         $tax = $services->getTax();
 
-//        print_r("Precio: " . $value . " - IVA: " . $tax); die();
+        print_r("Precio: " . $value . " - IVA: " . $tax); die();
         $duracion = ($services->getDuration()) - 15;
         $cupon = "";
 
@@ -1236,11 +1242,14 @@ class AssignedServiceController extends Controller {
 //        $time3 = strtotime($date . " " . $time);
         $time2 = strtotime($date . " " . $time . " +$duracion minute");
         //      Validate if the time is within range
-        if ($time1 < $time2) {
+
+        if ($time1 < $time2)
+        {
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Aún no puedes finalizar este servicio"
             ];
+
             return $response;
         }
 
@@ -1251,32 +1260,39 @@ class AssignedServiceController extends Controller {
                     "enable" => 1])
                 ->one();
 
-        if (!isset($credit_card) || empty($credit_card)) {
+        if (!isset($credit_card) || empty($credit_card))
+        {
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "El usuario no tiene tarjetas asociadas"
             ];
+
             return $response;
         }
         //      Se busca la tarjeta de credito asociada a un cliente en TPAGA
         $user = User::findOne(["id" => $id_user]);
         $info = Yii::$app->TPaga->GetCreditCard($user->tpaga_id, $credit_card->hash);
 
-        if (!isset($info)) {
+        if (!isset($info))
+        {
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Lo sentimos, esta tarjeta de credito no existe o no esta asociada a este cliente"
             ];
+
             return $response;
         }
+
         //    Service is Canceled
         $canceled = AssignedService::findOne($services->id);
 
-        if (isset($canceled) && !empty($canceled) && !$canceled->delete()) {
+        if (isset($canceled) && !empty($canceled) && !$canceled->delete())
+        {
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Lo sentimos, no se pudo Cancelar este servicio asignado."
             ];
+
             return $response;
         }
 
@@ -1284,7 +1300,8 @@ class AssignedServiceController extends Controller {
                     "id" => $id_user])
                 ->getPushTokens();
 
-        if (count($canceled) > 0) {
+        if (count($canceled) > 0)
+        {
             //      Generate charge on Credit card
             $data_pay = Yii::$app->TPaga->CreateCharge($credit_card->hash, $value, "Servicio Tiver", $tax);
 
@@ -1298,33 +1315,34 @@ class AssignedServiceController extends Controller {
             $cardType = $info->type;
             $cardNumber = $info->last_four;
 
-
-
             //      Si no se realizo el cargo a la tarjeta
-            if (!isset($data_pay) || empty($data_pay)) {
-
+            if (!isset($data_pay) || empty($data_pay))
+            {
                 $model_history = VwActualService::find()->where([
                                     'user_id' => $id_user
                                 ])->
                                 // 'status' => '1'
                                 asArray()->one();
+
                 $actual_service = false;
-                if ($model_history != null) {
+
+                if ($model_history != null)
+                {
                     $actual_service = true;
                 }
+
                 $data = [
                     "ticker" => "Oooops, algo ha salido mal",
                     "actual_service" => $actual_service,
                     'type' => Yii::$app->params ['notification_type_checkout_user']
                 ];
+
                 Yii::$app->PushNotifier->sendNotificationUserOS("Error al finalizar servicio", "Estás en deuda, no se pudo realizar el cobro", $data, $tokens);
 
                 $response ["success"] = true;
                 $response ["data"] = [
                     "message" => "No se pudo realizar el cobro"
                 ];
-
-
 
                 // Enviar mail de pago en mora
                 $sendGrid = new \SendGrid(Yii::$app->params ['sengrid_user'], Yii::$app->params ['sendgrid_pass']);
@@ -1346,12 +1364,17 @@ class AssignedServiceController extends Controller {
 
                 $resp = $sendGrid->send($email);
                 $response = json_encode($response);
+
                 return $response;
-            } else {                //      if all is OK
+            }
+
+            else
+            {
+                //      if all is OK
                 //      Get info charge to credit card
                 $info_charge = Yii::$app->TPaga->GetChargeCreditCard($data_pay->id);
-                //      Data send to email the user
 
+                //      Data send to email the user
                 $total =  number_format($data_pay->amount,0);
                 $dateTime = date_format(date_create($services->created_date), 'd-m-Y H:i:s');
                 $feeNumber = $data_pay->installments;
@@ -1360,16 +1383,18 @@ class AssignedServiceController extends Controller {
                 $replyCode = $info_charge->errorCode . " " . $info_charge->errorMessage;
                 $description = $data_pay->description;
                 $iva = $data_pay->tax_amount;
+
                 //      Sendgrid Header
                 $sendGrid = new \SendGrid(Yii::$app->params ['sengrid_user'], Yii::$app->params ['sendgrid_pass']);
                 $email = new \SendGrid\Email ();
                 $email->setFrom(Yii::$app->params ['sendgrid_from'])->setFromName(Yii::$app->params ['sendgrid_from_name'])->addTo($user->email)->setSubject(' ')->setHtml(' ')->setHtml(' ');
+
                 //      Generate new Pay
                 $pay = new Pay ();
                 $paid_pay = $data_pay->paid;
 
-                if ($paid_pay) {
-
+                if ($paid_pay)
+                {
                     $value = $services->setDiscountCoupon($total);
                     $pay->state = 1;
                     $email->addSubstitution('{{ username }}', [$username])
@@ -1390,8 +1415,10 @@ class AssignedServiceController extends Controller {
                             ->addSubstitution('{{ iva }}', [$iva])
                             ->addSubstitution('{{ total }}', [$total])
                             ->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_compraok']);
-                } else {
+                }
 
+                else
+                {
                     $email->addSubstitution('{{ username }}', [$username])
                             ->addSubstitution('{{ usercard }}', [$username])
                             ->addSubstitution('{{ usercardnum }}', [$cardNumber])
@@ -1406,18 +1433,20 @@ class AssignedServiceController extends Controller {
 
                     $pay->state = 0;
                 }
+
                 $resp = $sendGrid->send($email);
 
                 $pay->message = $data_pay->error_message;
                 $pay->hash = $data_pay->id;
                 $pay->value = intval($total);
 
-                if (!$pay->save()) {
-
+                if (!$pay->save())
+                {
                     $response ["success"] = true;
                     $response ["data"] = [
                         "message" => "No se pudo guardar el cobro en nuestros registros."
                     ];
+
                     return $response;
                 }
 
@@ -1430,12 +1459,14 @@ class AssignedServiceController extends Controller {
                                 // "state" => 1
                                 asArray()->all();
 
-                foreach ($services_h as $row) {
+                foreach ($services_h as $row)
+                {
                     $pay_service = new ServiceHistoryHasPay ();
                     $pay_service->pay_id = $pay->id;
                     $pay_service->service_history_id = $row ['id'];
                     $pay_service->save();
                 }
+
                 //      Enviar notificación push
                 /* $connection = Yii::$app->getDb();
                   $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'], [':user_id' => $id_user, ':id' => '']);
@@ -1449,7 +1480,9 @@ class AssignedServiceController extends Controller {
                                 asArray()->one();
 
                 $actual_service = false;
-                if (isset($model_history)) {
+
+                if (isset($model_history))
+                {
                     $actual_service = true;
                 }
 
@@ -1460,9 +1493,14 @@ class AssignedServiceController extends Controller {
                 ];
 
 //                Queda hasta que no se soluciones definitivamente los de Firebase
-                if ($paid_pay && isset($tokens) && !empty($tokens)) {
+
+                if ($paid_pay && isset($tokens) && !empty($tokens))
+                {
                     Yii::$app->PushNotifier->sendNotificationUserOS("Servicio finalizado", "El servicio ha sido cobrado", $data, $tokens);
-                } else {
+                }
+
+                else
+                {
                     Yii::$app->PushNotifier->sendNotificationUserOS("Servicio finalizado", "Estás en deuda, no se pudo realizar el cobro", $data, $tokens);
                 }
 
@@ -1470,13 +1508,18 @@ class AssignedServiceController extends Controller {
                 $response ["data"] = [
                     "message" => "Checkout OK"
                 ];
+
                 return $response;
             }
-        } else {
+        }
+
+        else
+        {
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Lo sentimos, este servicio ya fue finalizado o no existe"
             ];
+
             return $response;
         }
     }
