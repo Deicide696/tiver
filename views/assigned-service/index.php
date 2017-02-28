@@ -7,12 +7,16 @@ use yii\grid\GridView;
 /* @var $searchModel app\models\AssignedServiceSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Servicios Asignados';
+$this->title = Yii::t('app', 'Assigned');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="assigned-service-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <div class="row" style="padding-bottom: 15px;">
+        <div class="col col-sm-2 pull-left">
+            <h1 class="" style="margin: 0px;"><?= Html::encode($this->title) ?></h1>
+        </div>
+    </div>
 
     <?php
         $columns = [
@@ -46,14 +50,17 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
             [
-                'label' => 'Duración(mins)',
+                'label' => 'Mins',
                 'format' => 'html',
                 'value' => function($searchModel) {
 
                     return$searchModel->getDuration();
                 }
             ],
-            'coupon.code',
+            [
+                 'label' => Yii::t('app', 'Coupon'),
+                'attribute' => 'coupon.code',
+            ],
             'time:time',
             'date:date',
             'created_date:datetime',
@@ -71,21 +78,20 @@ $this->params['breadcrumbs'][] = $this->title;
         ];
  
     ?>
-
-    <?=
-    GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'rowOptions' => function ($searchModel) {
-            if ($searchModel->state == 0) {
-                $class = ['class' => 'info'];
-            } else {
-                $class = [];
-            }
-            return $class;
-        },
-        'columns' => $columns,
-    ]);
+    <?=   
+        GridView::widget([
+            'dataProvider' => $dataProvider,
+            'filterModel' => $searchModel,
+            'rowOptions' => function ($searchModel) {
+                if ($searchModel->state == 0) {
+                    $class = ['class' => 'info'];
+                } else {
+                    $class = [];
+                }
+                return $class;
+            },
+            'columns' => $columns,
+            'options' => ['class' => 'table-responsive'],
+        ]);
     ?>
-
 </div>

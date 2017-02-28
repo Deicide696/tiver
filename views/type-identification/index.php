@@ -16,23 +16,24 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="col col-sm-5 pull-left">
             <h1 class="" style="margin: 0px;"><?= Html::encode($this->title) ?></h1>
         </div>
-        
+
         <div class="col col-sm-2 pull-right text-right">
-            <?= yii::$app->user->can('create-user') ? Html::a('<span class="glyphicon glyphicon-plus"></span> '.Yii::t('app', 'New'), ['create'], ['class' => 'btn btn-success']): '' ?>
+            <?= yii::$app->user->can('create-user') ? Html::a('<span class="glyphicon glyphicon-plus"></span> ' . Yii::t('app', 'New'), ['create'], ['class' => 'btn btn-success']) : '' ?>
         </div>
     </div>
 
-    <?= GridView::widget([
+    <?=
+    GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
             'id',
             'description',
-
             ['class' => 'yii\grid\ActionColumn'],
         ],
-    ]); ?>
+        'options' => ['class' => 'table-responsive'],
+    ]);
+    ?>
 
 </div>

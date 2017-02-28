@@ -88,22 +88,25 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= yii::$app->user->can('create-user') ? Html::a('<span class="glyphicon glyphicon-plus"></span> '.Yii::t('app', 'New'), ['create'], ['class' => 'btn btn-success']): '' ?>
         </div>
     </div>
+    
     <?php Pjax::begin(); ?>
     <?=
-    GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'rowOptions' => function ($searchModel) {
-            if (($searchModel->used == 0) && ($searchModel->enable == 0)) {
-                $class = ['class' => 'danger'];
-            } elseif ($searchModel->used == 0) {
-                $class = ['class' => 'info'];
-            } else {
-                $class = [];
-            }
-            return $class;
-        },
-        'columns' => $columns ])
+        GridView::widget([
+            'dataProvider' => $dataProvider,
+            'filterModel' => $searchModel,
+            'rowOptions' => function ($searchModel) {
+                if (($searchModel->used == 0) && ($searchModel->enable == 0)) {
+                    $class = ['class' => 'danger'];
+                } elseif ($searchModel->used == 0) {
+                    $class = ['class' => 'info'];
+                } else {
+                    $class = [];
+                }
+                return $class;
+            },
+            'columns' => $columns,
+            'options' => ['class' => 'table-responsive'],
+        ])
     ?>
     <?php Pjax::end(); ?>
 </div>

@@ -38,6 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
         		'userHasAddress.user.last_name',
             ['class' => 'yii\grid\ActionColumn'],
         ],
+        'options' => ['class' => 'table-responsive'],
     ]); ?>
 
 </div>

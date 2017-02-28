@@ -7,17 +7,16 @@ use yii\grid\GridView;
 /* @var $searchModel app\models\ServiceHistorySearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Historial de servicios';
+$this->title = Yii::t('app', 'History');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="service-history-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
-    <p>
-
-    </p>
+    <div class="row" style="padding-bottom: 15px;">
+        <div class="col col-sm-2 pull-left">
+            <h1 class="" style="margin: 0px;"><?= Html::encode($this->title) ?></h1>
+        </div>
+    </div>
 
     <?=
     GridView::widget([
@@ -28,15 +27,14 @@ $this->params['breadcrumbs'][] = $this->title;
             return $class;
         },
         'columns' => [
-                ['class' => 'yii\grid\SerialColumn'],
-            // 'id',
+            ['class' => 'yii\grid\SerialColumn'],
             [
                 'attribute' => 'Fecha',
                 'format' => 'raw',
                 'value' => 'date',
                 'format' => 'Date',
             ],
-                [
+            [
                 'attribute' => 'Hora',
                 'format' => 'raw',
                 'value' => 'time',
@@ -44,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'address',
             'expert.zone.name',
-                [
+            [
                 'attribute' => 'Finalizado',
                 'format' => 'raw',
                 'value' => function($searchModel) {
@@ -53,13 +51,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $icon;
                 }
             ],
-                [
+            [
                 'attribute' => 'Fecha finalizado',
                 'format' => 'raw',
                 'value' => 'created_date',
                 'format' => 'DateTime',
             ],
-                [
+            [
                 'attribute' => 'Servicio',
                 'format' => 'raw',
                 'value' => function($searchModel) {
@@ -67,7 +65,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     return$searchModel->getServiceName();
                 }
             ],
-                [
+            [
                 'attribute' => 'Precio',
                 'format' => 'raw',
                 'format' => 'Currency',
@@ -76,7 +74,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     return$searchModel->getPrice();
                 }
             ],
-                [
+            [
                 'attribute' => 'Duración (mins)',
                 'format' => 'raw',
                 'value' => function($searchModel) {
@@ -84,8 +82,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     return$searchModel->getDuration();
                 }
             ],
-            //'coupon.code',
-            //'comment',
             [
                 'attribute' => 'Usuario',
                 'format' => 'raw',
@@ -94,7 +90,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     return$searchModel->getUserName();
                 }
             ],
-            // 'city_id',
             [
                 'attribute' => 'Especialista',
                 'format' => 'raw',
@@ -103,7 +98,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     return$searchModel->getExpertName();
                 }
             ],
-                [
+            [
                 'attribute' => 'Pagado',
                 'format' => 'raw',
                 'value' => function($searchModel) {
@@ -112,9 +107,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $icon;
                 }
             ],
-            //'serviceHistoryHasPay.pay.message',
             ['class' => 'yii\grid\ActionColumn', 'template' => '{view}'],
         ],
+        'options' => ['class' => 'table-responsive'],
     ]);
     ?>
 

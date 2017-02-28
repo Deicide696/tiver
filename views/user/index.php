@@ -98,6 +98,7 @@ if (isset($_GET['success']) && $_GET['success'] == true) {
                 ],
             ],
         ],
+        'options' => ['class' => 'table-responsive'],
     ]);
     ?>
 </div>

@@ -10,6 +10,7 @@ use app\models\AssignedServiceSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 use app\models\LogToken;
 use app\models\Service;
 use app\models\Coupon;
@@ -39,7 +40,18 @@ class AssignedServiceController extends Controller {
                         'post'
                     ]
                 ]
-            ]
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['index'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['index'],
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
         ];
     }
 
