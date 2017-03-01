@@ -38,8 +38,8 @@ class TypeModifier extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'name' => 'Nivel',
+            'id' => Yii::t('app', 'ID'),
+            'name' => Yii::t('app', 'Type'),
         ];
     }
 

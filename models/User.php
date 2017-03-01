@@ -124,10 +124,10 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface {
             [
                'class' => 'yii\behaviors\AttributeBehavior',
                 'attributes' => [
-                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => 'enable',
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['enable','FK_id_city'],
                 ],
                 'value' => 1,
-            ],
+            ]
         ];
     }
 

@@ -85,25 +85,28 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         
         <div class="col col-sm-2 pull-right text-right">
-            <?= yii::$app->user->can('create-coupon') ? Html::a(Yii::t('app', 'New Coupon'), ['create'], ['class' => 'btn btn-success']): '' ?>
+            <?= yii::$app->user->can('create-user') ? Html::a('<span class="glyphicon glyphicon-plus"></span> '.Yii::t('app', 'New'), ['create'], ['class' => 'btn btn-success']): '' ?>
         </div>
     </div>
+    
     <?php Pjax::begin(); ?>
     <?=
-    GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'rowOptions' => function ($searchModel) {
-            if (($searchModel->used == 0) && ($searchModel->enable == 0)) {
-                $class = ['class' => 'danger'];
-            } elseif ($searchModel->used == 0) {
-                $class = ['class' => 'info'];
-            } else {
-                $class = [];
-            }
-            return $class;
-        },
-        'columns' => $columns ])
+        GridView::widget([
+            'dataProvider' => $dataProvider,
+            'filterModel' => $searchModel,
+            'rowOptions' => function ($searchModel) {
+                if (($searchModel->used == 0) && ($searchModel->enable == 0)) {
+                    $class = ['class' => 'danger'];
+                } elseif ($searchModel->used == 0) {
+                    $class = ['class' => 'info'];
+                } else {
+                    $class = [];
+                }
+                return $class;
+            },
+            'columns' => $columns,
+            'options' => ['class' => 'table-responsive'],
+        ])
     ?>
     <?php Pjax::end(); ?>
 </div>

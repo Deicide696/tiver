@@ -6,7 +6,7 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\TypeModifier */
 
-$this->title = 'Create Modifier Type';
+$this->title = Yii::t('app', 'New'). ' ' .Yii::t('app', 'Modifier Type');
 $this->params['breadcrumbs'][] = ['label' => 'Modifier Types', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>

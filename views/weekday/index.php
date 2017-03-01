@@ -19,17 +19,17 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Create Weekday', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
-    <?= GridView::widget([
+    <?=
+    GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
             'id',
             'weekdays',
-
             ['class' => 'yii\grid\ActionColumn'],
         ],
-    ]); ?>
-
+        'options' => ['class' => 'table-responsive'],
+    ]);
+    ?>
 </div>

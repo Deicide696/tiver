@@ -38,39 +38,39 @@ AppAsset::register($this);
                 } else {
                     if(Yii::$app->user->can('admin')) {
                         $menuItems[] = [
-                            'label' => '<span class="glyphicon glyphicon-calendar"></span> Servicios asignados',
+                            'label' => '<span class="glyphicon glyphicon-calendar"></span> '.Yii::t('app','Current Services'),
                             'items' => [
-                                        ['label' => 'Servicios actuales', 'url' => ['/assigned-service']],
-                                        ['label' => 'Historial de servicios','url' => ['/service-history']],
+                                ['label' => Yii::t('app','Assigned'), 'url' => ['/assigned-service']],
+                                ['label' => Yii::t('app','History'),'url' => ['/service-history']],
                             ]
                         ];
                         $menuItems[] = [
                             'label' => '<span class="glyphicon glyphicon-leaf"></span> Servicios',
                             'items' => [
-                                ['label' => 'Categorías', 'url' => ['/category-service']],
-                                ['label' => 'Servicios', 'url' => ['/service']],
-                                ['label' => 'Modificadores', 'url' => ['/modifier/']],
-                                ['label' => 'Modificadores & servicios', 'url' => ['/service-has-modifier']]
+                                ['label' => Yii::t('app','Categories'), 'url' => ['/category-service']],
+                                ['label' => Yii::t('app','Services'), 'url' => ['/service']],
+                                ['label' => Yii::t('app','Modifiers'), 'url' => ['/modifier/']],
+                                ['label' => Yii::t('app','Modifiers & Services'), 'url' => ['/service-has-modifier']]
                             ]
                         ];
                         $menuItems[] = [
-                            'label' => '<span class="glyphicon glyphicon-briefcase"></span> Especialistas',
+                            'label' => '<span class="glyphicon glyphicon-briefcase"></span> '.Yii::t('app', 'Experts'),
                             'items' => [
-                                ['label' => 'Especialistas', 'url' => ['/expert']],
-                                ['label' => 'Disponibilidad', 'url' => ['/schedule']],
-                                ['label' => 'Especialistas & servicios', 'url' => ['/expert-has-service']]
+                                ['label' => Yii::t('app','Experts'), 'url' => ['/expert']],
+                                ['label' => Yii::t('app','Availability'), 'url' => ['/schedule']],
+                                ['label' => Yii::t('app','Experts & Services'), 'url' => ['/expert-has-service']]
                             ]
                         ];
                         $menuItems[] = [
-                            'label' => '<span class="glyphicon glyphicon-cog"></span> Configuración',
+                            'label' => '<span class="glyphicon glyphicon-cog"></span> '.Yii::t('app', 'Configuration'),
                             'items' => [
-                                ['label' => 'Cupones', 'url' => ['/coupon']],
-                                ['label' => 'Tipos de dirección', 'url' => ['/type-housing']],
-                                ['label' => 'Niveles de modificadores', 'url' => ['/type-modifier']],
-                                ['label' => 'Tipos de identificación', 'url' => ['/type-identification']],
-                                ['label' => 'Zonas', 'url' => ['/zone']],
-                                ['label' => 'Ciudades', 'url' => ['/city']],
-                                ['label' => 'Direcciones', 'url' => ['/address']],
+                                ['label' => Yii::t('app', 'Coupons'), 'url' => ['/coupon']],
+                                ['label' => Yii::t('app', 'Zones'), 'url' => ['/zone']],
+                                ['label' => Yii::t('app', 'Cities'), 'url' => ['/city']],
+                                ['label' => Yii::t('app', 'Addresses'), 'url' => ['/address']],
+                                ['label' => Yii::t('app', 'Housing Types'), 'url' => ['/type-housing']],
+                                ['label' => Yii::t('app', 'Types Identification'), 'url' => ['/type-identification']],
+                                ['label' => Yii::t('app', 'Modifier Types'), 'url' => ['/type-modifier']],
                             ]
                         ];
                         if(Yii::$app->user->can('super-admin')) {
@@ -88,8 +88,8 @@ AppAsset::register($this);
                             $menuItems[] = [
                                 'label' => '<span class="glyphicon glyphicon-lock"></span> Administración',
                                 'items' => [
-                                    ['label' => 'Usuarios', 'url' => ['/user']],
-                                    ['label' => 'Direcciones', 'url' => ['/address']],
+                                    ['label' => Yii::t('app', 'Users'), 'url' => ['/user']],
+                                    ['label' => Yii::t('app', 'Teams'), 'url' => ['/team']],
                                 ]
                             ];
                         }

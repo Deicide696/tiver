@@ -38,8 +38,8 @@ class TypeHousing extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'housing_type' => 'Housing Type',
+            'id' => Yii::t('app', 'ID'),
+            'housing_type' => Yii::t('app', 'Housing Types'),
         ];
     }
 }

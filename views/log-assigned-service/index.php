@@ -77,14 +77,9 @@ $this->params['breadcrumbs'][] = $this->title;
                      return Yii::$app->params['iconDisabled'];
                 }
             ],
-            // 'date',
-            // 'time',
-            // 'attempt',
-            // 'created_date',
-            // 'assigned_service_id',
-            // 'expert_id',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
+        'options' => ['class' => 'table-responsive'],
     ]); ?>
 </div>

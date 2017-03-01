@@ -7,7 +7,7 @@ use yii\grid\GridView;
 /* @var $searchModel app\models\ExpertHasServiceSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Especialistas & servicios';
+$this->title = Yii::t('app','Experts & Services');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="expert-has-service-index">
@@ -17,24 +17,25 @@ $this->params['breadcrumbs'][] = $this->title;
             <h1 class="" style="margin: 0px;"><?= Html::encode($this->title) ?></h1>
         </div>
         <div class="col col-sm-2 pull-right text-right">
-            <?= yii::$app->user->can('create-expert') ? Html::a('<span class="glyphicon glyphicon-plus"></span> '.Yii::t('app', 'Create'), ['create'], ['class' => 'btn btn-success']): '' ?>
+            <?= yii::$app->user->can('create-expert') ? Html::a('<span class="glyphicon glyphicon-plus"></span> '.Yii::t('app', 'New'), ['create'], ['class' => 'btn btn-success']): '' ?>
         </div>
     </div>
 
     <?=
-    GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-            'expert.name',
-            'expert.last_name',
-            'service.name',
-            'service.categoryService.description',
-            'qualification',
-            ['class' => 'yii\grid\ActionColumn'],
-        ],
-    ]);
+        GridView::widget([
+            'dataProvider' => $dataProvider,
+            'filterModel' => $searchModel,
+            'columns' => [
+                ['class' => 'yii\grid\SerialColumn'],
+                'expert.name',
+                'expert.last_name',
+                'service.name',
+                'service.categoryService.description',
+                'qualification',
+                ['class' => 'yii\grid\ActionColumn'],
+            ],
+            'options' => ['class' => 'table-responsive'],
+        ]);
     ?>
 
 </div>

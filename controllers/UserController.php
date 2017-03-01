@@ -118,114 +118,121 @@ class UserController extends Controller {
         ]);
     }
 
-    public function actionCreate() {
+    public function actionCreateUser() {
         
-        $model = new SignupForm([
-            'scenario' => SignupForm::SCENARIO_REGISTER
-                ]);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect([
+        $model = new User();
+        
+        if ($model->load(Yii::$app->request->post()) ) {
+            $model->FK_id_city = 1;
+            if( $model->save()){
+                return $this->redirect([
                         'view',
                         'id' => $model->id
-                    ]);
-        } else if (Yii::$app->request->isPost) {
-            // se define el layout
-            $this->layout = "json";
-            Yii::$app->response->format = 'json';
-            // este caso se da solo cuando los datos del usuario pasaron por el "tunel de creacion de usuarios del servicio registerUser.php"
-            $firstname = Yii::$app->request->post("firstname", null);
-            $lastname = Yii::$app->request->post("lastname", null);
-            $email = Yii::$app->request->post("email", null);
-            $password = Yii::$app->request->post("password", null);
-            $phone = Yii::$app->request->post("phone", null);
-            $gender = Yii::$app->request->post("gender", null);
-            $imei = Yii::$app->request->post("imei", null);
-
-            $tpaga_id = Yii::$app->TPaga->CreateCustomer($firstname, $lastname, $email, $phone);
-
-            $infoForm = [
-                'SignupForm' => [
-                    'firstname' => $firstname,
-                    'lastname' => $lastname,
-                    'email' => $email,
-                    'imei' => $imei,
-                    'password' => $password,
-                    'phone' => $phone,
-                    'gender' => $gender,
-                    'tpaga_id' => $tpaga_id
-                ]
-            ];
+                ]);
+            }else{
+                var_dump($model->getErrors());
+            }
+        } else {
             
-            if ($model->load($infoForm)) {
-                // se gusarda el usuario mmz en la nueva tabla
-                if ($user = $model->signup()) {
-                    // se elimina el registro del email en la lista de usuarios no registrado en mailchimp
-                    if (empty($user->getErrors())) {
+            return $this->render('create', [
+                        'model' => $model
+            ]);
+        }
+    }
 
-                        try {
-                            // se envia un email al usuario mmz con la bienvenida
-                            $assetEmail = new EmailAsset ();
-                            if ($user->email != '') {
-                                /*
-                                 * $arg = [
-                                 * 'model' => $user
-                                 * ];
-                                 * $booleanSend = $assetEmail->sendMail ( 'tiver@zugartek.com', $user->email, '¡Bienvenido a Tiver!', 'user/create', $arg );
-                                 */
+    public function actionCreate() {
 
-                                //
+        Yii::trace("Entro a crear un usuario");
+        Yii::info("Que cagada", "informacion");
+        Yii::trace('start calculating average revenue');
 
-                                $sendGrid = new \SendGrid(Yii::$app->params ['sengrid_user'], Yii::$app->params ['sendgrid_pass']);
-                                $email = new \SendGrid\Email ();
-                                $email
-                                        ->setFrom(Yii::$app->params ['sendgrid_from'])
-                                        ->setFromName(Yii::$app->params ['sendgrid_from_name'])
-                                        ->addTo($user->email)
-                                        ->setSubject(' ')
-                                        ->setHtml(' ')
-                                        ->addSubstitution('{{ username }}', [$user->first_name])
-                                        ->addFilter('templates', 'enabled', 1)
-                                        ->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_welcome']);
-                                $resp = $sendGrid->send($email);
-                                //	var_dump($resp);
-                            }
-                        } catch (\Exception $e) {
-                            Yii::error($e->getMessage());
-                            echo $e->getMessage();
+
+
+        // se define el layout
+        $this->layout = "json";
+        Yii::$app->response->format = 'json';
+        // este caso se da solo cuando los datos del usuario pasaron por el "tunel de creacion de usuarios del servicio registerUser.php"
+        $firstname = Yii::$app->request->post("firstname", null);
+        $lastname = Yii::$app->request->post("lastname", null);
+        $email = Yii::$app->request->post("email", null);
+        $password = Yii::$app->request->post("password", null);
+        $phone = Yii::$app->request->post("phone", null);
+        $gender = Yii::$app->request->post("gender", null);
+        $imei = Yii::$app->request->post("imei", null);
+
+        $tpaga_id = Yii::$app->TPaga->CreateCustomer($firstname, $lastname, $email, $phone);
+
+        $infoForm = [
+            'SignupForm' => [
+                'firstname' => $firstname,
+                'lastname' => $lastname,
+                'email' => $email,
+                'imei' => $imei,
+                'password' => $password,
+                'phone' => $phone,
+                'gender' => $gender,
+                'tpaga_id' => $tpaga_id
+            ]
+        ];
+
+        if ($model->load($infoForm)) {
+            // se gusarda el usuario mmz en la nueva tabla
+            if ($user = $model->signup()) {
+                // se elimina el registro del email en la lista de usuarios no registrado en mailchimp
+                if (empty($user->getErrors())) {
+
+                    try {
+                        // se envia un email al usuario mmz con la bienvenida
+                        $assetEmail = new EmailAsset ();
+                        if ($user->email != '') {
+                            /*
+                             * $arg = [
+                             * 'model' => $user
+                             * ];
+                             * $booleanSend = $assetEmail->sendMail ( 'tiver@zugartek.com', $user->email, '¡Bienvenido a Tiver!', 'user/create', $arg );
+                             */
+
+                            //
+
+                            $sendGrid = new \SendGrid(Yii::$app->params ['sengrid_user'], Yii::$app->params ['sendgrid_pass']);
+                            $email = new \SendGrid\Email ();
+                            $email
+                                    ->setFrom(Yii::$app->params ['sendgrid_from'])
+                                    ->setFromName(Yii::$app->params ['sendgrid_from_name'])
+                                    ->addTo($user->email)
+                                    ->setSubject(' ')
+                                    ->setHtml(' ')
+                                    ->addSubstitution('{{ username }}', [$user->first_name])
+                                    ->addFilter('templates', 'enabled', 1)
+                                    ->addFilter('templates', 'template_id', Yii::$app->params ['sendgrid_template_welcome']);
+                            $resp = $sendGrid->send($email);
+                            //	var_dump($resp);
                         }
-                        return [
-                            'success' => true,
-                            'data' => [
-                                'message' => 'Usuario creado correctamente'
-                            ]
-                        ];
-                    } else {
-//                        Yii::trace(json_encode([
-//                            'message' => "El usuario no se pudo guardar'  -  " . json_encode($user->getErrors())
-//                        ]));
-                        return [
-                            'success' => false,
-                            'data' => [
-                                'message' => json_encode($user->getErrors())
-                            ]
-                        ];
+                    } catch (\Exception $e) {
+                        Yii::error($e->getMessage());
+                        echo $e->getMessage();
                     }
+                    return [
+                        'success' => true,
+                        'data' => [
+                            'message' => 'Usuario creado correctamente'
+                        ]
+                    ];
                 } else {
-//                    Yii::trace(json_encode([
-//                        'message' => "El usuario no se pudo guardar'  -  " . json_encode($model->getErrors())
-//                    ]));
+                    Yii::trace(json_encode([
+                        'message' => "El usuario no se pudo guardar'  -  " . json_encode($user->getErrors())
+                    ]));
                     return [
                         'success' => false,
                         'data' => [
-                            'message' => json_encode($model->getErrors())
+                            'message' => json_encode($user->getErrors())
                         ]
                     ];
                 }
             } else {
-//                Yii::trace(json_encode([
-//                    'message' => "El usuario no se pudo guardar'  -  " . json_encode($model->getErrors())
-//                ]));
+                Yii::trace(json_encode([
+                    'message' => "El usuario no se pudo guardar'  -  " . json_encode($model->getErrors())
+                ]));
                 return [
                     'success' => false,
                     'data' => [
@@ -234,16 +241,20 @@ class UserController extends Controller {
                 ];
             }
         } else {
-            $model = new User($id);
-
-            return $this->render('create', [
-                        'model' => $model
-                    ]);
+            Yii::trace(json_encode([
+                'message' => "El usuario no se pudo guardar'  -  " . json_encode($model->getErrors())
+            ]));
+            return [
+                'success' => false,
+                'data' => [
+                    'message' => json_encode($model->getErrors())
+                ]
+            ];
         }
     }
 
     public function actionCheckPreregister() {
-        
+
         $model = new CheckPreRegister ();
         // Creación del usuario (WS) para la aplicación
         if (Yii::$app->request->isPost) {
@@ -281,7 +292,7 @@ class UserController extends Controller {
     }
 
     public function actionFacebook() {
-        
+
         Yii::trace(json_encode(Yii::$app->request->post()));
         // se define el layout
         $this->layout = "json";
@@ -770,7 +781,7 @@ class UserController extends Controller {
         $device = Yii::$app->request->post("device", null);
 
         $typeToken = TypeToken::findOne($device);
-        
+
         if (!isset($typeToken) || empty($typeToken)) {
 
             return [
@@ -859,7 +870,7 @@ class UserController extends Controller {
             $gcm_token->token = $gcm_id;
             $gcm_token->one_signal_token = $os_id;
             $gcm_token->updated_date = date('Y-m-d H:i:s');
-            $gcm_token->update();
+            $gcm_token->save();
         } else { // Si no existe, creamos uno nuevo
             $gcm_token = new GcmToken ();
             $gcm_token->one_signal_token = $os_id;
@@ -905,6 +916,7 @@ class UserController extends Controller {
     }
 
     public function actionOldLogin() {
+        
         if (Yii::$app->request->isPost) {
             $model = new LoginForm ();
             Yii::trace(json_encode(Yii::$app->request->post()));
@@ -1098,10 +1110,9 @@ class UserController extends Controller {
         // $usuario->user_pass = ''; //toma el dato especifico user_pass
         if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->resetPassword()) {
             Yii::$app->session->setFlash('success', 'New password was saved.');
-            /*return $this->render('password_change', [
+            return $this->render('password_change', [
                         'model' => null
-            ]);*/
-            return $this->redirect(['site/index', 'success-password-reset' => true]);
+            ]);
         }
         return $this->render('password_change', [
                     'model' => $model

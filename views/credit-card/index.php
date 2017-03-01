@@ -12,40 +12,39 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="credit-card-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <div class="row" style="padding-bottom: 15px;">
+        <div class="col col-sm-5 pull-left">
+            <h1 class="" style="margin: 0px;"><?= Html::encode($this->title) ?></h1>
+        </div>
+    </div>
 
-    <p>
-        <?php //echo Html::a('Create Credit Card', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
-
-    <?= GridView::widget([
+    <?=
+    GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
-          //  'id',
             'hash',
-           	[
-        		'attribute' => 'Activo',
-        		'format' => 'raw',
-        		'value' =>function($searchModel){
-        		$valido=true;
-        		if($searchModel->enable==0)
-        			$valido=false;
-        		if($valido)
-        			return  Yii::$app->params['iconEnabled'];
-        		else
-        			return Yii::$app->params['iconDisabled'];
-        		}
-        		],
+            [
+                'attribute' => 'Activo',
+                'format' => 'raw',
+                'value' => function($searchModel) {
+                    $valido = true;
+                    if ($searchModel->enable == 0)
+                        $valido = false;
+                    if ($valido)
+                        return Yii::$app->params['iconEnabled'];
+                    else
+                        return Yii::$app->params['iconDisabled'];
+                }
+            ],
             'created_date',
             'user.first_name',
             'user.last_name',
-
             ['class' => 'yii\grid\ActionColumn'],
         ],
-    ]); ?>
+        'options' => ['class' => 'table-responsive'],
+    ]);
+    ?>
 
 </div>

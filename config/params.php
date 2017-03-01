@@ -59,5 +59,5 @@ return [
     'sendgrid_template_pass' => '470a50dd-646e-46c4-93a3-44eb317cdbc6',
     'sendgrid_template_mora' => '195a9946-1eb6-42a4-8d46-09d330a2801c',
     'sendgrid_template_compraok' => '021f7dd6-1397-4c8a-9686-084e458140be',
-    'sendgrid_template_cancelado' => 'eb04b559-330e-494b-90d2-664524cdedeb',
+    'sendgrid_template_cancelado' => 'eb04b559-330e-494b-90d2-664524cdedeb'
 ];

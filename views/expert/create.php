@@ -11,8 +11,8 @@ use kartik\file\FileInput;
 /* @var $this yii\web\View */
 /* @var $model app\models\Expert */
 
-$this->title = 'Nuevo especialista';
-$this->params['breadcrumbs'][] = ['label' => 'Especialistas', 'url' => ['index']];
+$this->title = Yii::t('app', 'New'). ' '. Yii::t('app', 'Expert');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Experts'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="expert-create">

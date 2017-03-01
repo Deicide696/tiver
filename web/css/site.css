@@ -315,3 +315,9 @@ height: 700px !important;
 .margin-0{
     margin: 0px !important;
 }
+/*.font-13{
+    font-size: 13px !important;
+}*/
+table, .table, .table-striped, .table-bordered {
+    font-size: 13px !important;
+}

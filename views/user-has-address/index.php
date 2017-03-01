@@ -19,19 +19,19 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Create User Has Address', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
-    <?= GridView::widget([
+    <?=
+    GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
             'user.first_name',
-        		'user.last_name',
+            'user.last_name',
             'address.address',
-        		'address.tower_apartment',
-
+            'address.tower_apartment',
             ['class' => 'yii\grid\ActionColumn'],
         ],
-    ]); ?>
-
+        'options' => ['class' => 'table-responsive'],
+    ]);
+    ?>
 </div>
