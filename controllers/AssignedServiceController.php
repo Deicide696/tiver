@@ -192,6 +192,7 @@ class AssignedServiceController extends Controller {
                 ->one();
 
         if (!isset($model_token) || empty($model_token)) {
+            Yii::error('Token inválido', 'assign-service');
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Token inválido"
@@ -201,6 +202,8 @@ class AssignedServiceController extends Controller {
                         //      Validamos la zona de la dorección
         $zone = Zone::getZone ( $lat, $lng );
         if (! $zone) {
+            
+            Yii::error('Esta dirección se encuentra fuera de la zona de cobertura', 'assign-service');
             $response ["success"] = false;
             $response ["data"] = [ 
                 "message" => "Esta dirección se encuentra fuera de la zona de cobertura" 
@@ -235,10 +238,12 @@ class AssignedServiceController extends Controller {
 
         foreach ( $experts as $expert ) {
             
+            Yii::info('Existen Expertos en esta zona y con agendas correspondientes a este servicio.', 'assign-service');
             $disponible = $expert->validateDateTime ( $date, $time, $dur_serv );
 
             if ($disponible) { // Si está disponible
                 $expert_id = $expert->id;
+                Yii::info("Especialista disponible id = ".$expert->id, 'assign-service');
                 break;
             }
 
@@ -265,13 +270,14 @@ class AssignedServiceController extends Controller {
         }
 
         if (!isset($expert_id) || empty($expert_id)) {
-
+            Yii::error('El servicio no se pudo asignar porque no tenemos especialistas disponibles en este horario ($time $date)', 'assign-service');
             $response ["success"] = false;
             $response ["data"] = [ 
                 "message" => "El servicio no se pudo asignar porque no tenemos especialistas disponibles en este horario ($time $date)" 
             ];
             return $response;
         }
+        
                         //      Todo OK, se guarda el servicio
         $model = new AssignedService ();
         
@@ -289,6 +295,7 @@ class AssignedServiceController extends Controller {
 
         if (isset($cupon) && !empty($cupon)) {
             
+            Yii::info('Existe un cupon para este servicio.', 'assign-service');
             $model_coupon = Coupon::find ()
                 ->where(['code' => $cupon])
                 ->one ();
@@ -316,6 +323,7 @@ class AssignedServiceController extends Controller {
 
                         //      VAlidamos el Nuevo servicio
         if (! $model->validate ()) {
+            Yii::error('Existe un Error al validar este servicio.', 'assign-service');
             $response ["success"] = false;
             $response ["data"] = [ 
                             "message" => json_encode ( $model->getErrors () ) 
@@ -324,19 +332,26 @@ class AssignedServiceController extends Controller {
         }
                         //      Guardamos el Nuevo servicio
         if (! $model->save ()) {
+            
+            Yii::error('Existe un Error al guardar esta asignación de servicio.', 'assign-service');
             $response ["success"] = false;
             $response ["data"] = [ 
                             "message" => json_encode ( $model->getErrors () ) 
             ];
             return $response;
+        } else {
+            Yii::info('Se creo una nueva asignacion de servicio', 'assign-service');
         }
                         //      Si el servicio tiene modificadores, los guardamos
         if (! empty ( $modifier )) {
+            
+            Yii::info('Existe un modificador para este servicio con id = '.$modifier, 'assign-service');
             $model2 = new AssignedServiceHasModifier ();
             $model2->assigned_service_id = $model->id;
             $model2->modifier_id = $modifier;
             // $model2->item_modifier_id = '1';
             if (! $model2->save ()) {
+                Yii::info('Error guardar modelo AssignedServiceHasModifier', 'assign-service');
                 $response ["success"] = false;
                 $response ["data"] = [ 
                                 "message" => json_encode ( $model2->getErrors () ) 
@@ -407,6 +422,9 @@ class AssignedServiceController extends Controller {
        
         if ($tokens != null){
             Yii::$app->PushNotifier->sendNotificationExpertOS ( "Nuevo servicio", "Tienes un nuevo servicio", $data, $tokens );
+            Yii::info('Notificacion enviada a esperto con los datos: '.json_encode($tokens).', DATA:'. json_encode($data), 'assign-service');   
+        } else {
+            Yii::error('Error al intentar enviar notificaciona al esperto ya que no hay regitro de tokens', 'assign-service');
         }
         
         $id_serv = $model->id;
@@ -429,9 +447,13 @@ class AssignedServiceController extends Controller {
         $model_log->attempt = $model->getNumAttempts () + 1;
         $model_log->assigned_service_id = $model->id;
         $model_log->expert_id = $model->expert_id;
-        $model_log->save ();
+        if($model_log->save ()){
+            Yii::info('Nuevo registro en LogAssignedService guardado correctamente', 'assign-service');   
+        } else {
+            Yii::error('Error al intentar guardar registro en LogAssignedService', 'assign-service');
+        }
         //
-
+        Yii::info('Nuevo servicio correctamente', 'assign-service');
         $response ["success"] = true;
         $response ["data"] = [ 
             "message" => "Nuevo servicio correctamente" 
@@ -944,7 +966,7 @@ class AssignedServiceController extends Controller {
         $log = $url . "/web/logs/$id_serv.txt";
         $script = 'php ' . $url . '/./yii tasks/check-service "' . $id_serv . '" "' . $date. '" "' . $time . '"';
         // $url="/var/www/html/tiver/web/log_date.txt";
-        exec("(sleep " . Yii::$app->params ['seconds_wait'] . "; $script > $log) > /dev/null 2>&1 &");
+        exec("(sleep " . Yii::$app->params ['seconds_wait'] . "; $script >> $log) > /dev/null 2>&1 &");
 
         // Guardamos el log de rechazo
         $model_log = new LogAssignedService ();
@@ -1171,7 +1193,7 @@ class AssignedServiceController extends Controller {
         $log = $url . "/web/logs/$id_serv.txt";
         $script = 'php ' . $url . '/./yii tasks/check-service "' . $id_serv . '" "' . $date_new . '" "' . $time_new . '"';
         // $url="/var/www/html/tiver/web/log_date.txt";
-        exec("(sleep " . Yii::$app->params ['seconds_wait'] . "; $script > $log) > /dev/null 2>&1 &");
+        exec("(sleep " . Yii::$app->params ['seconds_wait'] . "; $script >> $log) > /dev/null 2>&1 &");
         // Guardamos el log de asignacion
         $model_log = new LogAssignedService ();
         $model_log->assigned = "1";
