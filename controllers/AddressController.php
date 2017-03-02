@@ -133,17 +133,27 @@ class AddressController extends Controller {
             ->one ();
         
         if (isset($model_token) && !empty($model_token)) {
-
-            $model = Address::find()->select(['address.id', 'address', 'tower_apartment', 'housing_type', 'type_housing_id', 'custom_address', 'lat', 'lng'])->joinwith('userHasAddress')->joinwith('typeHousing')->where(['user_has_address.user_id' => $model_token->FK_id_user, 'enable' => '1'])
-                            ->asArray()->all();
+            
+            Yii::info('No se pudo eliminar la dirección.', 'get-user-address');
+            $model = Address::find()
+                    ->select(['address.id', 'address', 'tower_apartment', 'housing_type', 'type_housing_id', 'custom_address', 'lat', 'lng'])
+                    ->joinwith('userHasAddress')
+                    ->joinwith('typeHousing')
+                    ->where(['user_has_address.user_id' => $model_token->FK_id_user, 'enable' => '1'])
+                    ->asArray()
+                    ->all();
+            
             if ($model != null) {
+                Yii::info('Esta dirección existe el modelo es: '. json_encode($model), 'get-user-address');
                 $response["success"] = true;
                 $response['data'] = $model;
             } else {
+                Yii::error('Esta dirección NO existe.', 'get-user-address');
                 $response["success"] = true;
                 $response["data"] = null;
             }
         } else {
+            Yii::error('Token inválido No. '.$token, 'get-user-address');
             $response["success"] = false;
             $response["data"] = ["message" => "Token inválido"];
         }
@@ -165,12 +175,11 @@ class AddressController extends Controller {
             ->one ();
         
         if (!isset($model_token) || empty($model_token)) {
-
+            Yii::error('Token inválido No. '.$token, 'remove-user-address');
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Token inválido"
             ];
-            //$response = json_encode ( $response );
             return $response;
         }
         $id_user = $model_token->FK_id_user;
@@ -180,27 +189,27 @@ class AddressController extends Controller {
                     'user_has_address.user_id' => $model_token->FK_id_user,
                     'id' => $address
                 ])->one();
-        // print_r($model_address);
+       
         if ($model_address == null) {
+            Yii::error('Dirección no existe.', 'remove-user-address');
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Dirección no existe"
             ];
-            //$response = json_encode ( $response );
             return $response;
         }
         $model_address->enable = '0';
         if (!$model_address->save()) {
+            Yii::info('No se pudo eliminar la dirección.', 'remove-user-address');
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "No se pudo eliminar la dirección"
             ];
-            //$response = json_encode ( $response );
             return $response;
         } else {
+            Yii::error('Dirección no existe.', 'remove-user-address');
             $response ["success"] = true;
             $response ["data"] = null;
-            //$response = json_encode ( $response );
             return $response;
         }
     }
@@ -224,6 +233,7 @@ class AddressController extends Controller {
             ->one ();
 
         if (!isset($model_token) || empty($model_token)) {
+            Yii::error('Token inválido No. '.$token, 'add-user-address');
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Token inválido"
@@ -234,6 +244,7 @@ class AddressController extends Controller {
         //Validamos la cobertura
         $zone = Zone::getZone($lat, $lng);
         if (!$zone) {
+            Yii::error('Esta dirección se encuentra fuera de la zona de cobertura.', 'add-user-address');
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Esta dirección se encuentra fuera de la zona de cobertura"
@@ -255,6 +266,8 @@ class AddressController extends Controller {
                 ->all();
         
         if ($model_address == null) { // No existe la direccion en DB, se guarda
+            
+            Yii::info('Esta dirección no esxiste en nuestros registros.', 'add-user-address');
             $model_address = new Address();
             $model_address->address = $address;
             $model_address->tower_apartment = $address_comp;
@@ -265,35 +278,46 @@ class AddressController extends Controller {
             $model_address->type_housing_id = $type_housing;
             
             if ($model_address->validate()){
+                Yii::info('La dirección a sido validada correctamente.', 'add-user-address');
                 if ($model_address->save()) {
+                    Yii::info('La dirección a sido Guardada correctamente.', 'add-user-address');
                     $model_user_addr = new UserHasAddress ();
                     $model_user_addr->user_id = $model_token->FK_id_user;
                     $model_user_addr->address_id = $model_address->id;
-                    $model_user_addr->save();
+                    if($model_user_addr->save()){
+                        Yii::info('La dirección a sido Guardada y asociada a un Usuario correctamente.', 'add-user-address');
+                    } else {
+                        Yii::error('La dirección no fue Guardada ni asociada a un Usuario correctamente.', 'add-user-address');
+                    }
                     $response["success"] = true;
                     $response["data"] = ["message" => "Dirección guardada correctamente"];
                     return $response;
                 } 
             } else {
                 if (!$model_address->validate(["address"])) {
+                    Yii::error('El numero de caracteres en el campo de Dirección no debe ser mayor a 100.', 'add-user-address');
                     $response["success"] = false;
                     $response["data"] = ["message" => "El numero de caracteres en el campo de Dirección no debe ser mayor a 100"];
                     return $response;
                 }else if (!$model_address->validate(["tower_apartment"])) {
+                    Yii::error('El numero de caracteres en el campo de Indicaciones no debe ser mayor a 100.', 'add-user-address');
                     $response["success"] = false;
                     $response["data"] = ["message" => "El numero de caracteres en el campo de Indicaciones no debe ser mayor a 100"];
                     return $response;
                 }else if (!$model_address->validate(["custom_address"])) {
+                    Yii::error('El numero de caracteres en el campo de Lugar no debe ser mayor a 100.', 'add-user-address');
                     $response["success"] = false;
                     $response["data"] = ["message" => "El numero de caracteres en el campo de Lugar no debe ser mayor a 100"];
                     return $response;
                 }else {
+                    Yii::error('No se pudo guardar la dirección por error desconocido.', 'add-user-address');
                     $response["success"] = false;
                     $response["data"] = ["message" => "No se pudo guardar la dirección por error desconocido."];
                     return $response;
                 }
             }
         } else {
+            Yii::error('Esta dirección ya esxiste en nuestros registros.', 'add-user-address');
             $response["success"] = false;
             $response["data"] = ["message" => "Dirección ya existe"];
             return $response;

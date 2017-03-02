@@ -94,8 +94,10 @@ class Zone extends \yii\db\ActiveRecord
 
         if(Point::pointInPolygon(new Point($lat,$lng), $polygon))
         {
+            Yii::info('Se creo un nuevo punto en pointInPolygon, y el id de la  zona es: '.$zone->id, 'add-user-address');
             return $zone->id;
-
+        } else {
+            Yii::error('Ocurrio un error la crear nuevo punto en pointInPolygon.', 'add-user-address');
         }
     }
     return false;

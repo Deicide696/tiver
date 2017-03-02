@@ -772,7 +772,6 @@ class UserController extends Controller {
      */
     public function actionLogin() {
 
-        // $this->layout = "json";
         Yii::$app->response->format = 'json';
         $email = Yii::$app->request->post("email", null);
         $password = Yii::$app->request->post("password", null);
@@ -829,11 +828,12 @@ class UserController extends Controller {
 //        ]);
 
         $updateTokens = LogToken::find()
-                ->where([
-                    'FK_id_user' => $user->id,
-                    'FK_id_token_type' => $typeToken->id,
-                    'status' => 1])
-                ->one();
+            ->where([
+                'FK_id_user' => $user->id,
+                'FK_id_token_type' => $typeToken->id,
+                'status' => 1])
+            ->one();
+        
         if (isset($updateTokens) && !empty($updateTokens)) {
             $updateTokens->status = 0;
             $updateTokens->update();
@@ -894,9 +894,10 @@ class UserController extends Controller {
         }
 
         $model_cc = CreditCard::find()->where([
-                    'user_id' => $user->id,
-                    'enable' => 1
-                ])->count();
+                'user_id' => $user->id,
+                'enable' => 1
+            ])->count();
+        
         $credit_card = $model_cc;
 
         return [

@@ -1248,6 +1248,7 @@ class AssignedServiceController extends Controller {
 
         if (!isset($services) || empty($services))
         {
+            Yii::error('Servicio ya fue finalizado o no existe excialista id: '.$id_expert, 'checkout-expert');
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Lo sentimos, este servicio ya fue finalizado o no existe"
@@ -1264,7 +1265,6 @@ class AssignedServiceController extends Controller {
         $value = $services->getPrice();
         $tax = $services->getTax();
 
-        print_r("Precio: " . $value . " - IVA: " . $tax); die();
         $duracion = ($services->getDuration()) - 15;
         $cupon = "";
 
@@ -1279,6 +1279,7 @@ class AssignedServiceController extends Controller {
 
         if ($time1 < $time2)
         {
+            Yii::error('Aún no puedes finalizar este servicio.', 'checkout-expert');
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Aún no puedes finalizar este servicio"
@@ -1296,6 +1297,7 @@ class AssignedServiceController extends Controller {
 
         if (!isset($credit_card) || empty($credit_card))
         {
+            Yii::error('El usuario no tiene tarjetas asociadas.', 'checkout-expert');
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "El usuario no tiene tarjetas asociadas"
@@ -1309,6 +1311,7 @@ class AssignedServiceController extends Controller {
 
         if (!isset($info))
         {
+            Yii::error('Lo sentimos, esta tarjeta de credito no existe o no esta asociada a este cliente.', 'checkout-expert');
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Lo sentimos, esta tarjeta de credito no existe o no esta asociada a este cliente"
@@ -1322,6 +1325,7 @@ class AssignedServiceController extends Controller {
 
         if (isset($canceled) && !empty($canceled) && !$canceled->delete())
         {
+            Yii::error('Lo sentimos, no se pudo Cancelar este servicio asignado.', 'checkout-expert');
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Lo sentimos, no se pudo Cancelar este servicio asignado."
@@ -1429,6 +1433,7 @@ class AssignedServiceController extends Controller {
 
                 if ($paid_pay)
                 {
+                    Yii::info('Servicio pagado por monto: '.$total, 'checkout-expert');
                     $value = $services->setDiscountCoupon($total);
                     $pay->state = 1;
                     $email->addSubstitution('{{ username }}', [$username])
@@ -1453,6 +1458,7 @@ class AssignedServiceController extends Controller {
 
                 else
                 {
+                    Yii::error('Servicio NO pagado por monto: '. $total, 'checkout-expert');
                     $email->addSubstitution('{{ username }}', [$username])
                             ->addSubstitution('{{ usercard }}', [$username])
                             ->addSubstitution('{{ usercardnum }}', [$cardNumber])
@@ -1476,6 +1482,7 @@ class AssignedServiceController extends Controller {
 
                 if (!$pay->save())
                 {
+                     Yii::error('No se pudo guardar el cobro en nuestros registros.'. $total, 'checkout-expert');
                     $response ["success"] = true;
                     $response ["data"] = [
                         "message" => "No se pudo guardar el cobro en nuestros registros."
@@ -1528,13 +1535,11 @@ class AssignedServiceController extends Controller {
 
 //                Queda hasta que no se soluciones definitivamente los de Firebase
 
-                if ($paid_pay && isset($tokens) && !empty($tokens))
-                {
+                if ($paid_pay && isset($tokens) && !empty($tokens)){
+                    Yii::info('El servicio ha sido cobrado.'. $total, 'checkout-expert');
                     Yii::$app->PushNotifier->sendNotificationUserOS("Servicio finalizado", "El servicio ha sido cobrado", $data, $tokens);
-                }
-
-                else
-                {
+                } else {
+                    Yii::error('Estás en deuda, no se pudo realizar el cobro.'. $total, 'checkout-expert');
                     Yii::$app->PushNotifier->sendNotificationUserOS("Servicio finalizado", "Estás en deuda, no se pudo realizar el cobro", $data, $tokens);
                 }
 
@@ -1549,6 +1554,7 @@ class AssignedServiceController extends Controller {
 
         else
         {
+            Yii::error('Lo sentimos, este servicio ya fue finalizado o no existe.'. $total, 'checkout-expert');
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Lo sentimos, este servicio ya fue finalizado o no existe"
