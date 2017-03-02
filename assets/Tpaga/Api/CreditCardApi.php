@@ -73,7 +73,8 @@ class CreditCardApi
     {
         if ($apiClient == null) {
             $apiClient = new ApiClient();
-            $apiClient->getConfig()->setHost('https://sandbox.tpaga.co/api');
+//            $apiClient->getConfig()->setHost('https://sandbox.tpaga.co/api');
+             $apiClient->getConfig()->setHost('https://api.tpaga.co/api');
         }
 
         $this->apiClient = $apiClient;
