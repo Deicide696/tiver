@@ -161,8 +161,8 @@ class AssignedServiceController extends Controller {
      * 
      * @return Json response
      */
-    public function actionAssignService() {
-	
+    public function actionAssignService()
+    {
         Yii::$app->response->format = 'json';
 
         $address = trim(Yii::$app->request->post("address", ""));
@@ -176,12 +176,15 @@ class AssignedServiceController extends Controller {
         $lat = trim(Yii::$app->request->post("address_lat", ""));
         $lng = trim(Yii::$app->request->post("address_lng", ""));
         $cupon = trim(Yii::$app->request->post("cupon", ""));   
-        
-                        //      Fortmat Date and Time  //
-        if (isset($time) && !empty($time)) {
+
+        // Fortmat Date and Time  //
+        if (isset($time) && !empty($time))
+        {
             $time = date("H:i:s",strtotime($time));
         }
-        if (isset($date) && !empty($date)) {
+
+        if (isset($date) && !empty($date))
+        {
             $date = date("Y-m-d",strtotime($date));
         }
         
@@ -191,26 +194,33 @@ class AssignedServiceController extends Controller {
                     'status' => 1])
                 ->one();
 
-        if (!isset($model_token) || empty($model_token)) {
+        if (!isset($model_token) || empty($model_token))
+        {
             Yii::error('Token inválido', 'assign-service');
+
             $response ["success"] = false;
             $response ["data"] = [
                 "message" => "Token inválido"
             ];
+
             return $response;
         }
-                        //      Validamos la zona de la dorección
+
+        // Validamos la zona de la dirección
         $zone = Zone::getZone ( $lat, $lng );
-        if (! $zone) {
-            
+        if (! $zone)
+        {
             Yii::error('Esta dirección se encuentra fuera de la zona de cobertura', 'assign-service');
+
             $response ["success"] = false;
             $response ["data"] = [ 
                 "message" => "Esta dirección se encuentra fuera de la zona de cobertura" 
             ];
+
             return $response;
         }
-                        //      Buscamos expertos disponibles para ese día y de ese servicio
+
+        // Buscamos expertos disponibles para ese día y de ese servicio
         $day = date ('N', strtotime($date));
         
         $experts = Expert::find()
@@ -220,7 +230,7 @@ class AssignedServiceController extends Controller {
             ->orderBy(new Expression('rand()'))
             ->all();   
 
-                        // obtenemos la duración del servicio, (duracion serv+ duracion mod)
+        // Obtenemos la duración del servicio, (duracion serv + duracion mod)
         $dur_serv = 0;
         $dur_serv += Service::find ()
             ->select(['duration'])
@@ -228,7 +238,8 @@ class AssignedServiceController extends Controller {
                 ->one()
                 ->duration;
         
-        if (isset($modifier) && !empty($modifier)){
+        if (isset($modifier) && !empty($modifier))
+        {
             $dur_serv += Modifier::find ()
                 ->select(['duration'])
                 ->where(['id' => $modifier])
@@ -236,9 +247,10 @@ class AssignedServiceController extends Controller {
                 ->duration;
         }	
 
-        foreach ( $experts as $expert ) {
-            
+        foreach ( $experts as $expert )
+        {
             Yii::info('Existen Expertos en esta zona y con agendas correspondientes a este servicio.', 'assign-service');
+
             $disponible = $expert->validateDateTime ( $date, $time, $dur_serv );
 
             if ($disponible) { // Si está disponible
@@ -278,7 +290,7 @@ class AssignedServiceController extends Controller {
             return $response;
         }
         
-                        //      Todo OK, se guarda el servicio
+        // Todo OK, se guarda el servicio
         $model = new AssignedService ();
         
         if (isset($address_comp) && !empty($address_comp)) {
@@ -293,14 +305,16 @@ class AssignedServiceController extends Controller {
         $model->comment = $comment;
         $model->service_id = $service;
 
-        if (isset($cupon) && !empty($cupon)) {
-            
-            Yii::info('Existe un cupon para este servicio.', 'assign-service');
+        if (isset($cupon) && !empty($cupon))
+        {
+            Yii::info('Se ingreso un cupón para este servicio.', 'assign-service');
+
             $model_coupon = Coupon::find ()
                 ->where(['code' => $cupon])
                 ->one ();
             
             $model->coupon_id = $model_coupon->id;
+
             // Cambiamos el estado del cupon
             $model_coupon->used = 1;
             
@@ -1234,7 +1248,7 @@ class AssignedServiceController extends Controller {
         {
             $date = date("Y-m-d",strtotime($date));
         }
-        
+
         $services = AssignedService::find()
                 ->where([
                     "user_id" => $id_user,
@@ -1256,11 +1270,6 @@ class AssignedServiceController extends Controller {
 
             return $response;
         }
-
-        // Obtener precio del servicio
-//        if (empty($value)) {
-//            $value = $services->getPrice();
-//        }
 
         $value = $services->getPrice();
         $tax = $services->getTax();

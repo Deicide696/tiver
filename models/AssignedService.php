@@ -240,7 +240,7 @@ class AssignedService extends \yii\db\ActiveRecord {
 
                     if (!empty($model["couponHasCategoryServices"]))
                     {
-                        $category = $model["couponHasCategoryServices"][0]["categoryService"]['description'];
+//                        $category = $model["couponHasCategoryServices"][0]["categoryService"]['description'];
 
                         if (isset($model["couponHasCategoryServices"][0]["categoryService"]['service']) && !empty($model["couponHasCategoryServices"][0]["categoryService"]['description']))
                         {
@@ -380,49 +380,213 @@ class AssignedService extends \yii\db\ActiveRecord {
         $price = 0;
         $service = Service::findOne(['id' => $this->service_id]);
 
-        if ($service->tax == 0)
-        {
-            $price += $service->price;
-        }
+        $userHasCoupons = UserHasCoupon::find()
+            ->where([
+                'user_id' => $this->user_id,
+                'used' => 0,
+                'enable' => 1])
+            ->asArray()
+            ->all();
 
+        if (isset($userHasCoupons) && !empty($userHasCoupons))
+        {
+            foreach ($userHasCoupons as $userHasCoupon)
+            {
+                $model = Coupon::find()
+                    ->where(['coupon.id' => $userHasCoupon['coupon_id'], 'coupon.enable' => 1])
+                    ->joinWith(['couponHasCategoryServices.categoryService.service'])
+                    ->joinWith(['couponHasServices.service s'])
+                    ->asArray()
+                    ->one();
+
+                if (isset($model) && !empty($model))
+                {
+                    $day = date_parse(date('Y-m-d H:i:s'));
+                    $day2 = date_parse($model['due_date']);
+
+                    if ($day > $day2)
+                    {
+                        break;
+                    }
+
+                    if (!empty($model["couponHasCategoryServices"]))
+                    {
+                        if (isset($model["couponHasCategoryServices"][0]["categoryService"]['service']) && !empty($model["couponHasCategoryServices"][0]["categoryService"]['description']))
+                        {
+                            foreach ($model["couponHasCategoryServices"][0]["categoryService"]['service'] as $serviceValid)
+                            {
+                                if ($serviceValid['id'] == $this->service_id)
+                                {
+                                    if ($model["quantity"] > 0)
+                                    {
+                                        if ($model["discount"] > 19)
+                                        {
+                                            return $price;
+                                        }
+
+                                        else
+                                        {
+                                            if ($service->tax == 0)
+                                            {
+                                                $price += $service->price;
+                                            }
+
+                                            else
+                                            {
+                                                $iva = $service->price * Yii::$app->params ['tax_percent'];
+
+                                                $round_iva = (int) round(($service->price * Yii::$app->params ['tax_percent']), -2, PHP_ROUND_HALF_UP);
+
+                                                if($round_iva > $iva)
+                                                {
+                                                    $extra_price = $round_iva - $iva;
+
+                                                    $extra_iva = $extra_price * 0.16;
+
+                                                    $price += ($service->price * Yii::$app->params ['tax_percent']) + $extra_iva;
+                                                }
+
+                                                else
+                                                {
+                                                    $price += ($service->price * Yii::$app->params ['tax_percent']);
+                                                }
+
+                                            }
+
+                                            $modifier_vw = VwActualService::findOne(['id' => $this->id]);
+
+                                            if ($modifier_vw->modifier_id != "")
+                                            {
+                                                $modifier = Modifier::findOne(['id' => $modifier_vw->modifier_id]);
+
+                                                if ($modifier->tax == 0)
+                                                {
+                                                    $price += $modifier->price;
+                                                }
+
+                                                else
+                                                {
+                                                    $iva = $modifier->price * Yii::$app->params ['tax_percent'];
+
+                                                    $round_iva = (int) round(($modifier->price * Yii::$app->params ['tax_percent']), -2, PHP_ROUND_HALF_UP);
+
+                                                    if($round_iva > $iva)
+                                                    {
+                                                        $extra_price = $round_iva - $iva;
+
+                                                        $extra_iva = $extra_price * 0.16;
+
+                                                        $price += ($modifier->price * Yii::$app->params ['tax_percent']) + $extra_iva;
+                                                    }
+
+                                                    else
+                                                    {
+                                                        $price += ($modifier->price * Yii::$app->params ['tax_percent']);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        a:
+                    }
+
+                    else if (!empty($model["couponHasServices"]))
+                    {
+                        $service = $model["couponHasServices"][0]['service']['id'];
+
+                        if ($service == $this->service_id)
+                        {
+                            if ($model["quantity"] > 0)
+                            {
+                                if ($model["discount"] > 19)
+                                {
+                                    return $price;
+                                }
+
+                                else
+                                {
+                                    if ($service->tax == 0)
+                                    {
+                                        $price += $service->price;
+                                    }
+
+                                    else
+                                    {
+                                        $iva = $service->price * Yii::$app->params ['tax_percent'];
+
+                                        $round_iva = (int) round(($service->price * Yii::$app->params ['tax_percent']), -2, PHP_ROUND_HALF_UP);
+
+                                        if($round_iva > $iva)
+                                        {
+                                            $extra_price = $round_iva - $iva;
+
+                                            $extra_iva = $extra_price * 0.16;
+
+                                            $price += ($service->price * Yii::$app->params ['tax_percent']) + $extra_iva;
+                                        }
+
+                                        else
+                                        {
+                                            $price += ($service->price * Yii::$app->params ['tax_percent']);
+                                        }
+
+                                    }
+
+                                    $modifier_vw = VwActualService::findOne(['id' => $this->id]);
+
+                                    if ($modifier_vw->modifier_id != "")
+                                    {
+                                        $modifier = Modifier::findOne(['id' => $modifier_vw->modifier_id]);
+
+                                        if ($modifier->tax == 0)
+                                        {
+                                            $price += $modifier->price;
+                                        }
+
+                                        else
+                                        {
+                                            $iva = $modifier->price * Yii::$app->params ['tax_percent'];
+
+                                            $round_iva = (int) round(($modifier->price * Yii::$app->params ['tax_percent']), -2, PHP_ROUND_HALF_UP);
+
+                                            if($round_iva > $iva)
+                                            {
+                                                $extra_price = $round_iva - $iva;
+
+                                                $extra_iva = $extra_price * 0.16;
+
+                                                $price += ($modifier->price * Yii::$app->params ['tax_percent']) + $extra_iva;
+                                            }
+
+                                            else
+                                            {
+                                                $price += ($modifier->price * Yii::$app->params ['tax_percent']);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        b:
+                    }
+                }
+            }
+        }
         else
         {
-            $iva = $service->price * Yii::$app->params ['tax_percent'];
-
-            $round_iva = (int) round(($service->price * Yii::$app->params ['tax_percent']), -2, PHP_ROUND_HALF_UP);
-
-            if($round_iva > $iva)
+            if ($service->tax == 0)
             {
-                $extra_price = $round_iva - $iva;
-
-                $extra_iva = $extra_price * 0.16;
-
-                $price += ($service->price * Yii::$app->params ['tax_percent']) + $extra_iva;
+                $price += $service->price;
             }
 
             else
             {
-                $price += ($service->price * Yii::$app->params ['tax_percent']);
-            }
+                $iva = $service->price * Yii::$app->params ['tax_percent'];
 
-        }
-
-        $modifier_vw = VwActualService::findOne(['id' => $this->id]);
-
-        if ($modifier_vw->modifier_id != "")
-        {
-            $modifier = Modifier::findOne(['id' => $modifier_vw->modifier_id]);
-
-            if ($modifier->tax == 0)
-            {
-                $price += $modifier->price;
-            }
-
-            else
-            {
-                $iva = $modifier->price * Yii::$app->params ['tax_percent'];
-
-                $round_iva = (int) round(($modifier->price * Yii::$app->params ['tax_percent']), -2, PHP_ROUND_HALF_UP);
+                $round_iva = (int) round(($service->price * Yii::$app->params ['tax_percent']), -2, PHP_ROUND_HALF_UP);
 
                 if($round_iva > $iva)
                 {
@@ -430,17 +594,115 @@ class AssignedService extends \yii\db\ActiveRecord {
 
                     $extra_iva = $extra_price * 0.16;
 
-                    $price += ($modifier->price * Yii::$app->params ['tax_percent']) + $extra_iva;
+                    $price += ($service->price * Yii::$app->params ['tax_percent']) + $extra_iva;
                 }
 
                 else
                 {
-                    $price += ($modifier->price * Yii::$app->params ['tax_percent']);
+                    $price += ($service->price * Yii::$app->params ['tax_percent']);
+                }
+
+            }
+
+            $modifier_vw = VwActualService::findOne(['id' => $this->id]);
+
+            if ($modifier_vw->modifier_id != "")
+            {
+                $modifier = Modifier::findOne(['id' => $modifier_vw->modifier_id]);
+
+                if ($modifier->tax == 0)
+                {
+                    $price += $modifier->price;
+                }
+
+                else
+                {
+                    $iva = $modifier->price * Yii::$app->params ['tax_percent'];
+
+                    $round_iva = (int) round(($modifier->price * Yii::$app->params ['tax_percent']), -2, PHP_ROUND_HALF_UP);
+
+                    if($round_iva > $iva)
+                    {
+                        $extra_price = $round_iva - $iva;
+
+                        $extra_iva = $extra_price * 0.16;
+
+                        $price += ($modifier->price * Yii::$app->params ['tax_percent']) + $extra_iva;
+                    }
+
+                    else
+                    {
+                        $price += ($modifier->price * Yii::$app->params ['tax_percent']);
+                    }
                 }
             }
         }
 
         return $price;
+
+        ////////////////////////////////////////////////////
+
+//        if ($service->tax == 0)
+//        {
+//            $price += $service->price;
+//        }
+//
+//        else
+//        {
+//            $iva = $service->price * Yii::$app->params ['tax_percent'];
+//
+//            $round_iva = (int) round(($service->price * Yii::$app->params ['tax_percent']), -2, PHP_ROUND_HALF_UP);
+//
+//            if($round_iva > $iva)
+//            {
+//                $extra_price = $round_iva - $iva;
+//
+//                $extra_iva = $extra_price * 0.16;
+//
+//                $price += ($service->price * Yii::$app->params ['tax_percent']) + $extra_iva;
+//            }
+//
+//            else
+//            {
+//                $price += ($service->price * Yii::$app->params ['tax_percent']);
+//            }
+//
+//        }
+//
+//        $modifier_vw = VwActualService::findOne(['id' => $this->id]);
+//
+//        if ($modifier_vw->modifier_id != "")
+//        {
+//            $modifier = Modifier::findOne(['id' => $modifier_vw->modifier_id]);
+//
+//            if ($modifier->tax == 0)
+//            {
+//                $price += $modifier->price;
+//            }
+//
+//            else
+//            {
+//                $iva = $modifier->price * Yii::$app->params ['tax_percent'];
+//
+//                $round_iva = (int) round(($modifier->price * Yii::$app->params ['tax_percent']), -2, PHP_ROUND_HALF_UP);
+//
+//                if($round_iva > $iva)
+//                {
+//                    $extra_price = $round_iva - $iva;
+//
+//                    $extra_iva = $extra_price * 0.16;
+//
+//                    $price += ($modifier->price * Yii::$app->params ['tax_percent']) + $extra_iva;
+//                }
+//
+//                else
+//                {
+//                    $price += ($modifier->price * Yii::$app->params ['tax_percent']);
+//                }
+//            }
+//        }
+
+//        return $price;
     }
 
     public function getDuration() {

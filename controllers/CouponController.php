@@ -940,11 +940,13 @@ class CouponController extends Controller {
                 ->asArray()
                 ->one();
 
-        if (isset($model) && !empty($model)) {
+        if (isset($model) && !empty($model))
+        {
             // Validacion si este servicio esta asociado a este cupon
-            if ($model['used'] == 0) {
-
-                if ($model['quantity'] > 0) {
+            if ($model['used'] == 0)
+            {
+                if ($model['quantity'] > 0)
+                {
                     //      Validate due date
                     $day = date_parse(date('Y-m-d H:i:s'));
                     $day2 = date_parse($model['due_date']);
