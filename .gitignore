@@ -6,3 +6,5 @@
 /web/img/
 /web/assets/
 /runtime/
+/config/db.php
+.idea/

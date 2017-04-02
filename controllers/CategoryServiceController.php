@@ -145,14 +145,20 @@ class CategoryServiceController extends Controller {
                          ->asArray()->all();
 
         for ($i = 0; $i < sizeof($model); $i++) {
+
             $services = $model[$i]['service'];
+
             for ($j = 0; $j < sizeof($services); $j++) {
+
                 //Modificamos precio del servicio
                 if ($model[$i]['service'][$j]['tax'] == 1) {
-                    $model[$i]['service'][$j]['price'] = (int)round($model[$i]['service'][$j]['price'] + ($model[$i]['service'][$j]['price'] * Yii::$app->params ['tax_percent']), -2, PHP_ROUND_HALF_UP);
-                }else{
+                    $model[$i]['service'][$j]['price'] = (int)round($model[$i]['service'][$j]['price'] + 50 + ($model[$i]['service'][$j]['price'] * Yii::$app->params ['tax_percent']), -2, PHP_ROUND_HALF_UP);
+                }
+
+                else {
                     $model[$i]['service'][$j]['price'] = (int)$model[$i]['service'][$j]['price'];
                 }
+
                 //Buscamos modificadores y se reajusta el precio del servicio
                 $modificadores = $model[$i]['service'][$j]['serviceHasModifier'];
                 $countMod = count($modificadores);
