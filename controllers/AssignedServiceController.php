@@ -83,6 +83,22 @@ class AssignedServiceController extends Controller {
     }
 
     /**
+     * Finds the AssignedService model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     *
+     * @param integer $id
+     * @return AssignedService the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findModel($id) {
+        if (($model = AssignedService::findOne($id)) !== null) {
+            return $model;
+        } else {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
+    }
+
+    /**
      * Creates a new AssignedService model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      *
@@ -107,7 +123,7 @@ class AssignedServiceController extends Controller {
      * Updates an existing AssignedService model.
      * If update is successful, the browser will be redirected to the 'view' page.
      *
-     * @param integer $id        	
+     * @param integer $id
      * @return mixed
      */
     public function actionUpdate($id) {
@@ -129,7 +145,7 @@ class AssignedServiceController extends Controller {
      * Deletes an existing AssignedService model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      *
-     * @param integer $id        	
+     * @param integer $id
      * @return mixed
      */
     public function actionDelete($id) {
@@ -138,22 +154,6 @@ class AssignedServiceController extends Controller {
         return $this->redirect([
                     'index'
                 ]);
-    }
-
-    /**
-     * Finds the AssignedService model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     *
-     * @param integer $id        	
-     * @return AssignedService the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id) {
-        if (($model = AssignedService::findOne($id)) !== null) {
-            return $model;
-        } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
-        }
     }
 
     /**
@@ -1044,7 +1044,7 @@ class AssignedServiceController extends Controller {
         $id_user = $model_token->FK_id_user;
         
         // Buscamos el servicio activo
-        $services = assignedService::find()
+        $services = AssignedService::find()
             ->where([
                 "user_id" => $id_user,
                 "date" => $date_old,
@@ -1076,7 +1076,7 @@ class AssignedServiceController extends Controller {
         $old_expert = $services->expert_id;
         $day = date('N', strtotime($date_new));
         // Primero validamos si el experto asignado puede tomar el servicio en la nueva hora
-        $experts = Expert::find()->where("expert.id='$old_expert' and enable='1' and zone_id='$zone' and (schedule.weekday_id='$day' and '$time_new' between schedule.start_time and schedule.finish_time) and (expert_has_service.service_id='$services->service_id')")->joinwith('schedule')->joinwith('assignedService')->joinwith('expertHasService')->one();
+        $experts = Expert::find()->where("expert.id=$old_expert and expert.enable='1' and zone_id='$zone' and (schedule.weekday_id='$day' and '$time_new' between schedule.start_time and schedule.finish_time) and (expert_has_service.service_id='$services->service_id')")->joinwith('schedule')->joinwith('assignedService')->joinwith('expertHasService')->one();
         if ($experts != null) {
             if ($experts->validateDateTimeActualService($date_new, $time_new, $dur_serv, $services->id, true)) {
                 $expert_id = $old_expert;
@@ -1085,7 +1085,7 @@ class AssignedServiceController extends Controller {
 
         if (!isset($expert_id)) {
             // Si no está disponible el experto Buscamos expertos disponibles para ese día y de ese servicio
-            $experts = Expert::find()->where("enable='1' and zone_id='$zone' and (schedule.weekday_id='$day' and '$time_new' between schedule.start_time and schedule.finish_time) and (expert_has_service.service_id='$services->service_id')")->joinwith('schedule')->joinwith('assignedService')->joinwith('expertHasService')->orderBy(new Expression('rand()'))->all();
+            $experts = Expert::find()->where("expert.enable='1' and zone_id='$zone' and (schedule.weekday_id='$day' and '$time_new' between schedule.start_time and schedule.finish_time) and (expert_has_service.service_id='$services->service_id')")->joinwith('schedule')->joinwith('assignedService')->joinwith('expertHasService')->orderBy(new Expression('rand()'))->all();
             foreach ($experts as $expert) {
 
                 $disponible = $expert->validateDateTime($date_new, $time_new, $dur_serv);

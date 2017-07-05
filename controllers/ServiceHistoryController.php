@@ -94,9 +94,25 @@ class ServiceHistoryController extends Controller {
     }
 
     /**
+     * Finds the ServiceHistory model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     *
+     * @param integer $id
+     * @return ServiceHistory the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findModel($id) {
+        if (($model = ServiceHistory::findOne($id)) !== null) {
+            return $model;
+        } else {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
+    }
+
+    /**
      * Creates a new ServiceHistory model.
      * If creation is successful, the browser will be redirected to the 'view' page.
-     * 
+     *
      * @return mixed
      */
     public function actionCreate() {
@@ -117,8 +133,8 @@ class ServiceHistoryController extends Controller {
     /**
      * Updates an existing ServiceHistory model.
      * If update is successful, the browser will be redirected to the 'view' page.
-     * 
-     * @param integer $id        	
+     *
+     * @param integer $id
      * @return mixed
      */
     public function actionUpdate($id) {
@@ -139,8 +155,8 @@ class ServiceHistoryController extends Controller {
     /**
      * Deletes an existing ServiceHistory model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
-     * 
-     * @param integer $id        	
+     *
+     * @param integer $id
      * @return mixed
      */
     public function actionDelete($id) {
@@ -151,23 +167,8 @@ class ServiceHistoryController extends Controller {
         ]);
     }
 
-    /**
-     * Finds the ServiceHistory model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * 
-     * @param integer $id        	
-     * @return ServiceHistory the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id) {
-        if (($model = ServiceHistory::findOne($id)) !== null) {
-            return $model;
-        } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
-        }
-    }
-
     // Android
+
     public function beforeAction($action) {
         $this->enableCsrfValidation = false;
         return parent::beforeAction($action);
@@ -367,30 +368,30 @@ class ServiceHistoryController extends Controller {
         //  Buscamos si este usuario fue el que recibio este servicio y por lo tanto puede calificarlo 
         $serviceH = ServiceHistory::find()
                 ->where(['id' => $service_id, 'user_id' => $model_token->FK_id_user, 'state' => 1])
-                ->asArray()
+//                ->asArray()
                 ->one();
 
-        if (!isset($serviceH) || empty($serviceH)) {
-            $response ["success"] = false;
-            $response ["data"] = [
-                "message" => "Este servicio no encuentra asociado a este usuario o no esta activo."
-            ];
-
-            return $response;
-        }
+//        if (!isset($serviceH) || empty($serviceH)) {
+//            $response ["success"] = false;
+//            $response ["data"] = [
+//                "message" => "Este servicio no encuentra asociado a este usuario o no esta activo."
+//            ];
+//
+//            return $response;
+//        }
 
         // Busca el servicio que se calificará que este finalizado y este pagado
-        $model = ServiceHistoryHasPay::find()
-                ->where([
-                    'service_history.id' => $service_id,
-                    'pay.state' => 1,
-                ])
-                ->joinWith(['serviceHistory', 'pay'])
-                ->asArray()
-                ->one();
+//        $model = ServiceHistoryHasPay::find()
+//                ->where([
+//                    'service_history.id' => $service_id,
+//                    'pay.state' => 1,
+//                ])
+//                ->joinWith(['serviceHistory', 'pay'])
+//                ->asArray()
+//                ->one();
 
-        if (isset($model) && !empty($model)) {
-            $serviceH = ServiceHistory::findOne($model['serviceHistory']['id']);
+        if (isset($serviceH) && !empty($serviceH)) {
+//            $serviceH = ServiceHistory::findOne($serviceH['serviceHistory']['id']);
 
             $serviceH->qualification = $qualify;
             $serviceH->observations = $observations;
@@ -408,10 +409,17 @@ class ServiceHistoryController extends Controller {
                 return $response;
             }
         } else {
+//            $response ["success"] = false;
+//            $response ["data"] = [
+//                "message" => "Este servicio no se puede calificar por que no se ha reportado el pago del mismo."
+//            ];
+//            return $response;
+
             $response ["success"] = false;
             $response ["data"] = [
-                "message" => "Este servicio no se puede calificar por que no se ha reportado el pago del mismo."
+                "message" => "Este servicio no encuentra asociado a este usuario o no esta activo."
             ];
+
             return $response;
         }
         return true;

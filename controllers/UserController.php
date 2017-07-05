@@ -118,10 +118,26 @@ class UserController extends Controller {
         ]);
     }
 
+    /**
+     * Finds the User model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     *
+     * @param integer $id
+     * @return User the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findModel($id) {
+        if (($model = User::findOne($id)) !== null) {
+            return $model;
+        } else {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
+    }
+
     public function actionCreateUser() {
-        
+
         $model = new User();
-        
+
         if ($model->load(Yii::$app->request->post()) ) {
             $model->FK_id_city = 1;
             if( $model->save()){
@@ -133,7 +149,7 @@ class UserController extends Controller {
                 var_dump($model->getErrors());
             }
         } else {
-            
+
             return $this->render('create', [
                         'model' => $model
             ]);
@@ -143,10 +159,10 @@ class UserController extends Controller {
     public function actionCreate() {
 
         Yii::trace("Entro a crear un usuario");
-        Yii::info("Que cagada", "informacion");
-        Yii::trace('start calculating average revenue');
 
-
+        $model = new SignupForm ( [
+            'scenario' => SignupForm::SCENARIO_REGISTER
+        ] );
 
         // se define el layout
         $this->layout = "json";
@@ -429,15 +445,15 @@ class UserController extends Controller {
                     // var_dump($gcm_token->getErrors());
 
 
-                    $connection = Yii::$app->getDb();
-                    $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'], [':user_id' => $user->id, ':id' => '']);
-                    $model_history = $command->queryAll();
-//                    
-//                    $model_history = VwActualService::find()->where([
-//                                        'user_id' => $user->id
-//                                    ])->
-//                                    // 'status' => '1'
-//                                    asArray()->one();
+//                    $connection = Yii::$app->getDb();
+//                    $command = $connection->createCommand(Yii::$app->params ['vw_actual_service'], [':user_id' => $user->id, ':id' => '']);
+//                    $model_history = $command->queryAll();
+//
+                    $model_history = VwActualService::find()->where([
+                                        'user_id' => $user->id
+                                    ])->
+                                    // 'status' => '1'
+                                    asArray()->one();
                     $actual_service = false;
                     if ($model_history != null) {
                         $actual_service = true;
@@ -603,7 +619,7 @@ class UserController extends Controller {
      * Updates an existing User model.
      * If update is successful, the browser will be redirected to the 'view' page.
      *
-     * @param integer $id        	
+     * @param integer $id
      * @return mixed
      */
     public function actionUpdate() {
@@ -664,10 +680,11 @@ class UserController extends Controller {
                         $modelUpdate = new SignupForm([
                             'scenario' => SignupForm::SCENARIO_UPDATE
                         ]);
+
                         // se gusarda el usuario mmz en la nueva tabla
                         if ($modelUpdate->load($arrayUpdate) && $user = $modelUpdate->update()) {
                             // se elimina el registro del email en la lista de usuarios no registrado en mailchimp
-                            if (!$user->hasErrors()) {
+//                            if (!$user->hasErrors()) {
 
                                 return [
                                     'success' => true,
@@ -675,18 +692,18 @@ class UserController extends Controller {
                                         'message' => 'Usuario actualizado correctamente'
                                     ]
                                 ];
-                            } else {
-
-                                Yii::trace(json_encode([
-                                    'message' => "el usuario no se pudo guardar'  -  " . json_encode($user->getErrors())
-                                ]));
-                                return [
-                                    'success' => false,
-                                    'data' => [
-                                        'message' => json_encode($user->getErrors())
-                                    ]
-                                ];
-                            }
+//                            } else {
+//
+//                                Yii::trace(json_encode([
+//                                    'message' => "el usuario no se pudo guardar'  -  " . json_encode($user->getErrors())
+//                                ]));
+//                                return [
+//                                    'success' => false,
+//                                    'data' => [
+//                                        'message' => json_encode($user->getErrors())
+//                                    ]
+//                                ];
+//                            }
                         } else {
                             Yii::trace(json_encode([
                                 'message' => "el usuario no se pudo guardar'  -  " . json_encode($modelUpdate->getErrors())
@@ -738,7 +755,7 @@ class UserController extends Controller {
      * Deletes an existing User model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      *
-     * @param integer $id        	
+     * @param integer $id
      * @return mixed
      */
     public function actionDelete($id) {
@@ -747,22 +764,6 @@ class UserController extends Controller {
         return $this->redirect([
                     'index'
         ]);
-    }
-
-    /**
-     * Finds the User model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     *
-     * @param integer $id        	
-     * @return User the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id) {
-        if (($model = User::findOne($id)) !== null) {
-            return $model;
-        } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
-        }
     }
 
     /**
@@ -1251,4 +1252,11 @@ class UserController extends Controller {
         print $pusher->presence_auth($_POST ['channel_name'], $_POST ['socket_id'], rand(1, 100), $presence_data);
     }
 
+    public function actionMassPush()
+    {
+        Yii::$app->PushNotifiersFCM->sendNotificationTopic("Title header", "Body message", "ass"); //enviar a todos los usuarios del topic
+
+//            $send = Yii::$app->PushNotifier->sendNotificationTopic($model->title, $model->body, $partner_id); //enviar a todos los usuarios del topic
+//            $send = Yii::$app->PushNotifier->sendNotification($model->title, $model->body, $model->usuarios); //enviar a los usuarios seleccionados
+    }
 }

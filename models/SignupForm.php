@@ -92,7 +92,7 @@ class SignupForm extends Model {
                     $ok = true;
                 }
             } while (!$ok);
-            
+//            print($user->validate()); die();
             if ($user->save()) {
                 return $user;
             } else {
@@ -103,6 +103,17 @@ class SignupForm extends Model {
             return $this->getErrors();
         }
         
+    }
+
+    public static function getRandomCode() {
+        $an = "abcdefghijklmnopqrstuvwxyz";
+        $su = strlen($an) - 1;
+        return substr($an, rand(0, $su), 1) .
+                substr($an, rand(0, $su), 1) .
+                substr($an, rand(0, $su), 1) .
+                substr($an, rand(0, $su), 1) .
+                substr($an, rand(0, $su), 1) .
+                substr($an, rand(0, $su), 1);
     }
 
     public function signup_fb() {
@@ -119,7 +130,7 @@ class SignupForm extends Model {
             $user->FK_id_gender = $this->gender;
             $user->FK_id_city = 1;
             $user->FK_id_type_identification = 1;
-            
+
             $ok = false;
             do {
                 $codigo = self::getRandomCode();
@@ -131,7 +142,7 @@ class SignupForm extends Model {
                     $ok = true;
                 }
             } while (!$ok);
-            
+
             if ($user->save()) {
                 return $user;
             } else {
@@ -147,7 +158,7 @@ class SignupForm extends Model {
      * @return User|null the saved model or null if saving fails
      */
     public function update() {
-        
+
         if ($this->validate()) {
             //print"->".$this->firstname;
             $user = User::findOne(['id' => $this->id, 'enable' => 1]);
@@ -156,27 +167,16 @@ class SignupForm extends Model {
             $user->phone = $this->phone;
             $user->email = $this->email;
             $user->imei = $this->imei;
-            
-            if ($user->update()) {
+
+            if ($user->save()) {
                 return $user;
             } else {
-                return var_dump($user->getErrors());
+                return "No se pudo guardar";
             }
-            
+
         }
 
         return null;
-    }
-
-    public static function getRandomCode() {
-        $an = "abcdefghijklmnopqrstuvwxyz";
-        $su = strlen($an) - 1;
-        return substr($an, rand(0, $su), 1) .
-                substr($an, rand(0, $su), 1) .
-                substr($an, rand(0, $su), 1) .
-                substr($an, rand(0, $su), 1) .
-                substr($an, rand(0, $su), 1) .
-                substr($an, rand(0, $su), 1);
     }
 
 }
